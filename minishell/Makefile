@@ -1,12 +1,12 @@
 CC = cc
 NAME = minishell
-SRC = main.c utils.c split.c lexer.c Built_in/echo.c
+SRC = main.c utils.c split.c lexer.c Built_in/echo.c  Built_in/cd.c Built_in/pwd.c
 OBJ = $(SRC:.c=.o)
 
 all: $(NAME) clean     #cleanı unutma -------------------------#
 
 $(NAME): $(OBJ) 
-	@$(CC) -Wall -Wextra -Werror -g -o $(NAME) $(OBJ) -lreadline 
+	@$(CC) -Wall -Wextra -Werror -g -o $(NAME) $(OBJ) -lreadline
 	@echo "\033[0;32mCompilation complete. Executable: $(NAME)\033[0m"
 
 clean:

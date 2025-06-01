@@ -24,7 +24,8 @@ typedef struct s_cd
 
 typedef struct s_export
 {
-    char * export_name; 
+    char * key;
+    char * value; 
     //int is_valid; eğer gerekirse ?----- 
 } t_export;
 
@@ -73,6 +74,7 @@ int	ft_strlen(const char *str);
 //tahminimce kalır
 char *get_value_by_key(char ***env_dict, const char *key);
 void print_env_dictionary(char ***env);
+void print_export(char ***env);
 char	**ft_split(char const *s, char c);
 // minishell.h içine ekleyin
 char *find_executable(const char *command, char ***env_dict);
@@ -81,9 +83,18 @@ char **lexer(char *input); // echo uzak "dur salih  'samed' " dinç
 void	*ft_memcpy(void *dst, const void *src, size_t n);
 
 
+//utils
+char	*ft_strdup(const char *s1);
+char	*ft_substr(char const *s, unsigned int start, size_t len);
+char	*ft_strjoin(char const *s1, char const *s2);
+void update_env_value(char ***env_dict, const char *key, const char *value);
+char ***add_env_variable(char ***env_dict, t_export *st_export);
+
 //built-in foncs
 int ft_echo(char **token);
 
+int ft_cd(char ** token,t_data *data);
 
+void ft_pwd(void);
 
 #endif
