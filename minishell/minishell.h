@@ -89,6 +89,11 @@ char	*ft_substr(char const *s, unsigned int start, size_t len);
 char	*ft_strjoin(char const *s1, char const *s2);
 void update_env_value(char ***env_dict, const char *key, const char *value);
 char ***add_env_variable(char ***env_dict, t_export *st_export);
+char ***sort_env(char ***env_dic);
+void fill_export(char **token, t_export *st_export);
+int is_dollar(char ** token,t_data * data);
+
+
 
 //built-in foncs
 int ft_echo(char **token);
@@ -96,5 +101,7 @@ int ft_echo(char **token);
 int ft_cd(char ** token,t_data *data);
 
 void ft_pwd(void);
+
+int ft_export(char **token, t_data *data);
 
 #endif

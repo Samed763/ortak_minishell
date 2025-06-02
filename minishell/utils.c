@@ -88,7 +88,8 @@ int is_builtin(char *input)
         return 4;
     else if (!strcmp("unset", input))
         return 5;
-
+    else if (!strcmp("env", input))
+        return 6;
     else if (!strcmp("exit", input))
         return 7;
     return 0;
@@ -140,16 +141,6 @@ char ***make_env_dictionary(char **envp)
     return env_ret;
 }
 
-void print_env(char **env) // geçici
-{
-    int i = 0;
-
-    while (env[i])
-    {
-        printf("%s\n", env[i]);
-        i++;
-    }
-}
 
 char *find_path(char **env) // geçici
 {

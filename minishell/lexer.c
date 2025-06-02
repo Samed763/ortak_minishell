@@ -1,5 +1,40 @@
 #include "minishell.h"
 
+char * put_value_in_dollar(char * token_arg,t_data *data)
+{
+    int i = 0, j = 1, k = 0;
+    char *key;
+    char *value;
+	while (token_arg[i])
+		i++;
+
+	key = malloc(i);
+	if (!key)
+        return NULL;
+	while (token_arg[j])
+	{
+		key[k] = token_arg[j];
+		k++;
+		j++;
+	}
+	key[k] = '\0';
+	value = get_value_by_key(data->env->env_dictionary, key);
+    free(key);
+	return	value;
+}
+
+int is_dollar(char ** token,t_data * data)
+{
+	int i = 0;
+	while (token[i])
+	{
+		if (token[i][0] == '$')
+			token[i] = ft_strdup(put_value_in_dollar(token[i],data));
+		i++;
+	}
+	return 0;
+}
+
 void	*ft_memcpy(void *dst, const void *src, size_t n)
 {
 	size_t	i;
@@ -103,7 +138,6 @@ char **lexer(char *input) // echo uzak "dur salih  'samed' " dinç
         parts[word] = ft_substr(input, j, i - j);
         word++;
     }
-    
     parts[word] = NULL;  // Null-terminate the array
     return parts;
 }
