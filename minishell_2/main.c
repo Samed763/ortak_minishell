@@ -1,9 +1,11 @@
 #include "minishell.h"
 
-int to_do_list(t_data *data,char **envp)
+int to_do_list(t_data *data, char **envp)
 {
     data->env = Malloc(sizeof(t_env));
     data->env->env_dictionary = make_env_dictionary(envp);
+    data->last_exit_status = 0;  // Initialize exit status to 0
+    return 0;
 }
 char *trim_quotes(char *arg, int free_old)
 {
@@ -36,25 +38,23 @@ char *trim_quotes(char *arg, int free_old)
     return new_arg;
 }
 
-char * take_env(char * key ,char * value,char * arg)// şu anda echo "$HOME" tıranaklı geldiğinden bu durumda çalışmıyor
+char * take_env(char * key ,char * value,char * arg)// şu anda echo "$HOME" tıranaklı geldiğinden bu durumda çalışmıyor 
 {
+    //tüm metni bölüyor ve aranılan env_variable var ise onun yerine onu koyup birleştirip return ediyor
     char **splitted = ft_split(arg,' ');
     char *total = ft_strdup("");
     int i = 0;
     char * new_key = ft_strdup("$");
     new_key = ft_strjoin(new_key,key);
-    printf("key :%s\n",key);
-    printf("new_key :%s\n",new_key);
-    while (splitted[i])
+
+    while (splitted[i]) 
     {
-        printf("B->%s\n",splitted[i]);
         if (!ft_strcmp(splitted[i],new_key))
         {
             splitted[i] = ft_strdup(value);
         }
-        printf("A->%s\n",splitted[i]);
         total = ft_strjoin(total , splitted[i]);
-        if (splitted[i + 1])
+        if (splitted[i + 1]) //son boşluk olamasın 
             total = ft_strjoin(total , " ");
         i++;
     }
@@ -62,14 +62,21 @@ char * take_env(char * key ,char * value,char * arg)// şu anda echo "$HOME" tı
     return total;
 }
 
-
-char *in_env(t_data *data, char *key,char *arg)
+char *in_env(t_data *data, char *key, char *arg)
 {   
     // For variable names like $HOME, just skip the $ character
-    char * ret_value;
+    char *ret_value;
     char *var_name = key;
     if (key[0] == '$')
         var_name = key + 1;
+    
+    // Special case for $?
+    if (!ft_strcmp(var_name, "?"))
+    {
+        char exit_status_str[12]; // Buffer for exit status as string
+        snprintf(exit_status_str, sizeof(exit_status_str), "%d", data->last_exit_status);
+        return take_env(key, exit_status_str, arg);
+    }
         
     char *value = get_value_by_key(data->env->env_dictionary, var_name);
     printf("Looking up: %s -> %s\n", var_name, value ? value : "not found");
@@ -78,7 +85,7 @@ char *in_env(t_data *data, char *key,char *arg)
         return key; // Return original if not found
     }
 
-    return take_env(key,value,arg);
+    return take_env(key, value, arg);
 }
 
 char ** set_variables(t_data *data, char **args)// ' ile yazılanlar hariç içini envden veri koyuyor"
@@ -123,7 +130,6 @@ char ** set_variables(t_data *data, char **args)// ' ile yazılanlar hariç içi
         i++;
     }
     return args;
-    
 }
 
 int main(int argc, char **argv, char **envp)

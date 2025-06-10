@@ -28,7 +28,7 @@ typedef struct s_data
 {
     t_env *env;
     char ** args;
-
+    int last_exit_status;
 } t_data;
 
 
