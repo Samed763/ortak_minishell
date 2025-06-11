@@ -7,30 +7,23 @@ int to_do_list(t_data *data, char **envp)
     data->last_exit_status = 0;  // Initialize exit status to 0
     return 0;
 }
-char *trim_quotes(char *arg, int free_old)
+char *trim_quotes(char *arg, int free_old, int take_dollar)// 1-> $a" tirank sonda olunca silmiyor
 {
     if (!arg)
         return NULL;
-
     int len = ft_strlen(arg);
-    if (len < 2)
-        return arg;
-
-    int i = 1;
-    if (len > 2 && arg[1] == '$')
-        i++;
-
-    int new_len = len - i - 1;
-    if (new_len < 0)
-        new_len = 0;
-
-    char *new_arg = malloc(new_len + 1);
-    if (!new_arg)
-        return NULL;
-
+    char * new_arg = Malloc(len + 1);
+    int i = 0;
     int j = 0;
-    while (i < len - 1)
-        new_arg[j++] = arg[i++];
+
+    while (arg[i])
+    {
+        if (take_dollar && len > 2 && arg[i] == '$')
+            i++;
+        if (arg[i] != '\'' && arg[i] != '\"')
+            new_arg[j++] = arg[i];
+        i++;
+    }
     new_arg[j] = '\0';
 
     if (free_old)
@@ -38,7 +31,7 @@ char *trim_quotes(char *arg, int free_old)
     return new_arg;
 }
 
-char * take_env(char * key ,char * value,char * arg)// şu anda echo "$HOME" tıranaklı geldiğinden bu durumda çalışmıyor 
+char * take_env(char * key ,char * value,char * arg)
 {
     //tüm metni bölüyor ve aranılan env_variable var ise onun yerine onu koyup birleştirip return ediyor
     char **splitted = ft_split(arg,' ');
@@ -49,6 +42,8 @@ char * take_env(char * key ,char * value,char * arg)// şu anda echo "$HOME" tı
 
     while (splitted[i]) 
     {
+        splitted[i] = ft_strdup(trim_quotes(splitted[i],1,0)); //Token 1:  "$HOME" durumunu düzeltiyor
+        printf("%d-> %s \n",i,splitted[i]);
         if (!ft_strcmp(splitted[i],new_key))
         {
             splitted[i] = ft_strdup(value);
@@ -58,7 +53,6 @@ char * take_env(char * key ,char * value,char * arg)// şu anda echo "$HOME" tı
             total = ft_strjoin(total , " ");
         i++;
     }
-    printf("total -> %s\n",total);
     return total;
 }
 
@@ -82,15 +76,16 @@ char *in_env(t_data *data, char *key, char *arg)
     printf("Looking up: %s -> %s\n", var_name, value ? value : "not found");
     if (!value) // Remove the semicolon!
     {
-        return key; // Return original if not found
+        value = ft_strdup("");
     }
+    printf("->>%s<<-\n",value);
 
     return take_env(key, value, arg);
 }
 
 char ** set_variables(t_data *data, char **args)// ' ile yazılanlar hariç içini envden veri koyuyor"
 {
-    int i =0;
+    int i = 0;
     int bosluk_index = 0;
     
     while (args[i])
@@ -137,15 +132,12 @@ int main(int argc, char **argv, char **envp)
     char *input;
     t_data data;
     to_do_list(&data,envp);
-
     while (1)
     {
-        input = readline("--> ");
-        data.args = lexer(input);
-        //sadece  doğru girdilerin geçebilmesi için kontorl
-        
-        data.args = set_variables(&data,data.args);
-        print_tokens(data.args);
+        input = readline("--> ");//satır okuma 
+        data.args = lexer(input);// tokenlara ayırma
+        data.args = set_variables(&data,data.args); //$ olanları $HOME gibi envden verilerini koyma 
+        print_tokens(data.args);//geçici token yazdırma
     }
 
     return 0;

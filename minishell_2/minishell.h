@@ -43,7 +43,7 @@ int	    ft_strlen(const char *str);
 int	    ft_strcmp(const char *s1, const char *s2);
 char	*ft_strdup(const char *s1);
 char	*ft_strjoin(char *s1, char *s2);
-char    *trim_quotes(char *arg,int free_old);
+char    *trim_quotes(char *arg, int free_old,int take_dollar);
 void	*ft_memcpy(void *dst, const void *src, size_t n);
 void    *Malloc(size_t size);
 
