@@ -24,8 +24,19 @@ typedef struct s_env
     //------------//düzen çek
 } t_env;
 
+typedef struct s_parsed
+{
+    char ***args;           // komut ve argümanlar
+    char *input_file;      // < file
+    char *output_file;     // > file veya >> file
+    int   append;          // >> varsa 1, yoksa 0
+    int   heredoc;         // << varsa 1
+    char *heredoc_limiter; // << limiter
+} t_parsed;
+
 typedef struct s_data
 {
+    t_parsed *parsed;
     t_env *env;
     char ** args;
     int last_exit_status;
@@ -49,5 +60,6 @@ void    *Malloc(size_t size);
 
 //geçiciler
 void print_tokens(char **tokens);
+void print_parsed_commands(t_data *data);
 
 #endif

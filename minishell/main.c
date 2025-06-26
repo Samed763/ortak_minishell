@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/27 17:30:12 by sadinc            #+#    #+#             */
-/*   Updated: 2025/06/02 14:15:16 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/06/26 17:42:52 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,7 @@ int ft_env(char ** token,t_data *data)
 
 
 //ahhhhhhhhhhhhhhhhhhahhhhhhhhhhhhhhhhhhahhhhhhhhhhhhhhh//
-int builtin_foncs(t_data * data,char ** token,int f)
+int wbuiltin_foncs(t_data * data,char ** token,int f)
 {
     if (f == 1)
         ft_echo(token);

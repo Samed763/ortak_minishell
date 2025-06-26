@@ -58,10 +58,7 @@ char ***make_env_dictionary(char **envp)
     while (envp[count])
         count++;
 
-    char ***env_ret = malloc(sizeof(char **) * (count + 1));
-    if (!env_ret)
-        return NULL;
-
+    char ***env_ret = Malloc(sizeof(char **) * (count + 1));
     for (i = 0; i < count; i++)
     {
         /* '=' işaretini bul */
@@ -186,4 +183,47 @@ int	ft_strcmp(const char *s1, const char *s2)
 		i++;
 	}
 	return (0);
+}
+
+void print_parsed_commands(t_data *data)
+{
+    int cmd_idx = 0;
+    
+    if (!data || !data->parsed || !data->parsed->args)
+        return;
+        
+    printf("\n--- Parsed Commands ---\n");
+    
+    // Iterate through each command segment (separated by pipes)
+    while (data->parsed->args[cmd_idx])
+    {
+        printf("Command %d: ", cmd_idx + 1);
+        
+        // Print all arguments for this command
+        int arg_idx = 0;
+        while (data->parsed->args[cmd_idx][arg_idx])
+        {
+            printf("[%s] ", data->parsed->args[cmd_idx][arg_idx]);
+            arg_idx++;
+        }
+        
+        // Print pipe symbol between commands for visualization
+        if (data->parsed->args[cmd_idx + 1])
+            printf(" | ");
+            
+        printf("\n");
+        cmd_idx++;
+    }
+    
+    // Print redirection information
+    if (data->parsed->input_file)
+        printf("Input Redirection: < %s\n", data->parsed->input_file);
+    if (data->parsed->heredoc)
+        printf("Heredoc: << %s\n", data->parsed->heredoc_limiter);
+    if (data->parsed->output_file)
+        printf("Output Redirection: %s %s\n", 
+               data->parsed->append ? ">>" : ">", 
+               data->parsed->output_file);
+    
+    printf("----------------------\n\n");
 }
