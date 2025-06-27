@@ -6,14 +6,18 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/02 14:33:17 by sadinc            #+#    #+#             */
-/*   Updated: 2025/05/26 14:34:28 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/06/27 17:33:27 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-
-
+/**
+ * Count the number of substrings that will be created when splitting
+ * @param str: String to analyze
+ * @param sep: Separator character
+ * @return: Number of substrings
+ */
 static int	str_count(char const *str, char sep)
 {
 	int	count;
@@ -30,6 +34,12 @@ static int	str_count(char const *str, char sep)
 	return (count);
 }
 
+/**
+ * Extract a substring until separator or end of string
+ * @param str: Source string
+ * @param sep: Separator character
+ * @return: Allocated substring
+ */
 static char	*str_parse(const char *str, char sep)
 {
 	char	*s;
@@ -46,6 +56,11 @@ static char	*str_parse(const char *str, char sep)
 	return (s);
 }
 
+/**
+ * Free all allocated strings in array and the array itself
+ * @param arr: Array of strings to free
+ * @return: NULL (for return convenience)
+ */
 static void	*free_all(char **arr)
 {
 	int	i;
@@ -60,7 +75,12 @@ static void	*free_all(char **arr)
 	return (NULL);
 }
 
-
+/**
+ * Split a string into array of substrings using delimiter
+ * @param s: String to split
+ * @param c: Delimiter character
+ * @return: Array of allocated substrings, NULL terminated
+ */
 char	**ft_split(char const *s, char c)
 {
 	char	**arr;

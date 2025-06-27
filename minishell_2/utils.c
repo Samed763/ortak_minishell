@@ -1,5 +1,10 @@
 #include "minishell.h"
 
+/**
+ * Safe malloc wrapper that exits on failure
+ * @param size: Size of memory to allocate
+ * @return: Pointer to allocated memory
+ */
 void *Malloc(size_t size)
 {
     void *ptr;
@@ -14,6 +19,11 @@ void *Malloc(size_t size)
     return (ptr);
 }
 
+/**
+ * Calculate the length of a string
+ * @param str: String to measure
+ * @return: Length of string
+ */
 int	ft_strlen(const char *str)
 {
 	int	i;
@@ -24,6 +34,11 @@ int	ft_strlen(const char *str)
 	return (i);
 }
 
+/**
+ * Duplicate a string by allocating new memory
+ * @param s1: String to duplicate
+ * @return: Pointer to duplicated string
+ */
 char	*ft_strdup(const char *s1)
 {
 	char	*s2;
@@ -36,6 +51,14 @@ char	*ft_strdup(const char *s1)
 	ft_memcpy(s2, s1, len + 1);
 	return (s2);
 }
+
+/**
+ * Copy memory from source to destination
+ * @param dst: Destination pointer
+ * @param src: Source pointer
+ * @param n: Number of bytes to copy
+ * @return: Pointer to destination
+ */
 void	*ft_memcpy(void *dst, const void *src, size_t n)
 {
 	size_t	i;
@@ -51,6 +74,12 @@ void	*ft_memcpy(void *dst, const void *src, size_t n)
 	return (dst);
 }
 
+/**
+ * Convert environment array to dictionary format
+ * Creates a 3D array where each entry contains [key, value, NULL]
+ * @param envp: Environment array from main
+ * @return: Dictionary format environment variables
+ */
 char ***make_env_dictionary(char **envp)
 {
     int i, count = 0;
@@ -94,6 +123,12 @@ char ***make_env_dictionary(char **envp)
     return env_ret;
 }
 
+/**
+ * Get environment variable value by key
+ * @param env_dict: Environment dictionary
+ * @param key: Key to search for
+ * @return: Value string or NULL if not found
+ */
 char *get_value_by_key(char ***env_dict, const char *key)
 {
     int i = 0;
@@ -112,6 +147,11 @@ char *get_value_by_key(char ***env_dict, const char *key)
     }
     return NULL; // bulunamadı
 }
+
+/**
+ * Print all environment variables in key=value format
+ * @param env: Environment dictionary to print
+ */
 void print_env_dictionary(char ***env)
 {
     int i = 0;
@@ -124,6 +164,11 @@ void print_env_dictionary(char ***env)
         i += 1;
     }
 }
+
+/**
+ * Print token array for debugging purposes
+ * @param tokens: Array of tokens to print
+ */
 void print_tokens(char **tokens)
 {
     
@@ -142,6 +187,12 @@ void print_tokens(char **tokens)
     printf("--------------------\n\n");
 }
 
+/**
+ * Join two strings into a new allocated string
+ * @param s1: First string (can be NULL)
+ * @param s2: Second string
+ * @return: New joined string
+ */
 char	*ft_strjoin(char *s1, char *s2)
 {
 	char	*joined_str;
@@ -186,6 +237,12 @@ char	*ft_strjoin(char *s1, char *s2)
 	return (joined_str);
 }
 
+/**
+ * Compare two strings lexicographically
+ * @param s1: First string
+ * @param s2: Second string
+ * @return: Difference between first differing characters
+ */
 int	ft_strcmp(const char *s1, const char *s2)
 {
 	int	i;
@@ -200,6 +257,10 @@ int	ft_strcmp(const char *s1, const char *s2)
 	return (0);
 }
 
+/**
+ * Print parsed command structure for debugging
+ * @param data: Main data structure containing parsed commands
+ */
 void print_parsed_commands(t_data *data)
 {
     int cmd_idx = 0;
@@ -252,6 +313,13 @@ void print_parsed_commands(t_data *data)
     printf("----------------------\n\n");
 }
 
+/**
+ * Extract substring from a string
+ * @param s: Source string
+ * @param start: Starting index
+ * @param len: Length of substring
+ * @return: New allocated substring
+ */
 char	*ft_substr(char const *s, unsigned int start, size_t len)
 {
 	char	*res;

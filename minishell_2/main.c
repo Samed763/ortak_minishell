@@ -1,5 +1,11 @@
 #include "minishell.h"
 
+/**
+ * Initialize data structure with environment variables
+ * @param data: Main data structure to initialize
+ * @param envp: Environment variables from main
+ * @return: 0 on success
+ */
 int to_do_list(t_data *data, char **envp)
 {
     data->env = Malloc(sizeof(t_env));
@@ -7,6 +13,14 @@ int to_do_list(t_data *data, char **envp)
     data->last_exit_status = 0;  // Initialize exit status to 0
     return 0;
 }
+
+/**
+ * Remove quotes from a string argument
+ * @param arg: String to process
+ * @param free_old: Whether to free the original string
+ * @param take_dollar: Whether to remove dollar signs
+ * @return: New string without quotes
+ */
 char *trim_quotes(char *arg, int free_old, int take_dollar)// 1-> $a" tirank sonda olunca silmiyor
 {
     if (!arg)
@@ -31,6 +45,13 @@ char *trim_quotes(char *arg, int free_old, int take_dollar)// 1-> $a" tirank son
     return new_arg;
 }
 
+/**
+ * Replace environment variable placeholder with actual value
+ * @param key: Environment variable key
+ * @param value: Environment variable value
+ * @param arg: String containing the placeholder
+ * @return: New string with variable substituted
+ */
 char * take_env(char * key ,char * value,char * arg)
 {
     //tüm metni bölüyor ve aranılan env_variable var ise onun yerine onu koyup birleştirip return ediyor
@@ -73,6 +94,13 @@ char * take_env(char * key ,char * value,char * arg)
     return total;
 }
 
+/**
+ * Resolve environment variable by key and substitute in argument
+ * @param data: Main data structure
+ * @param key: Variable key to look up
+ * @param arg: String to perform substitution in
+ * @return: New string with variable resolved
+ */
 char *in_env(t_data *data, char *key, char *arg)
 {   
     // For variable names like $HOME, just skip the $ character
@@ -99,6 +127,12 @@ char *in_env(t_data *data, char *key, char *arg)
     return take_env(key, value, arg);
 }
 
+/**
+ * Process environment variable substitution in argument array
+ * @param data: Main data structure
+ * @param args: Array of arguments to process
+ * @return: Processed argument array
+ */
 char ** set_variables(t_data *data, char **args)// ' ile yazılanlar hariç içini envden veri koyuyor"
 {
     int i = 0;
@@ -147,7 +181,10 @@ char ** set_variables(t_data *data, char **args)// ' ile yazılanlar hariç içi
     return args;
 }
 
-// Function to process environment variables in the parsed command structure
+/**
+ * Apply environment variable substitution to parsed command structure
+ * @param data: Main data structure with parsed commands
+ */
 void set_variables_parsed(t_data *data)
 {
     int cmd_idx = 0;
@@ -213,7 +250,11 @@ void set_variables_parsed(t_data *data)
     }
 }
 
-// Function to check if all quotes are properly closed
+/**
+ * Check if all quotes in arguments are properly closed
+ * @param args: Array of arguments to check
+ * @return: 1 if quotes are balanced, 0 otherwise
+ */
 int check_quotes_closed(char **args)
 {
     int i = 0;
@@ -242,7 +283,11 @@ int check_quotes_closed(char **args)
     return 1;
 }
 
-// Function to validate the arguments
+/**
+ * Validate command arguments for syntax errors
+ * @param data: Main data structure
+ * @return: 1 if valid, 0 if syntax error found
+ */
 int validate_args(t_data *data)
 {
     char **args = data->args;
@@ -342,6 +387,11 @@ int validate_args(t_data *data)
     return 1;
 }
 
+/**
+ * Parse tokenized arguments into command structure
+ * Separates commands by pipes and handles redirections
+ * @param data: Main data structure containing tokens
+ */
 void parser(t_data *data)
 {
     int i;
@@ -463,7 +513,10 @@ void parser(t_data *data)
     free(arg_indices);
 }
 
-// Function to free parsed structure
+/**
+ * Free all memory allocated for parsed command structure
+ * @param parsed: Parsed structure to free
+ */
 void free_parsed(t_parsed *parsed)
 {
     if (!parsed)
@@ -500,7 +553,10 @@ void free_parsed(t_parsed *parsed)
     free(parsed);
 }
 
-// Function to free lexer tokens
+/**
+ * Free array of tokens
+ * @param tokens: Token array to free
+ */
 void free_tokens(char **tokens)
 {
     if (!tokens)
@@ -515,7 +571,10 @@ void free_tokens(char **tokens)
     free(tokens);
 }
 
-// Function to free environment dictionary
+/**
+ * Free environment dictionary structure
+ * @param env_dict: Environment dictionary to free
+ */
 void free_env_dictionary(char ***env_dict)
 {
     if (!env_dict)
@@ -534,6 +593,13 @@ void free_env_dictionary(char ***env_dict)
     free(env_dict);
 }
 
+/**
+ * Main shell loop - reads input, parses, and executes commands
+ * @param argc: Argument count (unused)
+ * @param argv: Argument vector (unused)
+ * @param envp: Environment variables
+ * @return: Exit status
+ */
 int main(int argc, char **argv, char **envp)
 {   
     char *input;
