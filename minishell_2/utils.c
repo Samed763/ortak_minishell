@@ -147,26 +147,41 @@ char	*ft_strjoin(char *s1, char *s2)
 	char	*joined_str;
 	int		i;
 	int		j;
+	int		free_s1 = 0;
 
-	i = -1;
+	i = 0;
 	j = 0;
 	if (!s1)
 	{
 		s1 = ft_strdup("");
 		if (!s1)
 			return (NULL);
-		s1[0] = '\0';
+		free_s1 = 1;
 	}
 	if (!s2)
+	{
+		if (free_s1)
+			free(s1);
 		return (NULL);
+	}
 	joined_str = malloc(ft_strlen(s1) + ft_strlen(s2) + 1);
 	if (!joined_str)
+	{
+		if (free_s1)
+			free(s1);
 		return (NULL);
-	while (s1[++i] != '\0')
+	}
+	while (s1[i] != '\0')
+	{
 		joined_str[i] = s1[i];
+		i++;
+	}
 	while (s2[j] != '\0')
 		joined_str[i++] = s2[j++];
 	joined_str[i] = '\0';
+	
+	if (free_s1)
+		free(s1);
 	
 	return (joined_str);
 }
@@ -219,11 +234,46 @@ void print_parsed_commands(t_data *data)
     if (data->parsed->input_file)
         printf("Input Redirection: < %s\n", data->parsed->input_file);
     if (data->parsed->heredoc)
+    {
         printf("Heredoc: << %s\n", data->parsed->heredoc_limiter);
+        if (data->parsed->heredoc_content)
+        {
+            printf("Heredoc Content:\n%s", data->parsed->heredoc_content);
+            // Add a newline if the content doesn't end with one
+            if (data->parsed->heredoc_content[ft_strlen(data->parsed->heredoc_content)-1] != '\n')
+                printf("\n");
+        }
+    }
     if (data->parsed->output_file)
         printf("Output Redirection: %s %s\n", 
                data->parsed->append ? ">>" : ">", 
                data->parsed->output_file);
     
     printf("----------------------\n\n");
+}
+
+char	*ft_substr(char const *s, unsigned int start, size_t len)
+{
+	char	*res;
+	size_t	i;
+	size_t	slen;
+
+	i = 0;
+	if (!s)
+		return (NULL);
+	slen = ft_strlen(s);
+	if (slen <= start)
+		return (ft_strdup(""));
+	if (len > slen - start)
+		len = slen - start;
+	res = (char *)malloc(len + 1);
+	if (!res)
+		return (NULL);
+	while (s[start + i] && i < len)
+	{
+		res[i] = s[start + i];
+		i++;
+	}
+	res[i] = '\0';
+	return (res);
 }

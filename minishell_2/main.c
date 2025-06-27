@@ -38,28 +38,44 @@ char * take_env(char * key ,char * value,char * arg)
     char *total = ft_strdup("");
     int i = 0;
     char * new_key = ft_strdup("$");
-    new_key = ft_strjoin(new_key,key);
+    char * temp_key = ft_strjoin(new_key, key);
+    free(new_key);
+    new_key = temp_key;
 
     while (splitted[i]) 
     {
-        splitted[i] = ft_strdup(trim_quotes(splitted[i],1,0)); //Token 1:  "$HOME" durumunu düzeltiyor
-        printf("%d-> %s \n",i,splitted[i]);
-        if (!ft_strcmp(splitted[i],new_key))
+        char *processed_token = trim_quotes(splitted[i], 0, 0);
+        printf("%d-> %s \n",i,processed_token);
+        
+        if (!ft_strcmp(processed_token, new_key))
         {
-            splitted[i] = ft_strdup(value);
+            free(processed_token);
+            processed_token = ft_strdup(value);
         }
-        total = ft_strjoin(total , splitted[i]);
+        
+        char *old_total = total;
+        total = ft_strjoin(total, processed_token);
+        free(old_total);
+        
         if (splitted[i + 1]) //son boşluk olamasın 
-            total = ft_strjoin(total , " ");
+        {
+            old_total = total;
+            total = ft_strjoin(total, " ");
+            free(old_total);
+        }
+        
+        free(processed_token);
+        free(splitted[i]);
         i++;
     }
+    free(splitted);
+    free(new_key);
     return total;
 }
 
 char *in_env(t_data *data, char *key, char *arg)
 {   
     // For variable names like $HOME, just skip the $ character
-    char *ret_value;
     char *var_name = key;
     if (key[0] == '$')
         var_name = key + 1;
@@ -74,9 +90,9 @@ char *in_env(t_data *data, char *key, char *arg)
         
     char *value = get_value_by_key(data->env->env_dictionary, var_name);
     printf("Looking up: %s -> %s\n", var_name, value ? value : "not found");
-    if (!value) // Remove the semicolon!
+    if (!value)
     {
-        value = ft_strdup("");
+        value = "";
     }
     printf("->>%s<<-\n",value);
 
@@ -86,17 +102,16 @@ char *in_env(t_data *data, char *key, char *arg)
 char ** set_variables(t_data *data, char **args)// ' ile yazılanlar hariç içini envden veri koyuyor"
 {
     int i = 0;
-    int bosluk_index = 0;
     
     while (args[i])
     {
         int j = 0;
         int in_dquote = 0;
         int in_squote = 0;
-        while (args[i][j])
+        int found_var = 0;
+        
+        while (args[i][j] && !found_var)
         {
-            if (args[i][j] == ' ')
-                bosluk_index = j;
             // Track quote state
             if (args[i][j] == '"' && !in_squote)
                 in_dquote = !in_dquote;
@@ -104,7 +119,7 @@ char ** set_variables(t_data *data, char **args)// ' ile yazılanlar hariç içi
                 in_squote = !in_squote;
             
             // Process environment variables (when not in single quotes)
-            if (args[i][j] == '$' && !in_squote && args[i][j+1] && args[i][j+1] != ' ') //  selam  $USR ben amcı  
+            if (args[i][j] == '$' && !in_squote && args[i][j+1] && args[i][j+1] != ' ')
             {
                 int var_start = j + 1; // Start right after the $
                 int var_end = var_start;
@@ -118,7 +133,12 @@ char ** set_variables(t_data *data, char **args)// ' ile yazılanlar hariç içi
                 char *var_name = Malloc(var_len + 1);
                 strncpy(var_name, args[i] + var_start, var_len);
                 var_name[var_len] = '\0';
-                args[i] = in_env(data, var_name,args[i]); //buradan başka "$HOME SAFS" bu durumda düzgün çalışması lazım
+                
+                char *old_arg = args[i];
+                args[i] = in_env(data, var_name, args[i]);
+                free(old_arg);
+                free(var_name);
+                found_var = 1; // Process one variable at a time
             }
             j++;
         }
@@ -146,44 +166,50 @@ void set_variables_parsed(t_data *data)
     // Process redirection filenames for variables
     if (data->parsed->input_file)
     {
-        char **processed_arr;
         char *temp_arr[2];
-        temp_arr[0] = data->parsed->input_file;
+        temp_arr[0] = ft_strdup(data->parsed->input_file);
         temp_arr[1] = NULL;
-        processed_arr = set_variables(data, temp_arr);
+        
+        char **processed_arr = set_variables(data, temp_arr);
+        
         // Free the old input file and update with processed value
         free(data->parsed->input_file);
         data->parsed->input_file = ft_strdup(processed_arr[0]);
-        free(processed_arr[0]);
-        free(processed_arr);
+        
+        // Clean up temp array
+        free(temp_arr[0]);
     }
     
     if (data->parsed->output_file)
     {
-        char **processed_arr;
         char *temp_arr[2];
-        temp_arr[0] = data->parsed->output_file;
+        temp_arr[0] = ft_strdup(data->parsed->output_file);
         temp_arr[1] = NULL;
-        processed_arr = set_variables(data, temp_arr);
+        
+        char **processed_arr = set_variables(data, temp_arr);
+        
         // Free the old output file and update with processed value
         free(data->parsed->output_file);
         data->parsed->output_file = ft_strdup(processed_arr[0]);
-        free(processed_arr[0]);
-        free(processed_arr);
+        
+        // Clean up temp array
+        free(temp_arr[0]);
     }
     
     if (data->parsed->heredoc_limiter)
     {
-        char **processed_arr;
         char *temp_arr[2];
-        temp_arr[0] = data->parsed->heredoc_limiter;
+        temp_arr[0] = ft_strdup(data->parsed->heredoc_limiter);
         temp_arr[1] = NULL;
-        processed_arr = set_variables(data, temp_arr);
+        
+        char **processed_arr = set_variables(data, temp_arr);
+        
         // Free the old heredoc limiter and update with processed value
         free(data->parsed->heredoc_limiter);
         data->parsed->heredoc_limiter = ft_strdup(processed_arr[0]);
-        free(processed_arr[0]);
-        free(processed_arr);
+        
+        // Clean up temp array
+        free(temp_arr[0]);
     }
 }
 
@@ -313,7 +339,7 @@ int validate_args(t_data *data)
         i++;
     }
     
-    return 1;  // Arguments are valid
+    return 1;
 }
 
 void input_file(t_data *data ,t_parsed parsed)
@@ -346,6 +372,7 @@ void parser(t_data *data)
     data->parsed->append = 0;
     data->parsed->heredoc = 0;
     data->parsed->heredoc_limiter = NULL;
+    data->parsed->heredoc_content = NULL; // Initialize this field too
     
     // First pass: Count normal arguments (excluding redirections) for each command
     int cmd_idx = 0;
@@ -441,15 +468,119 @@ void parser(t_data *data)
     free(arg_indices);
 }
 
+// Function to free parsed structure
+void free_parsed(t_parsed *parsed)
+{
+    if (!parsed)
+        return;
+    
+    // Free command arguments
+    if (parsed->args)
+    {
+        int cmd_idx = 0;
+        while (parsed->args[cmd_idx])
+        {
+            int arg_idx = 0;
+            while (parsed->args[cmd_idx][arg_idx])
+            {
+                free(parsed->args[cmd_idx][arg_idx]);
+                arg_idx++;
+            }
+            free(parsed->args[cmd_idx]);
+            cmd_idx++;
+        }
+        free(parsed->args);
+    }
+    
+    // Free redirection files
+    if (parsed->input_file)
+        free(parsed->input_file);
+    if (parsed->output_file)
+        free(parsed->output_file);
+    if (parsed->heredoc_limiter)
+        free(parsed->heredoc_limiter);
+    if (parsed->heredoc_content)
+        free(parsed->heredoc_content);
+    
+    free(parsed);
+}
+
+// Function to free lexer tokens
+void free_tokens(char **tokens)
+{
+    if (!tokens)
+        return;
+    
+    int i = 0;
+    while (tokens[i])
+    {
+        free(tokens[i]);
+        i++;
+    }
+    free(tokens);
+}
+
+// Function to free environment dictionary
+void free_env_dictionary(char ***env_dict)
+{
+    if (!env_dict)
+        return;
+    
+    int i = 0;
+    while (env_dict[i])
+    {
+        if (env_dict[i][0])
+            free(env_dict[i][0]);
+        if (env_dict[i][1])
+            free(env_dict[i][1]);
+        free(env_dict[i]);
+        i++;
+    }
+    free(env_dict);
+}
 
 int main(int argc, char **argv, char **envp)
 {   
     char *input;
     t_data data;
+    
+    // Initialize data structure
+    data.parsed = NULL;
+    data.args = NULL;
+    
     to_do_list(&data,envp);
+    setup_signals(); // Setup signal handling for interactive mode
+    
     while (1)
     {
+        g_signal_received = 0; // Reset signal flag
         input = readline("--> ");//satır okuma 
+        
+        // Handle signal received during readline
+        if (g_signal_received == SIGINT)
+        {
+            data.last_exit_status = 130;
+            g_signal_received = 0;
+            if (input)
+                free(input);
+            continue;
+        }
+        
+        // Handle EOF (Ctrl+D)
+        if (!input)
+        {
+            printf("exit\n");
+            break;
+        }
+        
+        // Skip empty input
+        if (ft_strlen(input) == 0)
+        {
+            free(input);
+            continue;
+        }
+        
+        add_history(input); // Add to readline history
         data.args = lexer(input);// tokenlara ayırma 
         
         // Validate arguments
@@ -460,8 +591,36 @@ int main(int argc, char **argv, char **envp)
             set_variables_parsed(&data);
             print_parsed_commands(&data); // Print the parsed commands
             print_tokens(data.args);//geçici token yazdırma
+            
+            // Execute the parsed commands
+            executor(&data);
         }
+        
+        // Clean up memory
+        if (data.args)
+        {
+            free_tokens(data.args);
+            data.args = NULL;
+        }
+        if (data.parsed)
+        {
+            free_parsed(data.parsed);
+            data.parsed = NULL;
+        }
+        
+        free(input);
     }
+    
+    // Clean up readline history
+    clear_history();
+    
+    // Clean up before exit
+    if (data.env && data.env->env_dictionary)
+        free_env_dictionary(data.env->env_dictionary);
+    if (data.env)
+        free(data.env);
 
     return 0;
 }
+
+//sinyal kontrolü ile heradoc sonlandırma

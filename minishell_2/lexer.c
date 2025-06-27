@@ -1,31 +1,5 @@
 #include "minishell.h"
 
-
-
-char	*ft_substr(char const *s, unsigned int start, size_t len)
-{
-    char	*res;
-	size_t	i;
-	size_t	slen;
-
-	i = 0;
-	slen = ft_strlen(s);
-	if (slen <= start)
-		return (ft_strdup(""));
-	if (len > slen - start)
-		len = slen - start;
-	res = (char *)malloc(len + 1);
-	if (!res)
-		return (NULL);
-	while (s[start + i] && i < len)
-	{
-		res[i] = s[start + i];
-		i++;
-	}
-	res[i] = '\0';
-	return (res);
-}
-
 // Helper function to check if character is a redirection operator
 int is_redirection(char c)
 {
@@ -38,19 +12,35 @@ int is_special_char(char c)
     return (c == '|' || c == '<' || c == '>');
 }
 
-char **lexer(char *input) // echo uzak "dur salih  'samed' " dinç
+char **lexer(char *input)
 {
     char **parts;
     int i = 0, j = 0, word = 0;
     int in_dquote = 0;  // Double quote flag
     int in_squote = 0;  // Single quote flag
     
+    // Count approximate number of tokens to allocate appropriate size
+    int estimated_tokens = 0;
+    int temp_i = 0;
+    while (input[temp_i])
+    {
+        if (input[temp_i] == ' ' || is_special_char(input[temp_i]))
+            estimated_tokens++;
+        temp_i++;
+    }
+    estimated_tokens += 10; // Add some buffer
+    
     // Allocate memory for parts array
-    parts = (char **)malloc(sizeof(char *) * 1024);
+    parts = (char **)malloc(sizeof(char *) * estimated_tokens);
     if (!parts)
         return NULL;
     
-    while (input[i])
+    // Skip leading spaces
+    while (input[i] && input[i] == ' ')
+        i++;
+    j = i;
+    
+    while (input[i] && input[i] != '\n')  // Stop at newline
     {
         // Handle quotes
         if (input[i] == '"' && !in_squote)
@@ -71,7 +61,6 @@ char **lexer(char *input) // echo uzak "dur salih  'samed' " dinç
             // Special handling for redirection operators
             if (is_redirection(input[i]))
             {
-                char current = input[i];
                 int start = i;
                 
                 // Check for >> (append) or << (heredoc)
@@ -94,6 +83,9 @@ char **lexer(char *input) // echo uzak "dur salih  'samed' " dinç
                 i++;
             }
             
+            // Skip spaces after operators
+            while (input[i] && input[i] == ' ')
+                i++;
             j = i;  // Update start position for next token
             continue;
         }
@@ -106,7 +98,11 @@ char **lexer(char *input) // echo uzak "dur salih  'samed' " dinç
                 parts[word] = ft_substr(input, j, i - j);
                 word++;
             }
-            j = i + 1;  // Move start pointer past the space
+            // Skip multiple spaces
+            while (input[i] && input[i] == ' ')
+                i++;
+            j = i;  // Move start pointer past the space(s)
+            continue;
         }
         i++;
     }
@@ -117,6 +113,11 @@ char **lexer(char *input) // echo uzak "dur salih  'samed' " dinç
         parts[word] = ft_substr(input, j, i - j);
         word++;
     }
+    
     parts[word] = NULL;  // Null-terminate the array
+    
+    // Resize to exact size to avoid wasted memory
+    parts = realloc(parts, sizeof(char *) * (word + 1));
+    
     return parts;
 }
