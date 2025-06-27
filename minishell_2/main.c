@@ -45,7 +45,7 @@ char * take_env(char * key ,char * value,char * arg)
     while (splitted[i]) 
     {
         char *processed_token = trim_quotes(splitted[i], 0, 0);
-        printf("%d-> %s \n",i,processed_token);
+        //printf("%d-> %s \n",i,processed_token);
         
         if (!ft_strcmp(processed_token, new_key))
         {
@@ -89,12 +89,12 @@ char *in_env(t_data *data, char *key, char *arg)
     }
         
     char *value = get_value_by_key(data->env->env_dictionary, var_name);
-    printf("Looking up: %s -> %s\n", var_name, value ? value : "not found");
+    //printf("Looking up: %s -> %s\n", var_name, value ? value : "not found");
     if (!value)
     {
         value = "";
     }
-    printf("->>%s<<-\n",value);
+    //printf("->>%s<<-\n",value);
 
     return take_env(key, value, arg);
 }
@@ -342,11 +342,6 @@ int validate_args(t_data *data)
     return 1;
 }
 
-void input_file(t_data *data ,t_parsed parsed)
-{
-
-}
-
 void parser(t_data *data)
 {
     int i;
@@ -554,7 +549,7 @@ int main(int argc, char **argv, char **envp)
     while (1)
     {
         g_signal_received = 0; // Reset signal flag
-        input = readline("--> ");//satır okuma 
+        input = readline("minishell$ ");//satır okuma 
         
         // Handle signal received during readline
         if (g_signal_received == SIGINT)
@@ -589,8 +584,8 @@ int main(int argc, char **argv, char **envp)
             parser(&data);
             // Apply environment variable substitution to the parsed structure
             set_variables_parsed(&data);
-            print_parsed_commands(&data); // Print the parsed commands
-            print_tokens(data.args);//geçici token yazdırma
+            //print_parsed_commands(&data); // Print the parsed commands
+            //print_tokens(data.args);//geçici token yazdırma
             
             // Execute the parsed commands
             executor(&data);
