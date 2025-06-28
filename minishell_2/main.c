@@ -21,7 +21,7 @@ int to_do_list(t_data *data, char **envp)
  * @param take_dollar: Whether to remove dollar signs
  * @return: New string without quotes
  */
-char *trim_quotes(char *arg, int free_old, int take_dollar)// 1-> $a" tirank sonda olunca silmiyor
+char *trim_quotes(char *arg, int free_old, int take_dollar)
 {
     if (!arg)
         return NULL;
