@@ -170,14 +170,13 @@ int main(int argc, char **argv)
         else
         {
             // Normal komut işleme
-            /*
             data.token = tokenize_words(data.word_array);
             data.commands = parse_commands(data.word_array, data.token);
             print_word_array(data.word_array);
             execute_commands(data.commands);
             free_commands(data.commands);
             free_token_array(data.token);
-            */
+            
         }
         
         // Clean up
