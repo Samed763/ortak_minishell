@@ -30,7 +30,7 @@ static int lexer_word_count(char *input)
     return word_count;
 }
 
-char **lexer(char *input)
+char **split_by_quote(char *input)
 {
     int d_quote = 0;
     int s_quote = 0;
@@ -52,21 +52,19 @@ char **lexer(char *input)
 
         if (trimmed_input[i] == ' ' && !d_quote && !s_quote)
         {
-            if (i > j)  // Token varsa
+            if (i > j)
             {
                 args[word] = ft_substr(trimmed_input, j, i - j);
                 word++;
             }
-            // Boşlukları atla
             while (trimmed_input[i] && trimmed_input[i] == ' ')
                 i++;
-            j = i;  // Yeni token başlangıcı
+            j = i;
             continue;
         }
         i++;
     }
     
-    // Son token'ı ekle
     if (i > j)
     {
         args[word] = ft_substr(trimmed_input, j, i - j);
@@ -74,12 +72,25 @@ char **lexer(char *input)
     }
 
     args[word] = NULL;
-    free(trimmed_input);  // Memory leak'i önle
-    
-    
-    
+    free(trimmed_input);
     return args;
+}
 
-
-
+void print_word_array(char **word_array)
+{
+    int i = 0;
+    
+    if (!word_array)
+    {
+        printf("Array is NULL\n");
+        return;
+    }
+    
+    printf("Word array contents:\n");
+    while (word_array[i])
+    {
+        printf("[%d]: %s\n", i, word_array[i]);
+        i++;
+    }
+    printf("Total words: %d\n", i);
 }

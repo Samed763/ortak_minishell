@@ -15,22 +15,23 @@
 
 // Temel token türleri (bonus değil)
 #define TOKEN_WORD          0
-#define TOKEN_PIPE          1    // |
-#define TOKEN_REDIRECT_IN   2    // <
-#define TOKEN_REDIRECT_OUT  3    // >
-#define TOKEN_APPEND        4    // >>
-#define TOKEN_HEREDOC       5    // <<
+#define TOKEN_COMMAND          1
+#define TOKEN_PIPE          2    // |
+#define TOKEN_REDIRECT_IN   3    // <
+#define TOKEN_REDIRECT_OUT  4    // >
+#define TOKEN_APPEND        5    // >>
+#define TOKEN_HEREDOC       6    // <<
 
 typedef struct s_parsed_arg
 {
-    char ***arg;     // Her komut için ayrı char** array
+    char **arg;     // Her komut için ayrı char** array
     int  *tokens;    // Her kelimenin token türü
     int   count;     // Toplam kelime sayısı
 } t_parsed_arg;
 
 typedef struct s_parsed
 {
-    t_parsed_arg commands;   // Tek struct (array değil)
+    t_parsed_arg *commands;   // Tek struct (array değil)
     char *input_file;        // < file
     char *output_file;       // > file veya >> file
     int   append;            // >> varsa 1, yoksa 0
@@ -62,7 +63,7 @@ char	*ft_substr(char const *s, unsigned int start, size_t len);
 char **lexer(char *input);
 
 //main.c parser functions
-void parser(t_data *data);
+
 void parse_single_command(t_data *data, int cmd_index, int start, int end);
 int is_redirection(char *token);
 void handle_redirection(t_data *data, char *operator, char *file);
