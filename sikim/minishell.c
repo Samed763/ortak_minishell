@@ -176,7 +176,6 @@ int main(int argc, char **argv)
             execute_commands(data.commands);
             free_commands(data.commands);
             free_token_array(data.token);
-            
         }
         
         // Clean up
