@@ -1,37 +1,42 @@
 #include "minishell.h"
 
-static int	lexer_word_count(char *input)
+typedef struct s_lwc
 {
     int	d_quote;
     int	s_quote;
     int	i;
     int	word_count;
     int	in_word;
+}t_lwc;
 
-    d_quote = 0;
-    s_quote = 0;
-    i = 0;
-    word_count = 0;
-    in_word = 0;
-    while (input[i])
+
+static int	lexer_word_count(char *input)
+{
+    t_lwc lwc_data;
+
+    lwc_data.d_quote = 0;
+    lwc_data.s_quote = 0;
+    lwc_data.i = -1;
+    lwc_data.word_count = 0;
+    lwc_data.in_word = 0;
+    while (input[++lwc_data.i])
     {
-        if (input[i] == '\'' && !d_quote)
-            s_quote = !s_quote;
-        else if (input[i] == '"' && !s_quote)
-            d_quote = !d_quote;
-        if (input[i] != ' ' || s_quote || d_quote)
+        if (input[lwc_data.i] == '\'' && !lwc_data.d_quote)
+            lwc_data.s_quote = !lwc_data.s_quote;
+        else if (input[lwc_data.i] == '"' && !lwc_data.s_quote)
+            lwc_data.d_quote = !lwc_data.d_quote;
+        if (input[lwc_data.i] != ' ' || lwc_data.s_quote || lwc_data.d_quote)
         {
-            if (!in_word)
+            if (!lwc_data.in_word)
             {
-                word_count++;
-                in_word = 1;
+                lwc_data.word_count++;
+                lwc_data.in_word = 1;
             }
         }
         else
-            in_word = 0;
-        i++;
+            lwc_data.in_word = 0;
     }
-    return (word_count);
+    return (lwc_data.word_count);
 }
 
 static void	handle_space(char *trimmed_input, int *i, int *j, 
