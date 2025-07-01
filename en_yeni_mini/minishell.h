@@ -11,5 +11,7 @@ typedef struct s_data
 
 }t_data;
 
+int	is_valid_after_pipe(int c);
+int is_valid_filename_char(int c);
 
 #endif

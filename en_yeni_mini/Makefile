@@ -1,6 +1,6 @@
 CC = cc
 NAME = minishell
-SRC = minishell.c
+SRC = minishell.c utils.c
 OBJ = $(SRC:.c=.o)
 
 all: $(NAME) clean     #cleanı unutma -------------------------#
