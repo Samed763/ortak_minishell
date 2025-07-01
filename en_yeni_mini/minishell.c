@@ -20,11 +20,17 @@ int main(int argc, char **argv)
             break;
         }
 
-        if (syntax_check(input)) // TODO: if koy returna göre işlem yap
-            printf("%s doğru;\n",input);
-        else
-            printf("%s yanlış;\n",input);
+        add_history(input);
+        syntax_check(input);// TODO: if koy returna göre işlem yap
+        // Process input
+        data.word_array = split_by_quote(input);
 
+
+        for (size_t i = 0; data.word_array[i]; i++)
+            printf("[%ld] :%s \n",i , data.word_array[i]);
+        
+
+            
         free(input); // Memory leak önleme
     }
 
