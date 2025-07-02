@@ -1,6 +1,7 @@
 CC = cc
 NAME = minishell
-SRC = minishell.c utils.c syntax_check.c split_by_quote.c tokenize_word.c parse_commands.c env.c
+SRC = minishell.c utils.c syntax_check.c split_by_quote.c tokenize_word.c parse_commands.c env.c \
+	check_start_var.c 
 OBJ = $(SRC:.c=.o)
 
 all: $(NAME) clean     #cleanı unutma -------------------------#

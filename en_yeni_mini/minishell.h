@@ -30,6 +30,7 @@ typedef struct s_data
     char **env;
     char *var;
     int *token;
+    int export_found;
     t_command *cmd;
 }t_data;
 
@@ -44,6 +45,7 @@ int	    is_valid_after_pipe(int c);
 int     is_valid_filename_char(int c);
 int     ft_strcmp(const char *s1, const char *s2);
 void    *Malloc(size_t size);
+void	free_word_array(char **array);
 void	*ft_memcpy(void *dst, const void *src, size_t n);
 char	*ft_strdup(const char *s1);
 char	*ft_strchr(const char *s, int c);
@@ -62,5 +64,8 @@ void	print_parsed_commands(t_command *commands);
 //env.c
 char ** copy_env(char **envp);
 char ** add_to_env(char **env,char *input);
+
+//check_start_var.c
+void	check_start_var(t_data *data);
 
 #endif

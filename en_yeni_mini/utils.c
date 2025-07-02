@@ -67,7 +67,21 @@ void	*ft_memcpy(void *dst, const void *src, size_t n)
     }
     return (dst);
 }
+// utils.c dosyasına ekle
+void	free_word_array(char **array)
+{
+    int	i;
 
+    if (!array)
+        return ;
+    i = 0;
+    while (array[i])
+    {
+        free(array[i]);
+        i++;
+    }
+    free(array);
+}
 char	*ft_strdup(const char *s1)
 {
     char	*s2;
