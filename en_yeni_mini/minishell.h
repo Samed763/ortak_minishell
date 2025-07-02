@@ -27,6 +27,8 @@ typedef struct s_command
 typedef struct s_data
 {
     char **word_array;
+    char **env;
+    char *var;
     int *token;
     t_command *cmd;
 }t_data;
@@ -57,6 +59,8 @@ void	print_tokens(char **word_array, int *tokens);
 t_command	*parse_commands(char **word_array, int *tokens);
 void	print_parsed_commands(t_command *commands);
 
-
+//env.c
+char ** copy_env(char **envp);
+char ** add_to_env(char **env,char *input);
 
 #endif
