@@ -1,5 +1,47 @@
 #include "minishell.h"
 
+char *find_value_by_key(t_data *data,char *key)
+{
+    int i = 0;
+    char *search;
+    search = ft_strjoin(key, "="); // "USER" -> "USER=" şeklinde aransın
+    if (!search)
+        return NULL;
+    while (data->env[i])
+    {
+        if (!strncmp(data->env[i],search,ft_strlen(search)))
+            return ft_strdup(data->env[i] + ft_strlen(search));
+        i++;
+    }
+    return NULL;
+}
+
+
+void pipe_execute(t_data *data,char **splitted_path)
+{
+    //is_builtin
+}
+
+void single_execute(t_data *data,char **splitted_path)
+{
+    //is_builtin
+
+    
+}
+
+void execute_command(t_data* data)
+{
+    char ** splitted_path;
+    splitted_path = ft_split(find_value_by_key(data,"PATH"),':');
+    for (size_t i = 0; splitted_path[i]; i++)
+    {
+        printf("[%ld]: %s",i,splitted_path[i]);
+    }
+    if (!data->cmd->next)
+        pipe_execute(data,splitted_path);
+    else    
+        single_execute(data,splitted_path);
+}
 
 int main(int argc, char **argv,char **envp)
 {
@@ -29,7 +71,7 @@ int main(int argc, char **argv,char **envp)
         {
             printf("%s\n",data.word_array[i]);
         }
-        
+        //printf("\n%s\n",find_value_by_key(&data,"HOME"));
         data.token = tokenize_words(data.word_array);
         
         /*for (size_t i = 0; data.word_array[i]; i++)
@@ -43,6 +85,7 @@ int main(int argc, char **argv,char **envp)
 
         data.cmd = parse_commands(data.word_array,data.token);
         //print_parsed_commands(data.cmd);
+        execute_command(&data);
         free(data.token);
         free(input);
     }
