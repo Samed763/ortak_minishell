@@ -95,8 +95,6 @@ t_commands *parse_commands(char **word_array, int *tokens)
 
 void print_parsed_commands(t_commands *commands)
 {
-    // Debug function - only enable if DEBUG is defined
-    #ifdef DEBUG
     t_commands *current = commands;
     int cmd_num = 0;
     
@@ -126,7 +124,4 @@ void print_parsed_commands(t_commands *commands)
             printf("  | (pipe to next command)\n");
     }
     printf("========================\n\n");
-    #else
-    (void)commands;
-    #endif
 }
