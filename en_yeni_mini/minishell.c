@@ -1,93 +1,86 @@
 #include "minishell.h"
 
-char *find_value_by_key(t_data *data,char *key)
+char * set_var(char * arg,t_data *data)
 {
     int i = 0;
-    char *search;
-    search = ft_strjoin(key, "="); // "USER" -> "USER=" şeklinde aransın
-    if (!search)
-        return NULL;
-    while (data->env[i])
+    int j = 0;
+    char *key;
+    while (arg[i])
     {
-        if (!strncmp(data->env[i],search,ft_strlen(search)))
-            return ft_strdup(data->env[i] + ft_strlen(search));
+        if(arg[i] == '$')
+        {
+            j = 0;
+            while (arg[i + j] != '/' && arg[i + j] != '\0')
+                j++;
+            printf("i : %d, j : %d",i,j);
+            key = ft_substr(arg,i+1,i-j);
+            printf("%s",key);
+            printf("%s",find_value_by_key(data,key));
+        }
         i++;
     }
-    return NULL;
-}
-
-
-void pipe_execute(t_data *data,char **splitted_path)
-{
-    //is_builtin
-}
-
-void single_execute(t_data *data,char **splitted_path)
-{
-    //is_builtin
-
     
 }
 
-void execute_command(t_data* data)
+
+//her data.word_array da $HOME arıcak ve eğer sonu / yada \0 ise onun yerine env den değer atıcak
+void expander(t_data *data)
 {
-    char ** splitted_path;
-    splitted_path = ft_split(find_value_by_key(data,"PATH"),':');
-    for (size_t i = 0; splitted_path[i]; i++)
+    int i ;
+    int j ;
+
+    i =0;
+    while (data->word_array[i])
     {
-        printf("[%ld]: %s",i,splitted_path[i]);
+        j=0;
+        //$ varsa peşindekini / a kadar env de arıyacak
+        while (data->word_array[i][j])
+        {
+            
+            if (data->word_array[i][j] == '$')
+            {
+                printf("$  bulundu\n");
+                data->word_array[i] =ft_strdup(set_var(data->word_array[i],data));
+                break;
+            }
+            j++;
+        }
+        i++;
     }
-    if (!data->cmd->next)
-        pipe_execute(data,splitted_path);
-    else    
-        single_execute(data,splitted_path);
 }
 
-int main(int argc, char **argv,char **envp)
+int	main(int argc, char **argv, char **envp)
 {
-    (void)argc;
-    (void)argv;
     char	*input;
     t_data	data;
 
+    (void)argc;
+    (void)argv;
     while (1)
     {
         input = readline("-->");
         if (!input)
-            break;
+            break ;
         if (!strcmp(input, "exit"))
         {
             free(input);
-            break;
+            break ;
         }
-
-        //------------> test maini <------------
         add_history(input);
         syntax_check(input);
         data.env = copy_env(envp);
         data.word_array = split_by_quote(input);
-        check_start_var(&data);
-        for (size_t i = 0; data.word_array[i]; i++)
-        {
-            printf("%s\n",data.word_array[i]);
-        }
-        //printf("\n%s\n",find_value_by_key(&data,"HOME"));
+        expander(&data);
+        //check_start_var(&data);
         data.token = tokenize_words(data.word_array);
-        
-        /*for (size_t i = 0; data.word_array[i]; i++)
-            printf("[%ld] :%s \n", i, data.word_array[i]);
-        for (size_t i = 0; data.env[i]; i++)
-            printf("[%ld] :%s \n", i, data.env[i]);
-        data.env = add_to_env(data.env,input);
-        for (size_t i = 0; data.env[i]; i++)
-            printf("[%ld] :%s \n", i, data.env[i]);
-        print_tokens(data.word_array, data.token);*/
-
-        data.cmd = parse_commands(data.word_array,data.token);
-        //print_parsed_commands(data.cmd);
+        data.cmd = parse_commands(data.word_array, data.token);
         execute_command(&data);
         free(data.token);
+        free_word_array(data.word_array);
+        free_word_array(data.env);
         free(input);
     }
+
     return (0);
 }
+

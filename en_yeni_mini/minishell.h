@@ -4,7 +4,9 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <stdio.h>
+#include <sys/wait.h>
 
 #define TOKEN_WORD          0
 #define TOKEN_PIPE          1    // |
@@ -28,9 +30,7 @@ typedef struct s_data
 {
     char **word_array;
     char **env;
-    char *var;
     int *token;
-    int export_found;
     t_command *cmd;
 }t_data;
 
@@ -71,5 +71,11 @@ void	check_start_var(t_data *data);
 
 //split.c
 char	**ft_split(char const *s, char c);
+
+//execute_command.c
+void	execute_command(t_data *data);
+char	*find_value_by_key(t_data *data, char *key);
+
+
 
 #endif
