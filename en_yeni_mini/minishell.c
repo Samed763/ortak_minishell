@@ -1,25 +1,60 @@
 #include "minishell.h"
 
-char * set_var(char * arg,t_data *data)
+char *set_var(char *arg, t_data *data)
 {
-    int i = 0;
-    int j = 0;
-    char *key;
+    int		i;
+    int		j;
+    char	*key;
+    char	*value;
+    char	*start;
+    char	*end;
+    char	*temp;
+    char	*ret_val;
+
+    i = 0;
+    ret_val = NULL;
     while (arg[i])
     {
-        if(arg[i] == '$')
+        if (arg[i] == '$')
         {
-            j = 0;
-            while (arg[i + j] != '/' && arg[i + j] != '\0')
+            j = 1;
+            while (arg[i + j] && arg[i + j] != '/' && 
+                   arg[i + j] != ' ' && arg[i + j] != '\t')
                 j++;
-            printf("i : %d, j : %d",i,j);
-            key = ft_substr(arg,i+1,i-j);
-            printf("%s",key);
-            printf("%s",find_value_by_key(data,key));
+            key = ft_substr(arg, i + 1, j - 1);
+            if (!key)
+                return (ft_strdup(arg));
+            value = find_value_by_key(data, key);
+            if (!value)  // ✅ NULL kontrolü eklendi
+            {
+                free(key);
+                return (ft_strdup(arg));  // Değişken yoksa orijinali döndür
+            }
+            start = ft_substr(arg, 0, i);
+            end = ft_substr(arg, i + j, ft_strlen(arg) - (i + j));
+            if (!start || !end)
+            {
+                free(key);
+                free(value);
+                free(start);
+                free(end);
+                return (ft_strdup(arg));
+            }
+            temp = ft_strjoin(value, end);
+            ret_val = ft_strjoin(start, temp);
+            
+            // Memory temizleme
+            free(key);
+            free(value);
+            free(start);
+            free(end);
+            free(temp);
+            
+            return (ret_val);
         }
         i++;
     }
-    
+    return (ft_strdup(arg));  // $ yoksa orijinali döndür
 }
 
 
@@ -41,10 +76,13 @@ void expander(t_data *data)
             {
                 printf("$  bulundu\n");
                 data->word_array[i] =ft_strdup(set_var(data->word_array[i],data));
+                printf("%s",data->word_array[i]);
                 break;
             }
+            
             j++;
         }
+        
         i++;
     }
 }

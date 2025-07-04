@@ -66,7 +66,7 @@ void	pipe_execute(t_data *data, char **splitted_path)
     path_i = is_accessable(splitted_path, data->cmd->args[0]);
     if (path_i == -1)
     {
-        printf("minishell: %s: command not found\n", data->cmd->args[0]);
+        printf("\nminishell: %s: command not found\n", data->cmd->args[0]);
         return ;
     }
     temp_path = ft_strjoin(splitted_path[path_i], "/");
@@ -100,7 +100,7 @@ void	single_execute(t_data *data, char **splitted_path)
     path_i = is_accessable(splitted_path, data->cmd->args[0]);
     if (path_i == -1)
     {
-        printf("minishell: %s: command not found\n", data->cmd->args[0]);
+        printf("\nminishell: %s: command not found\n", data->cmd->args[0]);
         return ;
     }
     temp_path = ft_strjoin(splitted_path[path_i], "/");

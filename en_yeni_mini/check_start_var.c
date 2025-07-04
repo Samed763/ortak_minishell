@@ -152,7 +152,7 @@ void	check_start_var(t_data *data)
             }
             else
             {
-                printf("Invalid variable name\n");
+                printf("\nInvalid variable name\n");
                 break ;
             }
         }
