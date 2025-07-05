@@ -48,6 +48,7 @@ void    *Malloc(size_t size);
 void	free_word_array(char **array);
 void	*ft_memcpy(void *dst, const void *src, size_t n);
 char	*ft_strdup(const char *s1);
+char    *remove_d_quotes(char *str);
 char	*ft_strchr(const char *s, int c);
 char	*ft_strjoin(char const *s1, char const *s2);
 char	*ft_strtrim(char const *s1, char const *set);
@@ -76,6 +77,8 @@ char	**ft_split(char const *s, char c);
 void	execute_command(t_data *data);
 char	*find_value_by_key(t_data *data, char *key);
 
+//expander.c
+void expander(t_data * data);
 
 
 #endif

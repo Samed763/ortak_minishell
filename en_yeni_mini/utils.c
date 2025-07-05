@@ -16,7 +16,6 @@ int is_valid_filename_char(int c)
             c == '"' || c == '$');
 }
 
-#include "minishell.h"
 
 char	*ft_strchr(const char *s, int c)
 {
@@ -159,25 +158,45 @@ char	*ft_strtrim(char const *s1, char const *set)
 
 char	*ft_strjoin(char const *s1, char const *s2)
 {
-	int		i;
-	int		j;
-	char	*mem;
+    int		i;
+    int		j;
+    char	*mem;
 
-	i = 0;
-	j = 0;
-	mem = (char *)malloc(ft_strlen(s1) + ft_strlen(s2) + 1);
-	if (!mem)
-		return (NULL);
-	while (s1[i])
-	{
-		mem[i] = s1[i];
-		i++;
-	}
-	while (s2[j])
-	{
-		mem[i + j] = s2[j];
-		j++;
-	}
-	mem[i + j] = '\0';
-	return (mem);
+    if (!s1 || !s2)  // ✅ NULL kontrolü eklendi
+        return (NULL);
+    i = 0;
+    j = 0;
+    mem = (char *)malloc(ft_strlen(s1) + ft_strlen(s2) + 1);
+    if (!mem)
+        return (NULL);
+    while (s1[i])
+    {
+        mem[i] = s1[i];
+        i++;
+    }
+    while (s2[j])
+    {
+        mem[i + j] = s2[j];
+        j++;
+    }
+    mem[i + j] = '\0';
+    return (mem);
+}
+char *remove_d_quotes(char *str)
+{
+    int len = ft_strlen(str);
+    int start = 0;
+    int end = len - 1;
+    
+    // Başlangıç ve bitiş tırnak kontrolü
+    if (len >= 2 && 
+        ((str[0] == '"' && str[end] == '"')))
+    {
+        start = 1;
+        end = len - 2;
+    }
+    
+    // Yeni string oluştur
+    char *result = ft_substr(str, start, end - start + 1);
+    return result;
 }
