@@ -7,6 +7,7 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <sys/wait.h>
+#include <fcntl.h>
 
 #define TOKEN_WORD          0
 #define TOKEN_PIPE          1    // |
@@ -19,8 +20,9 @@ typedef struct s_command
 {
     char **args;           // Command arguments (including command itself)
     char *input_file;      // Input redirection file
-    char *output_file;     // Output redirection file
-    int append_mode;       // 1 if >>, 0 if >
+    char **output_files;   // Multiple output files array
+    int *append_modes;     // Append modes for each output file
+    int output_count;      // Number of output files
     char *heredoc_delimiter; // Heredoc delimiter
     struct s_command *next; // Next command in pipeline
 }t_command;
@@ -62,6 +64,7 @@ void	print_tokens(char **word_array, int *tokens);
 //parse_commands
 t_command	*parse_commands(char **word_array, int *tokens);
 void	print_parsed_commands(t_command *commands);
+void	add_argument_to_command(t_command *cmd, char *arg);
 
 //env.c
 char ** copy_env(char **envp);

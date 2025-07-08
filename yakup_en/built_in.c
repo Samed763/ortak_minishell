@@ -50,24 +50,7 @@ int builtin_pwd(void)
     return 0;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
 // ----------- export -----------
-
-
-
-
-
 // Variable name kontrolü
 static int is_valid_var(const char *str) {
     if (!str || !(isalpha(str[0]) || str[0] == '_'))

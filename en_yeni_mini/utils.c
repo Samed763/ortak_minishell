@@ -200,3 +200,25 @@ char *remove_d_quotes(char *str)
     char *result = ft_substr(str, start, end - start + 1);
     return result;
 }
+
+char	*find_value_by_key(t_data *data, char *key) // bulamazsa patlıyor
+{
+    int		i;
+    char	*search;
+
+    i = 0;
+    search = ft_strjoin(key, "=");
+    if (!search)
+        return (NULL);
+    while (data->env[i])
+    {
+        if (!strncmp(data->env[i], search, ft_strlen(search)))
+        {
+            free(search);
+            return (ft_strdup(data->env[i] + ft_strlen(search)));
+        }
+        i++;
+    }
+    free(search);
+    return (NULL);
+}
