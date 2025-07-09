@@ -1,5 +1,8 @@
 #include "minishell.h"
 
+int g_signal_received = 0;
+
+
 void debug_parsed_data(t_data *data)
 {
     t_command *current;
@@ -75,23 +78,56 @@ void debug_parsed_data(t_data *data)
         if (current)
             printf("    | (pipe to next)\n");
     }
-    
     printf("==================================\n\n");
 }
 
+
+void signal_handler(int sig)
+{
+    if (sig == SIGINT)
+    {
+        g_signal_received = SIGINT;
+        write(STDOUT_FILENO, "\n", 1);
+        rl_on_new_line();
+        rl_replace_line("", 0);
+        rl_redisplay();
+    }
+}
+
+void setup_signals(void)
+{
+    struct sigaction sa;
+    
+    sa.sa_handler = signal_handler;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_flags = SA_RESTART;
+    
+    sigaction(SIGINT, &sa, NULL);
+    signal(SIGQUIT, SIG_IGN);
+}
 
 int	main(int argc, char **argv, char **envp)
 {
     char	*input;
     t_data	data;
-
+    setup_signals();
+    signal(SIGINT,signal_handler);
+    printf("signal oluşturuldu");
     (void)argc;
     (void)argv;
     while (1)
     {
         input = readline("-->");
         if (!input)
+        {
+            printf("exit\n");
             break ;
+        }
+        if (g_signal_received == SIGINT)
+        {
+            free(input);
+            continue; // Komutu işleme, yeni prompt'a geç
+        }
         if (!strcmp(input, "exit"))
         {
             free(input);

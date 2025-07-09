@@ -160,6 +160,14 @@ void	pipe_execute(t_data *data, char **splitted_path)
                 full_path = ft_strjoin(temp_path, current->args[0]);
                 free(temp_path);
             }
+
+            // ✅ EXECVE ÇAĞRISI EKSİKTİ - BU SATIRLARI EKLE
+            if (execve(full_path, current->args, data->env) == -1)
+            {
+                perror("execve");
+                free(full_path);
+                exit(1);
+            }
         }
         else // Parent process
         {
@@ -190,7 +198,6 @@ void	pipe_execute(t_data *data, char **splitted_path)
         current = current->next;
     }
 }
-
 
 
 void	single_execute(t_data *data, char **splitted_path)
