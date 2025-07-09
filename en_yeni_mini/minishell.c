@@ -61,8 +61,10 @@ void debug_parsed_data(t_data *data)
             printf("    Args: (NULL)\n");
         
         // Redirections
-        if (current->input_file)
-            printf("    Input: '%s'\n", current->input_file);
+           // Redirections
+        if (current->input_files && current->input_files[0])
+            printf("    Input: '%s'\n", current->input_files[0]);
+    
         if (current->output_count > 0)
         {
             printf("    Outputs: ");
@@ -80,7 +82,6 @@ void debug_parsed_data(t_data *data)
     }
     printf("==================================\n\n");
 }
-
 
 void signal_handler(int sig)
 {
@@ -100,7 +101,7 @@ void setup_signals(void)
     
     sa.sa_handler = signal_handler;
     sigemptyset(&sa.sa_mask);
-    sa.sa_flags = SA_RESTART;
+    sa.sa_flags = SA_RESTART;    
     
     sigaction(SIGINT, &sa, NULL);
     signal(SIGQUIT, SIG_IGN);
@@ -110,31 +111,45 @@ int	main(int argc, char **argv, char **envp)
 {
     char	*input;
     t_data	data;
+    
     setup_signals();
-    signal(SIGINT,signal_handler);
-    printf("signal oluşturuldu");
     (void)argc;
     (void)argv;
+    
     while (1)
     {
+        g_signal_received = 0;
+        
+        // Signal check BEFORE readline
+        if (g_signal_received == SIGINT)
+        {
+            printf("-->");
+            fflush(stdout);
+        }
+        
         input = readline("-->");
+        
         if (!input)
         {
             printf("exit\n");
-            break ;
+            break;
         }
-        if (g_signal_received == SIGINT)
+                
+        // Boş satır kontrolü
+        if (input[0] == '\0')
         {
             free(input);
-            continue; // Komutu işleme, yeni prompt'a geç
+            continue;
         }
+        
         if (!strcmp(input, "exit"))
         {
             free(input);
-            break ;
+            break;
         }
+        
         add_history(input);
-        syntax_check(input); //kontrol ekle
+        syntax_check(input);
         data.env = copy_env(envp);
         data.word_array = split_by_quote(input);
         expander(&data);

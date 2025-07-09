@@ -1,6 +1,7 @@
 {
     "files.associations": {
         "*.embeddedhtml": "html",
-        "readline.h": "c"
+        "readline.h": "c",
+        "history.h": "c"
     }
 }

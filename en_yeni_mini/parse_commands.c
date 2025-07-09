@@ -44,7 +44,7 @@ t_command	*create_command_node(void)
 
     cmd = malloc(sizeof(t_command));
     cmd->args = NULL;
-    cmd->input_file = NULL;
+    cmd->input_files = NULL;
     cmd->output_files = NULL;
     cmd->append_modes = NULL;
     cmd->output_count = 0;
@@ -52,6 +52,7 @@ t_command	*create_command_node(void)
     cmd->next = NULL;
     return (cmd);
 }
+
 
 void	add_output_to_command(t_command *cmd, char *filename, int append_mode)
 {
@@ -82,6 +83,24 @@ void	add_output_to_command(t_command *cmd, char *filename, int append_mode)
     cmd->append_modes = new_append_modes;
     cmd->output_count++;
 }
+void	add_input_to_command(t_command *cmd, char *filename)
+{
+    // İlk kez input_files oluşturuluyorsa
+    if (!cmd->input_files)
+    {
+        cmd->input_files = malloc(sizeof(char *) * 1);
+        cmd->input_files[0] = NULL;
+    }
+    
+    // Önceki input file varsa free et
+    if (cmd->input_files[0])
+        free(cmd->input_files[0]);
+    
+    // Yeni input file'ı 0. indekse ata (son input file kullanılır)
+    cmd->input_files[0] = ft_strdup(filename);
+}
+
+// ...existing code...
 
 static void	handle_redirections(t_command *current, char **word_array, 
             int *tokens, int *i)
@@ -90,7 +109,7 @@ static void	handle_redirections(t_command *current, char **word_array,
     {
         (*i)++;
         if (word_array[*i])
-            current->input_file = ft_strdup(word_array[*i]);
+            add_input_to_command(current, word_array[*i]); // Düzeltildi
     }
     else if (tokens[*i] == TOKEN_REDIRECT_OUT)
     {
@@ -135,8 +154,8 @@ void	print_parsed_commands(t_command *commands)
             }
             printf("\n");
         }
-        if (current->input_file)
-            printf("  Input: %s\n", current->input_file);
+        if (current->input_files && current->input_files[0]) // Düzeltildi
+            printf("  Input: %s\n", current->input_files[0]); // Düzeltildi
         if (current->output_count > 0)
         {
             printf("  Outputs: ");
@@ -157,6 +176,8 @@ void	print_parsed_commands(t_command *commands)
     }
     printf("========================\n\n");
 }
+
+// ...existing code...
 t_command	*parse_commands(char **word_array, int *tokens)
 {
     t_command	*head;

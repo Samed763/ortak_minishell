@@ -1,6 +1,28 @@
 #include "minishell.h"
 
-
+void apply_input_redirection(t_command *cmd)
+{
+    int fd;
+    
+    // input_files[0] kontrolü
+    if (!cmd->input_files || !cmd->input_files[0])
+        return;
+    
+    fd = open(cmd->input_files[0], O_RDONLY);
+    if (fd == -1)
+    {
+        perror("open input file");
+        exit(1);
+    }
+    
+    if (dup2(fd, STDIN_FILENO) == -1)
+    {
+        perror("dup2 input");
+        close(fd);
+        exit(1);
+    }
+    close(fd);
+}
 
 void apply_output_redirection(t_command *cmd)
 {
@@ -120,11 +142,16 @@ void	pipe_execute(t_data *data, char **splitted_path)
 
         if (pid == 0) // Child process
         {
-            // Input redirection (önceki pipe'tan)
+            // Input redirection (önceki pipe'tan VEYA dosyadan)
             if (prev_fd != -1)
             {
                 dup2(prev_fd, STDIN_FILENO);
                 close(prev_fd);
+            }
+            else
+            {
+                // İlk command - input redirection kontrol et
+                apply_input_redirection(current); // ← Bu satırı ekle
             }
 
             // Output redirection (sonraki pipe'a veya dosyaya)
@@ -161,7 +188,6 @@ void	pipe_execute(t_data *data, char **splitted_path)
                 free(temp_path);
             }
 
-            // ✅ EXECVE ÇAĞRISI EKSİKTİ - BU SATIRLARI EKLE
             if (execve(full_path, current->args, data->env) == -1)
             {
                 perror("execve");
@@ -169,6 +195,8 @@ void	pipe_execute(t_data *data, char **splitted_path)
                 exit(1);
             }
         }
+
+        
         else // Parent process
         {
             // Önceki pipe'ı kapat
@@ -236,6 +264,7 @@ void	single_execute(t_data *data, char **splitted_path)
     }
     if (pid == 0)
     {
+        apply_input_redirection(data->cmd);
         apply_output_redirection(data->cmd);
         execute(full_path, data);
     }

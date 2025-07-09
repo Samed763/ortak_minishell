@@ -20,7 +20,7 @@
 typedef struct s_command
 {
     char **args;           // Command arguments (including command itself)
-    char *input_file;      // Input redirection file
+    char **input_files;      // Input redirection file
     char **output_files;   // Multiple output files array
     int *append_modes;     // Append modes for each output file
     int output_count;      // Number of output files
@@ -79,8 +79,8 @@ char	**ft_split(char const *s, char c);
 
 //execute_command.c
 void	execute_command(t_data *data);
+void    apply_input_redirection(t_command *cmd);  // ← Bu satırı ekle
 char	*find_value_by_key(t_data *data, char *key);
-
 //expander.c
 void expander(t_data * data);
 
