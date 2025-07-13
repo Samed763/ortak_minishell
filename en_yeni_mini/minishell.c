@@ -3,6 +3,44 @@
 int g_signal_received = 0;
 
 
+void free_command_list(t_command *head)
+{
+    t_command *current = head;
+    t_command *next;
+    
+    while (current)
+    {
+        next = current->next;
+        
+        // Args temizle
+        if (current->args)
+            free_word_array(current->args);
+        
+        // Input files temizle
+        if (current->input_files)
+            free_word_array(current->input_files);
+        
+        // Output files temizle
+        if (current->output_files)
+            free_word_array(current->output_files);
+        
+        // Append modes temizle
+        if (current->append_modes)
+            free(current->append_modes);
+        
+        // Heredoc delimiter temizle
+        if (current->heredoc_delimiter)
+            free(current->heredoc_delimiter);
+        
+        // Heredoc lines temizle
+        if (current->heredoc_lines)
+            free_heredoc_lines(current->heredoc_lines);
+        
+        free(current);
+        current = next;
+    }
+}
+
 void debug_parsed_data(t_data *data)
 {
     t_command *current;
@@ -107,26 +145,21 @@ void setup_signals(void)
     signal(SIGQUIT, SIG_IGN);
 }
 
-int	main(int argc, char **argv, char **envp)
+int main(int argc, char **argv, char **envp)
 {
-    char	*input;
-    t_data	data;
+    char *input;
+    t_data data;
     
     setup_signals();
     (void)argc;
     (void)argv;
     
+    // ENV'i sadece bir kez copy et
+    data.env = copy_env(envp);
+    data.exit_value = 0;
+    
     while (1)
     {
-        g_signal_received = 0;
-        
-        // Signal check BEFORE readline
-        if (g_signal_received == SIGINT)
-        {
-            printf("-->");
-            fflush(stdout);
-        }
-        
         input = readline("-->");
         
         if (!input)
@@ -134,8 +167,15 @@ int	main(int argc, char **argv, char **envp)
             printf("exit\n");
             break;
         }
-                
-        // Boş satır kontrolü
+        
+        // Signal check
+        if (g_signal_received == SIGINT)
+        {
+            g_signal_received = 0;
+            free(input);
+            continue;
+        }
+        
         if (input[0] == '\0')
         {
             free(input);
@@ -149,18 +189,44 @@ int	main(int argc, char **argv, char **envp)
         }
         
         add_history(input);
-        syntax_check(input);
-        data.env = copy_env(envp);
+        
+        // Syntax check
+        if (!syntax_check(input))
+        {
+            printf("syntax error\n");
+            free(input);
+            continue;
+        }
+        
         data.word_array = split_by_quote(input);
+        if (!data.word_array)
+        {
+            free(input);
+            continue;
+        }
+        
         expander(&data);
         data.token = tokenize_words(data.word_array);
-        data.cmd = parse_commands(data.word_array, data.token);
+        data.cmd = parse_commands(data.word_array, data.token, &data);
+        
         debug_parsed_data(&data);
+        printf("\n");
+        
         execute_command(&data);
-        free(data.token);
-        free_word_array(data.word_array);
-        free_word_array(data.env);
+        printf("Exit_value :%d\n", data.exit_value);
+        
+        // Cleanup
+        if (data.cmd)
+            free_command_list(data.cmd);
+        if (data.token)
+            free(data.token);
+        if (data.word_array)
+            free_word_array(data.word_array);
+        
         free(input);
     }
+    
+    // Çıkıştan önce env'i temizle
+    free_word_array(data.env);
     return (0);
 }

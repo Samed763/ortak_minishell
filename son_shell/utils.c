@@ -1,5 +1,11 @@
 #include "minishell.h"
 
+int is_token(int c)
+{
+    	return (c == '|' || c == '<' || c == '>');
+}
+
+
 int	is_valid_after_pipe(int c)
 {
 	return ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || 
@@ -129,6 +135,21 @@ int ft_strcmp(const char *s1, const char *s2)
     }
     return (*(unsigned char*)s1 - *(unsigned char*)s2);
 }
+
+char	*ft_strcpy(char *dest, const char *src)
+{
+	int	i;
+
+	i = 0;
+	while (src[i])
+	{
+		dest[i] = src[i];
+		i++;
+	}
+	dest[i] = '\0';
+	return (dest);
+}
+
 
 char	*ft_strtrim(char const *s1, char const *set)
 {

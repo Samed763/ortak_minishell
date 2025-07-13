@@ -1,7 +1,6 @@
 {
     "files.associations": {
         "*.embeddedhtml": "html",
-        "readline.h": "c",
-        "history.h": "c"
+        "minishell.h": "c"
     }
 }

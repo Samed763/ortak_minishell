@@ -17,6 +17,13 @@
 #define TOKEN_APPEND        4    // >>
 #define TOKEN_HEREDOC       5    // <<
 
+typedef struct s_heredoc_line
+{
+    char *content;
+    struct s_heredoc_line *next;      
+}t_heredoc_line;
+
+
 typedef struct s_command
 {
     char **args;           // Command arguments (including command itself)
@@ -26,6 +33,7 @@ typedef struct s_command
     int output_count;      // Number of output files
     char *heredoc_delimiter; // Heredoc delimiter
     struct s_command *next; // Next command in pipeline
+    t_heredoc_line *heredoc_lines;
 }t_command;
 
 
@@ -34,6 +42,7 @@ typedef struct s_data
     char **word_array;
     char **env;
     int *token;
+    int exit_value;
     t_command *cmd;
 }t_data;
 
@@ -47,6 +56,7 @@ char **split_by_quote(char *input);
 int	    is_valid_after_pipe(int c);
 int     is_valid_filename_char(int c);
 int     ft_strcmp(const char *s1, const char *s2);
+int     ft_strncmp(const char *s1, const char *s2, size_t n);
 void    *Malloc(size_t size);
 void	free_word_array(char **array);
 void	*ft_memcpy(void *dst, const void *src, size_t n);
@@ -63,7 +73,7 @@ int		*tokenize_words(char **word_array);
 void	print_tokens(char **word_array, int *tokens);
 
 //parse_commands
-t_command	*parse_commands(char **word_array, int *tokens);
+t_command	*parse_commands(char **word_array, int *tokens,t_data *data);
 void	print_parsed_commands(t_command *commands);
 void	add_argument_to_command(t_command *cmd, char *arg);
 
@@ -82,7 +92,15 @@ void	execute_command(t_data *data);
 void    apply_input_redirection(t_command *cmd);  // ← Bu satırı ekle
 char	*find_value_by_key(t_data *data, char *key);
 //expander.c
-void expander(t_data * data);
+void expander(t_data *data);
+char *expand_single_line(char *line, t_data *data);
+void expand_heredoc_lines(t_command *cmd, t_data *data);
 
+//heredoc.c
+void handle_heredoc(t_command *cmd, char *delimiter,t_data *data);
+void debug_heredoc(t_command *cmd);
+void debug_all_heredocs(t_command *commands);
+void test_heredoc_functionality(void);
+void free_heredoc_lines(t_heredoc_line *head);
 
 #endif

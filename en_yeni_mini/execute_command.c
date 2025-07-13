@@ -2,13 +2,55 @@
 
 void apply_input_redirection(t_command *cmd)
 {
-    int fd;
+    int pipefd[2];
+    pid_t pid;
+    t_heredoc_line *current;
     
-    // input_files[0] kontrolü
+    // Önce heredoc kontrol et
+    if (cmd->heredoc_lines)
+    {
+        if (pipe(pipefd) == -1)
+        {
+            perror("pipe");
+            exit(1);
+        }
+        
+        pid = fork();
+        if (pid == -1)
+        {
+            perror("fork");
+            exit(1);
+        }
+        
+        if (pid == 0) // Child: heredoc'u pipe'a yaz
+        {
+            close(pipefd[0]); // Read end'i kapat
+            
+            current = cmd->heredoc_lines;
+            while (current)
+            {
+                write(pipefd[1], current->content, ft_strlen(current->content));
+                write(pipefd[1], "\n", 1);
+                current = current->next;
+            }
+            close(pipefd[1]);
+            exit(0);
+        }
+        else // Parent: pipe'ın read end'ini stdin'e yönlendir
+        {
+            close(pipefd[1]); // Write end'i kapat
+            dup2(pipefd[0], STDIN_FILENO);
+            close(pipefd[0]);
+            wait(NULL); // Child'ı bekle
+        }
+        return;
+    }
+    
+    // Normal input redirection
     if (!cmd->input_files || !cmd->input_files[0])
         return;
     
-    fd = open(cmd->input_files[0], O_RDONLY);
+    int fd = open(cmd->input_files[0], O_RDONLY);
     if (fd == -1)
     {
         perror("open input file");
@@ -117,6 +159,7 @@ void	pipe_execute(t_data *data, char **splitted_path)
     pid_t pid;
     char *full_path;
     char *temp_path;
+    int status;
     int path_i;
 
     current = data->cmd;
@@ -222,9 +265,15 @@ void	pipe_execute(t_data *data, char **splitted_path)
     current = data->cmd;
     while (current)
     {
-        wait(NULL);
+        wait(&status);
         current = current->next;
     }
+    if (WIFEXITED(status))
+        data->exit_value = WEXITSTATUS(status);
+    else if (WIFSIGNALED(status))
+        data->exit_value = 128 + WTERMSIG(status);
+    else
+        data->exit_value = 1;
 }
 
 
@@ -233,6 +282,7 @@ void	single_execute(t_data *data, char **splitted_path)
     char	*full_path;
     char	*temp_path;
     int		path_i;
+    int		status;
     pid_t	pid;
 
     if (!data->cmd || !data->cmd->args || !data->cmd->args[0])
@@ -271,7 +321,13 @@ void	single_execute(t_data *data, char **splitted_path)
     else
     {
         free(full_path);
-        wait(NULL);
+        wait(&status);
+        if (WIFEXITED(status))
+            data->exit_value = WEXITSTATUS(status);
+        else if (WIFSIGNALED(status))
+            data->exit_value = 128 + WTERMSIG(status);
+        else
+            data->exit_value = 1;
     }
 }
 
@@ -279,6 +335,9 @@ void	execute_command(t_data *data)
 {
     char	**splitted_path;
 
+    if (!data->cmd || !data->cmd->args || !data->cmd->args[0] || 
+        ft_strlen(data->cmd->args[0]) == 0)
+        return ;
     splitted_path = ft_split(find_value_by_key(data, "PATH"), ':');
     if (!splitted_path)
         return ;

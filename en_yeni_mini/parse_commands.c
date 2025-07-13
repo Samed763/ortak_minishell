@@ -103,7 +103,7 @@ void	add_input_to_command(t_command *cmd, char *filename)
 // ...existing code...
 
 static void	handle_redirections(t_command *current, char **word_array, 
-            int *tokens, int *i)
+            int *tokens, int *i,t_data *data)
 {
     if (tokens[*i] == TOKEN_REDIRECT_IN)
     {
@@ -127,7 +127,10 @@ static void	handle_redirections(t_command *current, char **word_array,
     {
         (*i)++;
         if (word_array[*i])
+        {
             current->heredoc_delimiter = ft_strdup(word_array[*i]);
+            handle_heredoc(current,current->heredoc_delimiter,data);
+        }
     }
 }
 
@@ -178,7 +181,7 @@ void	print_parsed_commands(t_command *commands)
 }
 
 // ...existing code...
-t_command	*parse_commands(char **word_array, int *tokens)
+t_command	*parse_commands(char **word_array, int *tokens,t_data *data)
 {
     t_command	*head;
     t_command	*current;
@@ -199,7 +202,7 @@ t_command	*parse_commands(char **word_array, int *tokens)
             current = current->next;
         }
         else
-            handle_redirections(current, word_array, tokens, &i);
+            handle_redirections(current, word_array, tokens, &i,data);
         i++;
     }
     return (head);
