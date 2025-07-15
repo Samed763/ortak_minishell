@@ -45,26 +45,39 @@ typedef struct s_data
 } t_data;
 
 // utils.c
+void *Malloc(size_t size);
+void free_word_array(char **array);
+void *ft_memcpy(void *dst, const void *src, size_t n);
 int is_token(int c);
 int is_valid_after_pipe(int c);
 int is_valid_filename_char(int c);
 int ft_strcmp(const char *s1, const char *s2);
 int ft_strncmp(const char *s1, const char *s2, size_t n);
-void *Malloc(size_t size);
-void free_word_array(char **array);
-void *ft_memcpy(void *dst, const void *src, size_t n);
 char *ft_strdup(const char *s1);
 char *remove_d_quotes(char *str);
 char *ft_strchr(const char *s, int c);
-char	*ft_strcpy(char *dest, const char *src);
+char *ft_strcpy(char *dest, const char *src);
 char *ft_strjoin(char const *s1, char const *s2);
+char *find_value_by_key(t_data *data, char *key);
 char *ft_strtrim(char const *s1, char const *set);
 char *ft_substr(char const *s, unsigned int start, size_t len);
+char ** copy_env(char **envp);
 size_t ft_strlen(const char *str);
-
 //syntax_check.c
 int syntax_check(char * line);
 
 //lexer.c
 void lexer(char *line, t_data *data);
+
+//parser.c
+t_command *parser(t_data *data);
+
+//heredoc.c
+void handle_heredoc(t_data *data,t_command *cmd);
+
+//expander.c
+void expander(t_data *data);
+char *expand_single_line(t_data *data,char *line);
+
+
 #endif

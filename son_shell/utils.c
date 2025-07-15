@@ -222,6 +222,22 @@ char *remove_d_quotes(char *str)
     return result;
 }
 
+char ** copy_env(char **envp)
+{
+    int i = 0;
+    while (envp[i])
+        i++;
+    char **new_env = Malloc(sizeof(char *) * (i + 1));
+    i = 0;
+    while (envp[i])
+    {
+        new_env[i] = ft_strdup(envp[i]);
+        i++;
+    }
+    new_env[i] = NULL;
+    return new_env;    
+}
+
 char *find_value_by_key(t_data *data, char *key)
 {
     int i;
