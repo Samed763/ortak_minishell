@@ -79,5 +79,19 @@ void handle_heredoc(t_data *data,t_command *cmd);
 void expander(t_data *data);
 char *expand_single_line(t_data *data,char *line);
 
+//heredoc.c
+void handle_heredoc(t_data *data,t_command *cmd);
+
+//split.c
+char	**ft_split(char const *s, char c);
+
+//execute_commad.c
+void execute_commmand(t_data *data);
+
+//apply_input.c
+void apply_input_redirection(t_command *cmd);
+
+//apply_output.c
+void apply_output_redirection(t_command *cmd);
 
 #endif

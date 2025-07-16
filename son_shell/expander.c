@@ -77,15 +77,17 @@ void expander(t_data *data)
     int i = 0;
     char *old_word;
     char *expanded;
-    // Çift tırnakları kaldır
     while (data->word_array[i])
     {
         old_word = data->word_array[i];
         data->word_array[i] = remove_d_quotes(data->word_array[i]);
         free(old_word); // Eski string'i free et
-        expanded = expand_single_line(data,data->word_array[i]);
-        free(data->word_array[i]);
-        data->word_array[i] = expanded;
+        if (i >= 1 && data->token[i-1] != TOKEN_HEREDOC)
+        {
+            expanded = expand_single_line(data,data->word_array[i]);
+            free(data->word_array[i]);
+            data->word_array[i] = expanded;
+        }
         i++;
-    }    
+    }
 }

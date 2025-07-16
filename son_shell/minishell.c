@@ -1,73 +1,62 @@
 #include "minishell.h"
-
-static void expand_heredoc_lines(t_data *data,t_command *cmd)
+void free_heredoc_lines(t_heredoc_line *head)
 {
-    t_heredoc_line *current = cmd->heredoc_lines;
+    t_heredoc_line *current = head;
+    t_heredoc_line *next;
     
     while (current)
     {
-        char *expanded = expand_single_line(data,current->content);
+        next = current->next;
         free(current->content);
-        current->content = expanded;
-        current = current->next;
+        free(current);
+        current = next;
     }
 }
-
-static t_heredoc_line *create_heredoc_node(char *line)
+void free_commands(t_command *cmd)
 {
-    t_heredoc_line *node;
-    node = Malloc(sizeof(t_heredoc_line));
+    t_command *current = cmd;
+    t_command *next;
     
-    node->content = ft_strdup(line);
-    if (!node->content)  // ← strdup kontrolü
+    while (current)
     {
-        free(node);
-        return (NULL);
+        next = current->next;
+        
+        // Free args
+        if (current->args)
+            free_word_array(current->args);
+        
+        // Free input file
+        if (current->input_files)
+            free(current->input_files);
+        
+        // Free output files
+        if (current->output_files)
+        {
+            int i = 0;
+            while (i < current->output_count)
+            {
+                free(current->output_files[i]);
+                i++;
+            }
+            free(current->output_files);
+        }
+        
+        // Free append modes
+        if (current->append_modes)
+            free(current->append_modes);
+        
+        // Free heredoc delimiter
+        if (current->heredoc_delimiter)
+            free(current->heredoc_delimiter);
+        
+        // Free heredoc lines
+        free_heredoc_lines(current->heredoc_lines);
+        
+        free(current);
+        current = next;
     }
-    node->next = NULL;
-    return node;
 }
 
-void handle_heredoc(t_data *data,t_command *cmd)
-{
-    t_heredoc_line *head = NULL;
-    t_heredoc_line *current = NULL;
-    t_heredoc_line *new_node;
-    char * line;
-
-    if (!cmd->heredoc_delimiter)  // ✅ NULL kontrolü
-        return;
-    while (1)
-    {
-        line = readline("> ");
-        if (!line)
-            return ;
-
-        if (ft_strcmp(line,cmd->heredoc_delimiter) == 0)
-        {
-            free(line);
-            break; ;
-        }
-        new_node = create_heredoc_node(line);
-        if (!new_node)
-        {
-            free(line);
-            continue;
-        }
-        if (!head)
-        {
-            head = new_node;
-            current = new_node;
-        }
-        else{
-            current->next = new_node;
-            current = new_node;
-        }
-        free(line);
-    }
-    cmd->heredoc_lines = head;
-    expand_heredoc_lines(data,cmd);
-}
 
 // main fonksiyonunu güncelle
 int main(int argc, char **argv, char **envp)
@@ -98,11 +87,9 @@ int main(int argc, char **argv, char **envp)
         expander(&data);
 
         data.cmd = parser(&data);
-
+        execute_commmand(&data);
         // Memory cleanup
-        free_word_array(data.word_array);
-        free(data.token);
-        free(line);
+
     }
 
     return 0;
