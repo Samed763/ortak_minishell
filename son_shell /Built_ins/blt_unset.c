@@ -1,4 +1,5 @@
-#include "minishell.h"
+#include "../minishell.h"
+
 
 static int	find_env_index(char **env, char *arg)
 {

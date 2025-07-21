@@ -1,4 +1,5 @@
-#include "minishell.h"
+#include "../minishell.h"
+
 
 static t_command *create_list(void)
 {

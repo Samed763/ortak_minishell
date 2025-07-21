@@ -1,4 +1,5 @@
-#include "minishell.h"
+#include "../minishell.h"
+
 
 char *put_var(char *line, char *var_value, int key_start, int key_end)
 {

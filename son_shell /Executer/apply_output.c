@@ -1,6 +1,7 @@
 // DOSYA: apply_output.c
 
-#include "minishell.h"
+#include "../minishell.h"
+
 
 // Bu fonksiyon da artık hata döndürebilir.
 static int create_empty_output_files(t_command *cmd)

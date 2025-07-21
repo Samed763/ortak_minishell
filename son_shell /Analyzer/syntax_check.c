@@ -1,4 +1,5 @@
-#include "minishell.h"
+#include "../minishell.h"
+
 
 static int	check_heredoc(char *line, int i)
 {

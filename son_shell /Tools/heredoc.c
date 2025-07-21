@@ -1,4 +1,5 @@
-#include "minishell.h"
+#include "../minishell.h"
+
 
 static void expand_heredoc_lines(t_data *data,t_command *cmd)
 {

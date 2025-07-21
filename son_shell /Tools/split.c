@@ -6,11 +6,12 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/02 14:33:17 by sadinc            #+#    #+#             */
-/*   Updated: 2025/05/26 14:34:28 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/07/21 21:14:28 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../minishell.h"
+
 
 
 

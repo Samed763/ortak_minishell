@@ -2,7 +2,8 @@
 #include <string.h>
 #include <unistd.h>
 #include <stdlib.h>
-#include "minishell.h"
+#include "../minishell.h"
+
 
 static int	handle_echo_cd_pwd(t_data *data)
 {

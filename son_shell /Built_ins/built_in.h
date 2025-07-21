@@ -7,7 +7,8 @@
 
 // 2. Onun yerine bu satırları EKLE:
 // Standart kütüphaneler (size_t için)
-#include "minishell.h"
+#include "../minishell.h"
+
 
 // Derleyiciye t_data'nın bir yapı olduğunu önceden bildiriyoruz.
 // Buna "Forward Declaration" denir.

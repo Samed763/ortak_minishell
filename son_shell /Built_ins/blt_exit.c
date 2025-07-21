@@ -1,4 +1,5 @@
-#include "minishell.h"
+#include "../minishell.h"
+
 
 int builtin_exit(char **args, int exit_code)
 {

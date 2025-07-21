@@ -1,4 +1,5 @@
-#include "minishell.h"
+#include "../minishell.h"
+
 
 static void heredoc_child_process(int *pipefd, t_command *cmd)
 {

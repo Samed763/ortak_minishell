@@ -1,4 +1,5 @@
-#include "minishell.h"
+#include "../minishell.h"
+
 
 static int is_builtin(char *command)
 {
@@ -89,17 +90,22 @@ static void single_execute(t_data *data, char **splitted_path)
         if (apply_input_redirection(data->cmd) == -1 || 
             apply_output_redirection(data->cmd) == -1)
         {
-            // Yönlendirme hatası varsa, child process hemen çıkmalı.
-            exit(1); 
+            exit(1); // Yönlendirme hatası varsa çocuk proses 1 ile çıksın.
         }
-        // ****************************************
 
-        if (is_accessable(data->cmd->args[0], splitted_path, &full_path) == -1)
+        // Eğer çalıştırılacak bir komut varsa (sadece yönlendirme değilse)...
+        
+        if (data->cmd->args && data->cmd->args[0])
         {
-            fprintf(stderr, "%s: command not found\n", data->cmd->args[0]);
-            exit(127);
+            if (is_accessable(data->cmd->args[0], splitted_path, &full_path) == -1)
+            {
+                fprintf(stderr, "%s: command not found\n", data->cmd->args[0]);
+                exit(127);
+            }
+            execute(full_path, data);
+            free(full_path); // Bu satıra sadece execve başarısız olursa ulaşılır.
         }
-        execute(full_path, data);
+        exit(0); 
     }
     else // ------ PARENT PROCESS ------
     {
@@ -127,13 +133,22 @@ void execute_commmand(t_data *data)
 {
     char **splitted_path;
 
-    if (!data->cmd || !data->cmd->args || !data->cmd->args[0] ||
-        ft_strlen(data->cmd->args[0]) == 0)
+    if (!data->cmd)
         return;
-    
+    if (!data->cmd->args || !data->cmd->args[0])
+    {
+        if (data->cmd->input_files || data->cmd->output_files || data->cmd->heredoc_delimiter)
+        {
+             // Bu durumu tek komut gibi çalıştır, ama çalıştıracak komut yok.
+            single_execute(data, NULL);
+        }
+        return; // Yönlendirme de yoksa hiçbir şey yapma
+    }
+
+
     splitted_path = ft_split(find_value_by_key(data, "PATH"), ':');
 
-    if (is_builtin(data->cmd->args[0]) && !data->cmd->next)
+    if (!data->cmd->next && is_builtin(data->cmd->args[0]))
     {
         int original_stdin = dup(STDIN_FILENO);
         int original_stdout = dup(STDOUT_FILENO);

@@ -1,5 +1,6 @@
 #include "minishell.h"
 
+
 void free_heredoc_lines(t_heredoc_line *head)
 {
     t_heredoc_line *current = head;
@@ -81,6 +82,8 @@ int main(int argc, char **argv, char **envp)
     char *line;
     t_data data;
     struct sigaction sa;
+    (void)argc;
+    (void)argv;
 
     sa.sa_handler = signal_handler; // Bizim yazdığımız fonksiyonu ata
     sigemptyset(&sa.sa_mask);       // Handler çalışırken başka sinyalleri bloklama

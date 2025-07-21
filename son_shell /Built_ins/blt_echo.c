@@ -16,28 +16,28 @@ static int	is_valid_n_flag(char *str)
 	return (i > 1);
 }
 
-static int	get_start_index(char **args)
-{
-	int	i;
+// static int	get_start_index(char **args)
+// {
+// 	int	i;
 
-	i = 1;
-	while (args[i] && is_valid_n_flag(args[i]))
-		i++;
-	return (i);
-}
+// 	i = 1;
+// 	while (args[i] && is_valid_n_flag(args[i]))
+// 		i++;
+// 	return (i);
+// }
 
-static int	should_print_newline(char **args)
-{
-	int	i;
+// static int	should_print_newline(char **args)
+// {
+// 	int	i;
 
-	i = 1;
-	while (args[i] && is_valid_n_flag(args[i]))
-	{
-		return (0);
-		i++;
-	}
-	return (1);
-}
+// 	i = 1;
+// 	while (args[i] && is_valid_n_flag(args[i]))
+// 	{
+// 		return (0);
+// 		i++;
+// 	}
+// 	return (1);
+// }
 
 static char	*remove_quotes_echo(char *str)
 {

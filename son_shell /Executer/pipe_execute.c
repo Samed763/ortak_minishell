@@ -1,4 +1,5 @@
-#include "minishell.h"
+#include "../minishell.h"
+
 
 // Bu fonksiyonun zaten doğru, dokunmana gerek yok.
 void pipe_execve(char *full_path, t_data *data, t_command *current)
