@@ -76,6 +76,7 @@ int	builtin_exit(char **args, int exit_code); // Exit'i güncelleyeceğiz
 int	builtin_pwd(void);
 void builtin_export(t_data *data);
 int	builtin_unset(t_data *data);
+int	is_valid_var(const char *str);
 
 // syntax_check.c
 int syntax_check(char *line);
@@ -105,10 +106,11 @@ void execute(char *full_path, t_data *data);
 int is_accessable(char *command, char **splited_path, char **full_path);
 
 // apply_input.c
-void apply_input_redirection(t_command *cmd);
+int apply_input_redirection(t_command *cmd);
+
 
 // apply_output.c
-void apply_output_redirection(t_command *cmd);
+int apply_output_redirection(t_command *cmd);
 
 // pipe_execute.c
 void pipe_execute(t_data *data, char **splitted_path);

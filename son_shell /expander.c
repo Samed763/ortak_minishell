@@ -35,33 +35,50 @@ int is_identifier_char(int c)
                     (c == '_');
 }
 
-char *expand_single_line(t_data *data,char *line)
+char *expand_single_line(t_data *data, char *line)
 {
     char *result = ft_strdup(line);
     int s_quotes = 0;
-    
-    for (size_t j = 0; result[j]; j++)
+    size_t j = 0;
+
+    while (result[j])
     {
         if (result[j] == '\'')
             s_quotes = !s_quotes;
+
         if (result[j] == '$' && s_quotes == 0)
         {
+            char *key;
+            char *value;
             int k = j + 1;
-            while (result[k] && is_identifier_char(result[k]))
-                k++;
-            char *key = ft_substr(result, j + 1, k - j - 1);
-            char *value = find_value_by_key(data, key);
-            if (!value)
-                value = ft_strdup("");
+
+            // --- YENİ EKLENEN BLOK BAŞLANGICI ---
+            if (result[k] == '?')
+            {
+                key = ft_strdup("?");
+                k++; // '?' karakterini atla
+            }
+            // --- YENİ EKLENEN BLOK SONU ---
+            else // Eski mantık
+            {
+                while (result[k] && is_identifier_char(result[k]))
+                    k++;
+                key = ft_substr(result, j + 1, k - j - 1);
+            }
+            
+            value = find_value_by_key(data, key);
             result = put_var(result, value, j, k);
+            
             free(key);
-            free(value);
-            j = 0; // Reset j
+            if(value) // find_value_by_key'den dönen bellek sızıntısını önle
+                free(value);
+
+            j = -1; // Döngüyü baştan başlatmak için j'yi sıfırla (-1 + 1 = 0)
         }
+        j++;
     }
     return result;
 }
-
 // Word array için variable expansion
 void set_var(t_data *data)
 {
@@ -77,14 +94,21 @@ void expander(t_data *data)
     int i = 0;
     char *old_word;
     char *expanded;
+
     while (data->word_array[i])
     {
+        // --- GEREKSİZ IF BLOĞU KALDIRILDI ---
+        
+        // Önce çift tırnakları (varsa) kaldır
         old_word = data->word_array[i];
         data->word_array[i] = remove_d_quotes(data->word_array[i]);
-        free(old_word); // Eski string'i free et
-        if (i >= 1 && data->token[i-1] != TOKEN_HEREDOC)
+        free(old_word);
+        
+        // Heredoc delimiter'ları hariç her kelimeyi genişletmeyi dene.
+        // Tek tırnak kontrolünü expand_single_line zaten yapıyor.
+        if (i > 0 && data->token[i-1] != TOKEN_HEREDOC)
         {
-            expanded = expand_single_line(data,data->word_array[i]);
+            expanded = expand_single_line(data, data->word_array[i]);
             free(data->word_array[i]);
             data->word_array[i] = expanded;
         }

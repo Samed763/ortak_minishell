@@ -58,6 +58,7 @@ static char	*remove_quotes_echo(char *str)
 	return (ft_strdup(str));
 }
 
+// Bu fonksiyonu güncelliyoruz
 int	builtin_echo(char **args)
 {
 	int		i;
@@ -65,22 +66,31 @@ int	builtin_echo(char **args)
 	char	*clean_str;
 
 	if (!args)
-		return (EXIT_FAILURE);
-	newline = should_print_newline(args);
-	i = get_start_index(args);
+		return (1);
+	newline = 1;
+	i = 1;
+	if (args[i] && is_valid_n_flag(args[i]))
+	{
+		newline = 0;
+		while (args[i] && is_valid_n_flag(args[i]))
+			i++;
+	}
 	while (args[i])
 	{
+		// 1. Argümandaki tırnakları kaldır
 		clean_str = remove_quotes_echo(args[i]);
 		if (clean_str)
 		{
-			printf("%s", clean_str);
+			// 2. Temizlenmiş string'i 'write' ile yazdır
+			write(STDOUT_FILENO, clean_str, ft_strlen(clean_str));
+			// 3. Bellek sızıntısını önlemek için ayrılan alanı serbest bırak
 			free(clean_str);
 		}
 		if (args[i + 1])
-			printf(" ");
+			write(STDOUT_FILENO, " ", 1);
 		i++;
 	}
 	if (newline)
-		printf("\n");
-	return (EXIT_SUCCESS);
+		write(STDOUT_FILENO, "\n", 1);
+	return (0);
 }

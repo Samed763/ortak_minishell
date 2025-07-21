@@ -20,7 +20,6 @@ static void pipe_execute_child(t_data *data, t_command *current,
 	sa_child.sa_handler = SIG_DFL;
 	sa_child.sa_flags = 0;
 	sigemptyset(&sa_child.sa_mask);
-
 	sigaction(SIGINT, &sa_child, NULL);
 	sigaction(SIGQUIT, &sa_child, NULL);
 
@@ -30,22 +29,36 @@ static void pipe_execute_child(t_data *data, t_command *current,
 		close(prev_fd);
 	}
 	else
-		apply_input_redirection(current);
+	{
+        // **** DEĞİŞİKLİK BURADA ****
+		if (apply_input_redirection(current) == -1)
+			exit(1);
+	}
 	if (current->next)
 	{
+		close(pipefd[0]);
 		dup2(pipefd[1], STDOUT_FILENO);
 		close(pipefd[1]);
-		close(pipefd[0]);
 	}
 	else
-		apply_output_redirection(current);
+	{
+        // **** DEĞİŞİKLİK BURADA ****
+		if (apply_output_redirection(current) == -1)
+			exit(1);
+	}
+
 	if (!current->args || !current->args[0])
 		exit(1);
-
-	if (try_builtin(data, 0)) // 0 = is_child
+    
+    // built-in çalıştırma bloğu doğru, try_builtin hata durumunda 0 döndürmez
+	if (try_builtin(data, 0))
 		exit(data->exit_value);
 
-	is_accessable(current->args[0], splitted_path, &full_path);
+	if (is_accessable(current->args[0], splitted_path, &full_path) == -1)
+	{
+		fprintf(stderr, "%s: command not found\n", data->cmd->args[0]);
+		exit(127);
+	}
 	pipe_execve(full_path, data, current);
 }
 
@@ -131,25 +144,15 @@ void pipe_execute(t_data *data, char **splitted_path)
 		pid = fork_and_execute(data, current, splitted_path, pipefd, prev_fd);
 		if (pid == -1)
 			return;
-		// Önceki kodundaki 'if (pid == 0)' bloğunu sildim, çünkü o bir hataydı.
 		prev_fd = pipe_exec_parent(current, pipefd, prev_fd);
 		current = current->next;
 	}
 	if (prev_fd != -1)
 		close(prev_fd);
 
-	// YENİ: Bütün child'ları beklemeden önce sinyalleri görmezden gel
 	signal(SIGINT, SIG_IGN);
 	signal(SIGQUIT, SIG_IGN);
-
-	wait_all_children(data); // Bekleme burada yapılıyor
-
-	// YENİ: Bekleme bitti, sinyalleri tekrar interaktif moda al
-	// signal_handler fonksiyonu minishell.c içinde olduğu için
-	// bu dosyada doğrudan kullanamazsın. extern ile bildirebilirsin
-	// ya da doğrudan signal(SIGINT, SIG_DFL) yapıp main'de tekrar kurabilirsin.
-	// Ama en temizi `minishell.h`'a `signal_handler` prototipini eklemektir.
-	// Şimdilik `main`'de ayarlı olduğu için çalışacaktır.
-	signal(SIGINT, signal_handler); // En doğru yöntem, handler'ı data struct'ında taşımak
+	wait_all_children(data);
+	signal(SIGINT, signal_handler);
 	signal(SIGQUIT, SIG_IGN);
 }

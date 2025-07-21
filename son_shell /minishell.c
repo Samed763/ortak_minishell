@@ -4,7 +4,7 @@ void free_heredoc_lines(t_heredoc_line *head)
 {
     t_heredoc_line *current = head;
     t_heredoc_line *next;
-    
+
     while (current)
     {
         next = current->next;
@@ -17,19 +17,19 @@ void free_commands(t_command *cmd)
 {
     t_command *current = cmd;
     t_command *next;
-    
+
     while (current)
     {
         next = current->next;
-        
+
         // Free args
         if (current->args)
             free_word_array(current->args);
-        
+
         // Free input file
         if (current->input_files)
             free(current->input_files);
-        
+
         // Free output files
         if (current->output_files)
         {
@@ -41,24 +41,24 @@ void free_commands(t_command *cmd)
             }
             free(current->output_files);
         }
-        
+
         // Free append modes
         if (current->append_modes)
             free(current->append_modes);
-        
+
         // Free heredoc delimiter
         if (current->heredoc_delimiter)
             free(current->heredoc_delimiter);
-        
+
         // Free heredoc lines
         free_heredoc_lines(current->heredoc_lines);
-        
+
         free(current);
         current = next;
     }
-}   
+}
 
-void    signal_handler(int signum)
+void signal_handler(int signum)
 {
     if (signum == SIGINT)
     {
@@ -86,7 +86,7 @@ int main(int argc, char **argv, char **envp)
     sigemptyset(&sa.sa_mask);       // Handler çalışırken başka sinyalleri bloklama
     sa.sa_flags = SA_RESTART;       // Sistem çağrılarının handler'dan sonra devam etmesini sağla
 
-     if (sigaction(SIGINT, &sa, NULL) == -1)
+    if (sigaction(SIGINT, &sa, NULL) == -1)
     {
         perror("sigaction");
         exit(1);
@@ -100,12 +100,9 @@ int main(int argc, char **argv, char **envp)
         exit(1);
     }
 
-
-    
-
     data.env = copy_env(envp);
     data.exit_value = 0;
-    data.cmd = NULL;       
+    data.cmd = NULL;
     while (1)
     {
         line = readline("minishell$ ");
@@ -113,6 +110,10 @@ int main(int argc, char **argv, char **envp)
         if (!line)
         {
             return 0;
+        }
+        if (line && *line)
+        {
+            add_history(line);
         }
 
         if (syntax_check(line))
@@ -122,7 +123,7 @@ int main(int argc, char **argv, char **envp)
             continue;
         }
 
-        lexer(line,&data);
+        lexer(line, &data);
 
         expander(&data);
 

@@ -51,7 +51,7 @@ static int	syntax_validation(char *line)
     in_double_quote = 0;
     while (line[i] && (line[i] == ' ' || line[i] == '\t'))
         i++;
-    if (is_token(line[i]))
+    if (line[i] == '|')
         return (1);
     while (line[i])
     {

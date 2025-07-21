@@ -4,13 +4,20 @@ static int is_builtin(char *command)
 {
     if (!command)
         return (0);
-    if (ft_strcmp(command, "echo") == 0) return (1);
-    if (ft_strcmp(command, "cd") == 0) return (1);
-    if (ft_strcmp(command, "pwd") == 0) return (1);
-    if (ft_strcmp(command, "export") == 0) return (1);
-    if (ft_strcmp(command, "unset") == 0) return (1);
-    if (ft_strcmp(command, "env") == 0) return (1);
-    if (ft_strcmp(command, "exit") == 0) return (1);
+    if (ft_strcmp(command, "echo") == 0)
+        return (1);
+    if (ft_strcmp(command, "cd") == 0)
+        return (1);
+    if (ft_strcmp(command, "pwd") == 0)
+        return (1);
+    if (ft_strcmp(command, "export") == 0)
+        return (1);
+    if (ft_strcmp(command, "unset") == 0)
+        return (1);
+    if (ft_strcmp(command, "env") == 0)
+        return (1);
+    if (ft_strcmp(command, "exit") == 0)
+        return (1);
     return (0);
 }
 
@@ -57,16 +64,10 @@ static void single_execute(t_data *data, char **splitted_path)
     char *full_path;
     int status;
     pid_t pid;
-    struct sigaction sa_child; // YENİ: Child için sinyal yapısı
-
-    if (is_accessable(data->cmd->args[0], splitted_path, &full_path) == -1)
-    {
-        // ... command not found hatası ...
-        return;
-    }
+    struct sigaction sa_child;
 
     // YENİ: Child prosesin varsayılan sinyal davranışını ayarlıyoruz
-    sa_child.sa_handler = SIG_DFL; // SIG_DFL = Default Signal Handler
+    sa_child.sa_handler = SIG_DFL;
     sa_child.sa_flags = 0;
     sigemptyset(&sa_child.sa_mask);
 
@@ -74,46 +75,54 @@ static void single_execute(t_data *data, char **splitted_path)
     if (pid == -1)
     {
         perror("fork");
-        free(full_path);
+        data->exit_value = 1;
         return;
     }
-    if (pid == 0) // ------ BURASI CHILD PROCESS ------
+    if (pid == 0) // ------ CHILD PROCESS ------
     {
         // YENİ: Sinyalleri varsayılan davranışlarına geri döndür.
-        // Böylece Ctrl-C bu işlemi sonlandırabilir.
         sigaction(SIGINT, &sa_child, NULL);
         sigaction(SIGQUIT, &sa_child, NULL);
 
-        // Mevcut kodun: Yönlendirmeleri uygula ve komutu çalıştır
-        apply_input_redirection(data->cmd);
-        apply_output_redirection(data->cmd);
+        // **** EN ÖNEMLİ DEĞİŞİKLİK BURADA ****
+        // Yönlendirmeleri uygula ve DÖNÜŞ DEĞERLERİNİ KONTROL ET
+        if (apply_input_redirection(data->cmd) == -1 || 
+            apply_output_redirection(data->cmd) == -1)
+        {
+            // Yönlendirme hatası varsa, child process hemen çıkmalı.
+            exit(1); 
+        }
+        // ****************************************
+
+        if (is_accessable(data->cmd->args[0], splitted_path, &full_path) == -1)
+        {
+            fprintf(stderr, "%s: command not found\n", data->cmd->args[0]);
+            exit(127);
+        }
         execute(full_path, data);
     }
     else // ------ PARENT PROCESS ------
-{
-    signal(SIGINT, SIG_IGN);
-    signal(SIGQUIT, SIG_IGN);
-
-    free(full_path);
-    wait(&status); // Child'ın bitmesini bekle
-
-    // YENİ: Eğer child SIGINT ile sonlandıysa, yeni satır ekle
-    if (WIFSIGNALED(status) && WTERMSIG(status) == SIGINT)
     {
-        write(STDOUT_FILENO, "\n", 1);
+        signal(SIGINT, SIG_IGN);
+        signal(SIGQUIT, SIG_IGN);
+
+        wait(&status); // Child'ın bitmesini bekle
+
+        if (WIFSIGNALED(status) && WTERMSIG(status) == SIGINT)
+            write(STDOUT_FILENO, "\n", 1);
+        
+        signal(SIGINT, signal_handler);
+        signal(SIGQUIT, SIG_IGN);
+
+        if (WIFEXITED(status))
+            data->exit_value = WEXITSTATUS(status);
+        else if (WIFSIGNALED(status))
+            data->exit_value = 128 + WTERMSIG(status);
+        else
+            data->exit_value = 1;
     }
-
-    signal(SIGINT, signal_handler);
-    signal(SIGQUIT, SIG_IGN);
-
-    if (WIFEXITED(status))
-        data->exit_value = WEXITSTATUS(status);
-    else if (WIFSIGNALED(status))
-        data->exit_value = 128 + WTERMSIG(status);
-    else
-        data->exit_value = 1;
 }
-}
+
 void execute_commmand(t_data *data)
 {
     char **splitted_path;
@@ -121,19 +130,45 @@ void execute_commmand(t_data *data)
     if (!data->cmd || !data->cmd->args || !data->cmd->args[0] ||
         ft_strlen(data->cmd->args[0]) == 0)
         return;
-    splitted_path = ft_split(find_value_by_key(data, "PATH"), ':');
-    if (!splitted_path)
-        return;
     
+    splitted_path = ft_split(find_value_by_key(data, "PATH"), ':');
+
     if (is_builtin(data->cmd->args[0]) && !data->cmd->next)
     {
-        // Yönlendirmeleri burada ele almamız gerekebilir (zor kısım)
-        // Şimdilik basitçe çalıştıralım:
-        data->exit_value = try_builtin(data, 1); // 1 = is_parent
-        return;
+        int original_stdin = dup(STDIN_FILENO);
+        int original_stdout = dup(STDOUT_FILENO);
+        int redir_error = 0;
+
+        if (original_stdin == -1 || original_stdout == -1)
+        {
+            perror("dup");
+            data->exit_value = 1;
+            if (original_stdin != -1) close(original_stdin);
+            if (original_stdout != -1) close(original_stdout);
+            free_word_array(splitted_path);
+            return;
+        }
+
+        if (apply_input_redirection(data->cmd) == -1)
+            redir_error = 1;
+        
+        if (redir_error == 0 && apply_output_redirection(data->cmd) == -1)
+            redir_error = 1;
+
+        if (redir_error)
+            data->exit_value = 1;
+        else
+            data->exit_value = try_builtin(data, 1);
+
+        dup2(original_stdin, STDIN_FILENO);
+        dup2(original_stdout, STDOUT_FILENO);
+        close(original_stdin);
+        close(original_stdout);
     }
     else if (!data->cmd->next)
         single_execute(data, splitted_path);
     else
         pipe_execute(data, splitted_path);
+
+    free_word_array(splitted_path);
 }
