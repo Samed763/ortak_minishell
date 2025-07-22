@@ -54,7 +54,8 @@ void *Malloc(size_t size)
     if (!ptr)
     {
         perror("Malloc BOMM");
-        exit(1);
+            exit(1); // Yönlendirme hatası varsa çocuk proses 1 ile çıksın. //DEBUG
+
     }   
     return (ptr);
 }

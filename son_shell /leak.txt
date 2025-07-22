@@ -1,0 +1,91 @@
+==143142== Invalid read of size 8
+==143142==    at 0x10A73F: free_word_array (utils.c:85)
+==143142==    by 0x10AFF6: free_command_list (leak_manager.c:30)
+==143142==    by 0x10B0F3: free_data_resources (leak_manager.c:62)
+==143142==    by 0x109826: main (minishell.c:97)
+==143142==  Address 0x4b7f0a8 is 0 bytes after a block of size 8 alloc'd
+==143142==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==143142==    by 0x10A65C: Malloc (utils.c:53)
+==143142==    by 0x10CD97: add_output_to_command (parser.c:79)
+==143142==    by 0x10CFED: handle_redirections (parser.c:112)
+==143142==    by 0x10D1E1: parser (parser.c:153)
+==143142==    by 0x1097F7: main (minishell.c:90)
+==143142==
+
+
+minishell$ cat << sa
+> g
+> fd
+> fd
+> $USER
+> sa
+==143561== 
+==143561== HEAP SUMMARY:
+==143561==     in use at exit: 245,195 bytes in 398 blocks
+==143561==   total heap usage: 1,788 allocs, 1,390 frees, 430,953 bytes allocated
+==143561== 
+==143561== 5,890 bytes in 19 blocks are definitely lost in loss record 86 of 100
+==143561==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==143561==    by 0x10A787: ft_strdup (utils.c:98)
+==143561==    by 0x10AE4E: find_value_by_key (utils.c:270)
+==143561==    by 0x10B72A: execute_commmand (execute_command.c:147)
+==143561==    by 0x109817: main (minishell.c:95)
+==143561== 
+==143561== LEAK SUMMARY:
+==143561==    definitely lost: 5,890 bytes in 19 blocks
+==143561==    indirectly lost: 0 bytes in 0 blocks
+==143561==      possibly lost: 0 bytes in 0 blocks
+==143561==    still reachable: 239,305 bytes in 379 blocks
+==143561==         suppressed: 0 bytes in 0 blocks
+==143561== Reachable blocks (those to which a pointer was found) are not shown.
+==143561== To see them, rerun with: --leak-check=full --show-leak-kinds=all
+==143561== 
+==143561== For lists of detected and suppressed errors, rerun with: -s
+==143561== ERROR SUMMARY: 3 errors from 2 contexts (suppressed: 0 from 0)
+==143565== 
+==143565== HEAP SUMMARY:
+==143565==     in use at exit: 246,053 bytes in 425 blocks
+==143565==   total heap usage: 1,805 allocs, 1,380 frees, 431,607 bytes allocated
+==143565== 
+==143565== 6,200 bytes in 20 blocks are definitely lost in loss record 91 of 105
+==143565==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==143565==    by 0x10A787: ft_strdup (utils.c:98)
+==143565==    by 0x10AE4E: find_value_by_key (utils.c:270)
+==143565==    by 0x10B72A: execute_commmand (execute_command.c:147)
+==143565==    by 0x109817: main (minishell.c:95)
+==143565== 
+==143565== LEAK SUMMARY:
+==143565==    definitely lost: 6,200 bytes in 20 blocks
+==143565==    indirectly lost: 0 bytes in 0 blocks
+==143565==      possibly lost: 0 bytes in 0 blocks
+==143565==    still reachable: 239,853 bytes in 405 blocks
+==143565==         suppressed: 0 bytes in 0 blocks
+==143565== Reachable blocks (those to which a pointer was found) are not shown.
+==143565== To see them, rerun with: --leak-check=full --show-leak-kinds=all
+==143565== 
+==143565== For lists of detected and suppressed errors, rerun with: -s
+==143565== ERROR SUMMARY: 3 errors from 2 contexts (suppressed: 0 from 0)
+
+==143142== 
+==143142== HEAP SUMMARY:
+==143142==     in use at exit: 245,352 bytes in 279 blocks
+==143142==   total heap usage: 3,030 allocs, 2,751 frees, 457,721 bytes allocated
+==143142== 
+==143142== 12,090 bytes in 39 blocks are definitely lost in loss record 78 of 81
+==143142==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==143142==    by 0x10A787: ft_strdup (utils.c:98)
+==143142==    by 0x10AE4E: find_value_by_key (utils.c:270)
+==143142==    by 0x10B72A: execute_commmand (execute_command.c:147)
+==143142==    by 0x109817: main (minishell.c:95)
+==143142== 
+==143142== LEAK SUMMARY:
+==143142==    definitely lost: 12,090 bytes in 39 blocks
+==143142==    indirectly lost: 0 bytes in 0 blocks
+==143142==      possibly lost: 0 bytes in 0 blocks
+==143142==    still reachable: 233,262 bytes in 240 blocks
+==143142==         suppressed: 0 bytes in 0 blocks
+==143142== Reachable blocks (those to which a pointer was found) are not shown.
+==143142== To see them, rerun with: --leak-check=full --show-leak-kinds=all
+==143142== 
+==143142== For lists of detected and suppressed errors, rerun with: -s
+==143142== ERROR SUMMARY: 3 errors from 2 contexts (suppressed: 0 from 0)

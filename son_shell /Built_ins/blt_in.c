@@ -50,7 +50,7 @@ static int	handle_env_exit(t_data *data)
 	{
 		// **** DEĞİŞİKLİK BURADA ****
 		// İkinci argüman olarak 'data->exit_value' eklendi.
-		builtin_exit(data->cmd->args, data->exit_value);
+		//builtin_exit(data->cmd->args, data->exit_value);
 		return (1);
 	}
 	return (0);

@@ -1,5 +1,49 @@
 #include "../minishell.h"
 
+/**
+ * @brief Bir kelime içindeki tüm dış tırnak katmanlarını kaldırır.
+ * Örnek: "hello"'world' -> helloworld
+ * @param str Temizlenecek kelime.
+ * @return Tırnaklardan arındırılmış yeni bir string.
+ */
+static char *remove_quotes_from_word(char *str)
+{
+    char *new_str;
+    int i;
+    int j;
+    char quote_char;
+
+    if (!str)
+        return (NULL);
+    new_str = (char *)malloc(ft_strlen(str) + 1);
+    if (!new_str)
+        return (NULL);
+    i = 0;
+    j = 0;
+    while (str[i])
+    {
+        // Bir tırnak karakteriyle karşılaşırsak
+        if (str[i] == '\'' || str[i] == '"')
+        {
+            quote_char = str[i];
+            i++; // Açılış tırnağını atla
+            // Eşleşen kapanış tırnağını bulana kadar kopyala
+            while (str[i] && str[i] != quote_char)
+            {
+                new_str[j++] = str[i++];
+            }
+            if (str[i] == quote_char)
+                i++; // Kapanış tırnağını atla
+        }
+        else // Tırnak değilse karakteri direkt kopyala
+        {
+            new_str[j++] = str[i++];
+        }
+    }
+    new_str[j] = '\0';
+    return (new_str);
+}
+
 static void remove_quotes_parser_helper(const char *str, char **delimiter, t_command *current)
 {
     size_t len;
@@ -41,7 +85,7 @@ static t_command *create_list(void)
 static void add_argument_to_command(t_command *cmd, char *word)
 {
     char **new_args;
-
+    char *cleaned_word; // Temizlenmiş kelime için yeni değişken
     int i = 0;
     int j = 0;
 
@@ -57,11 +101,16 @@ static void add_argument_to_command(t_command *cmd, char *word)
     if (cmd->args != NULL)
         free(cmd->args);
 
-    new_args[j] = ft_strdup(word);
-    new_args[j + 1] = NULL;
+    // --- DEĞİŞİKLİK BURADA ---
+    // Argümanı listeye eklemeden önce tırnaklarını temizle.
+    cleaned_word = remove_quotes_from_word(word);
+    new_args[j] = cleaned_word; // Yeni, temizlenmiş string'i ata
+    // --- DEĞİŞİKLİK SONU ---
 
+    new_args[j + 1] = NULL;
     cmd->args = new_args;
 }
+
 
 static void add_input_to_command(t_command *current, char *filename)
 {

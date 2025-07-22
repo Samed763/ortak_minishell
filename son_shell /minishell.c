@@ -1,5 +1,5 @@
 #include "minishell.h"
-#include <sys/ioctl.h> 
+#include <sys/ioctl.h>
 // Global değişkenler
 volatile sig_atomic_t g_heredoc_interrupted = 0;
 struct termios g_original_termios; // Orijinal terminal ayarlarını saklamak için
@@ -15,8 +15,6 @@ struct termios g_original_termios; // Orijinal terminal ayarlarını saklamak i�
 //     // Readline'ı sonlandırmak için terminalin girdi akışına yeni satır karakteri gönder.
 //     ioctl(STDIN_FILENO, TIOCSTI, "\n");
 // }
-
-
 
 void signal_handler(int signum)
 {
@@ -44,7 +42,7 @@ int main(int argc, char **argv, char **envp)
     (void)argc;
     (void)argv;
 
-   // --- YENİ EKLENEN SATIR ---
+    // --- YENİ EKLENEN SATIR ---
     // Program başlarken terminalin "sağlıklı" ayarlarını global değişkene kaydet.
     tcgetattr(STDIN_FILENO, &g_original_termios);
 
@@ -67,7 +65,7 @@ int main(int argc, char **argv, char **envp)
     data.env = copy_env(envp);
     data.exit_value = 0;
     data.cmd = NULL;
-while (1)
+    while (1)
     {
         line = readline("minishell$ ");
 
@@ -75,7 +73,7 @@ while (1)
         {
             // Ctrl-D (EOF) durumu, shell'den çık. [cite: 117]
             printf("exit\n");
-            break; 
+            break;
         }
         if (line && *line)
             add_history(line);
@@ -90,14 +88,17 @@ while (1)
         lexer(line, &data);
         expander(&data);
         data.cmd = parser(&data);
-        
+
         // Eğer heredoc iptal edildiyse, komutu çalıştırma.
         if (!g_heredoc_interrupted)
         {
             execute_commmand(&data);
         }
-
+        free_data_resources(&data);
+        free(line);                // readline ile ayrılan satırı temizle
+        g_heredoc_interrupted = 0; // Global bayrağı sıfırla
     }
-
-    return 0;
+    free_word_array(data.env);
+    clear_history();
+    return (data.exit_value);
 }

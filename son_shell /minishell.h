@@ -78,7 +78,7 @@ int	try_builtin(t_data *data, int is_parent);
 int	builtin_cd(char **args);
 int	builtin_echo(char **args);
 int	builtin_env(char **env);
-int	builtin_exit(char **args, int exit_code); // Exit'i güncelleyeceğiz
+int builtin_exit(t_data *data); //
 int	builtin_pwd(void);
 void builtin_export(t_data *data);
 int	builtin_unset(t_data *data);
@@ -121,5 +121,11 @@ void pipe_execute(t_data *data, char **splitted_path);
 //minishell.c
 void    signal_handler(int signum);
 void    heredoc_signal_handler(int signum);
+
+//leak_manager.c
+void free_command_list(t_command *head);
+void free_heredoc_lines(t_heredoc_line *head);
+void free_data_resources(t_data *data);
+void    cleanup_and_exit(t_data *data, int exit_code);
 
 #endif

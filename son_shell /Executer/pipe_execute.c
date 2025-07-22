@@ -1,13 +1,12 @@
 #include "../minishell.h"
 
-
 // Bu fonksiyonun zaten doğru, dokunmana gerek yok.
 void pipe_execve(char *full_path, t_data *data, t_command *current)
 {
 	if (execve(full_path, current->args, data->env) == -1)
 	{
 		perror("execve");
-		exit(1);
+		cleanup_and_exit(data, 1); // Yönlendirme hatası varsa çocuk proses 1 ile çıksın.
 	}
 }
 
@@ -31,9 +30,10 @@ static void pipe_execute_child(t_data *data, t_command *current,
 	}
 	else
 	{
-        // **** DEĞİŞİKLİK BURADA ****
+		// **** DEĞİŞİKLİK BURADA ****
 		if (apply_input_redirection(current) == -1)
-			exit(1);
+			            cleanup_and_exit(data,1); // Yönlendirme hatası varsa çocuk proses 1 ile çıksın.
+
 	}
 	if (current->next)
 	{
@@ -43,22 +43,24 @@ static void pipe_execute_child(t_data *data, t_command *current,
 	}
 	else
 	{
-        // **** DEĞİŞİKLİK BURADA ****
+		// **** DEĞİŞİKLİK BURADA ****
 		if (apply_output_redirection(current) == -1)
-			exit(1);
+			            cleanup_and_exit(data,1); // Yönlendirme hatası varsa çocuk proses 1 ile çıksın.
+
 	}
 
 	if (!current->args || !current->args[0])
-		exit(1);
-    
-    // built-in çalıştırma bloğu doğru, try_builtin hata durumunda 0 döndürmez
+		            cleanup_and_exit(data,1); // Yönlendirme hatası varsa çocuk proses 1 ile çıksın.
+
+
+	// built-in çalıştırma bloğu doğru, try_builtin hata durumunda 0 döndürmez
 	if (try_builtin(data, 0))
 		exit(data->exit_value);
 
 	if (is_accessable(current->args[0], splitted_path, &full_path) == -1)
 	{
 		fprintf(stderr, "%s: command not found\n", data->cmd->args[0]);
-		exit(127);
+		cleanup_and_exit(data, 127);
 	}
 	pipe_execve(full_path, data, current);
 }
