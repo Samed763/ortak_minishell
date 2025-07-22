@@ -1,5 +1,25 @@
 #include "../minishell.h"
 
+static void remove_quotes_parser_helper(const char *str, char **delimiter, t_command *current)
+{
+    size_t len;
+
+    if (!str)
+        return ;
+    len = ft_strlen(str);
+    if (len >= 2 && ((str[0] == '"' && str[len - 1] == '"') ||
+                     (str[0] == '\'' && str[len - 1] == '\'')))
+    {
+        // ft_substr kullanarak tırnakları atla
+        *delimiter = ft_substr(str, 1, len - 2); // tırnaksız hali
+        current->should_expand_heredoc = 0;
+        return ;
+    }
+    *delimiter = ft_strdup(str);
+
+    current->should_expand_heredoc = 1;
+    return ;
+}
 
 static t_command *create_list(void)
 {
@@ -14,17 +34,17 @@ static t_command *create_list(void)
     cmd->heredoc_delimiter = NULL;
     cmd->heredoc_lines = NULL;
     cmd->next = NULL;
-    return(cmd);
-
+    cmd->should_expand_heredoc = 1;
+    return (cmd);
 }
 
-static void add_argument_to_command(t_command *cmd,char *word)
+static void add_argument_to_command(t_command *cmd, char *word)
 {
     char **new_args;
-    
+
     int i = 0;
     int j = 0;
-    
+
     while (cmd->args != NULL && cmd->args[i])
         i++;
     new_args = Malloc(sizeof(char *) * (i + 2));
@@ -43,22 +63,22 @@ static void add_argument_to_command(t_command *cmd,char *word)
     cmd->args = new_args;
 }
 
-static void	add_input_to_command(t_command *current, char *filename)
+static void add_input_to_command(t_command *current, char *filename)
 {
     if (current->input_files)
         free(current->input_files);
     current->input_files = ft_strdup(filename);
 }
 
-static void	add_output_to_command(t_command *current, char *filename, int append_mode)
+static void add_output_to_command(t_command *current, char *filename, int append_mode)
 {
-        char	**new_output_files;
-    int		*new_append_modes;
-    int		i;
+    char **new_output_files;
+    int *new_append_modes;
+    int i;
 
     new_output_files = Malloc(sizeof(char *) * (current->output_count + 1));
     new_append_modes = Malloc(sizeof(int) * (current->output_count + 1));
-    
+
     i = 0;
     while (i < current->output_count)
     {
@@ -77,35 +97,40 @@ static void	add_output_to_command(t_command *current, char *filename, int append
     current->output_count++;
 }
 
-static void handle_redirections(t_data *data,t_command *current,int *i)
+static int handle_redirections(t_data *data, t_command *current, int *i)
 {
-    if(data->token[*i] == TOKEN_REDIRECT_IN)
+    if (data->token[*i] == TOKEN_REDIRECT_IN)
     {
-        (*i)++;  // ✅ Önce artır
-        if (data->word_array[*i])  // ✅ Sonra kontrol et
-            add_input_to_command(current,data->word_array[*i]);
+        (*i)++;                   // ✅ Önce artır
+        if (data->word_array[*i]) // ✅ Sonra kontrol et
+            add_input_to_command(current, data->word_array[*i]);
     }
-    else if(data->token[*i] == TOKEN_REDIRECT_OUT)
+    else if (data->token[*i] == TOKEN_REDIRECT_OUT)
     {
-        (*i)++;  // ✅ Önce artır
-        if (data->word_array[*i])  // ✅ Sonra kontrol et
-            add_output_to_command(current,data->word_array[*i],0);
+        (*i)++;                   // ✅ Önce artır
+        if (data->word_array[*i]) // ✅ Sonra kontrol et
+            add_output_to_command(current, data->word_array[*i], 0);
     }
-    else if(data->token[*i] == TOKEN_APPEND)
+    else if (data->token[*i] == TOKEN_APPEND)
     {
-        (*i)++;  // ✅ Önce artır
-        if (data->word_array[*i])  // ✅ Sonra kontrol et
-            add_output_to_command(current,data->word_array[*i],1);
+        (*i)++;                   // ✅ Önce artır
+        if (data->word_array[*i]) // ✅ Sonra kontrol et
+            add_output_to_command(current, data->word_array[*i], 1);
     }
-    else if(data->token[*i] == TOKEN_HEREDOC)
+    else if (data->token[*i] == TOKEN_HEREDOC)
     {
-        (*i)++;  // ✅ Önce artır
-        if (data->word_array[*i])  // ✅ Sonra kontrol et
+        (*i)++;
+        if (data->word_array[*i])
         {
-            current->heredoc_delimiter = ft_strdup(data->word_array[*i]);
-            handle_heredoc(data,current);
+            remove_quotes_parser_helper(data->word_array[*i], &current->heredoc_delimiter, current);
+            // handle_heredoc'un dönüş değerini kontrol et
+            if (handle_heredoc(data, current) == -1)
+            {
+                return (-1);
+            }
         }
     }
+    return (0);
 }
 
 t_command *parser(t_data *data)
@@ -119,14 +144,18 @@ t_command *parser(t_data *data)
     while (data->word_array[i])
     {
         if (data->token[i] == TOKEN_WORD)
-            add_argument_to_command(current,data->word_array[i]);
+            add_argument_to_command(current, data->word_array[i]);
         else if (data->token[i] == TOKEN_PIPE)
         {
             current->next = create_list();
             current = current->next;
         }
-        else
-            handle_redirections(data,current,&i);
+        else if (handle_redirections(data, current, &i) == -1)
+        {
+            // Heredoc iptal edildi, parsing işlemine devam etme.
+            // free_command_list(head); // Oluşturulan listeyi temizle.
+            return (NULL); // veya head (main'de kontrol edilecek)
+        }
         i++;
     }
     return head;

@@ -1,63 +1,22 @@
 #include "minishell.h"
+#include <sys/ioctl.h> 
+// Global değişkenler
+volatile sig_atomic_t g_heredoc_interrupted = 0;
+struct termios g_original_termios; // Orijinal terminal ayarlarını saklamak için
+
+// /**
+//  * @brief Heredoc için basit ve güvenli sinyal yöneticisi.
+//  * Sadece bayrağı set eder ve readline'ı uyandırır.
+//  */
+// void    heredoc_signal_handler(int signum)
+// {
+//     (void)signum;
+//     g_heredoc_interrupted = 1;
+//     // Readline'ı sonlandırmak için terminalin girdi akışına yeni satır karakteri gönder.
+//     ioctl(STDIN_FILENO, TIOCSTI, "\n");
+// }
 
 
-void free_heredoc_lines(t_heredoc_line *head)
-{
-    t_heredoc_line *current = head;
-    t_heredoc_line *next;
-
-    while (current)
-    {
-        next = current->next;
-        free(current->content);
-        free(current);
-        current = next;
-    }
-}
-void free_commands(t_command *cmd)
-{
-    t_command *current = cmd;
-    t_command *next;
-
-    while (current)
-    {
-        next = current->next;
-
-        // Free args
-        if (current->args)
-            free_word_array(current->args);
-
-        // Free input file
-        if (current->input_files)
-            free(current->input_files);
-
-        // Free output files
-        if (current->output_files)
-        {
-            int i = 0;
-            while (i < current->output_count)
-            {
-                free(current->output_files[i]);
-                i++;
-            }
-            free(current->output_files);
-        }
-
-        // Free append modes
-        if (current->append_modes)
-            free(current->append_modes);
-
-        // Free heredoc delimiter
-        if (current->heredoc_delimiter)
-            free(current->heredoc_delimiter);
-
-        // Free heredoc lines
-        free_heredoc_lines(current->heredoc_lines);
-
-        free(current);
-        current = next;
-    }
-}
 
 void signal_handler(int signum)
 {
@@ -85,18 +44,20 @@ int main(int argc, char **argv, char **envp)
     (void)argc;
     (void)argv;
 
-    sa.sa_handler = signal_handler; // Bizim yazdığımız fonksiyonu ata
-    sigemptyset(&sa.sa_mask);       // Handler çalışırken başka sinyalleri bloklama
-    sa.sa_flags = SA_RESTART;       // Sistem çağrılarının handler'dan sonra devam etmesini sağla
+   // --- YENİ EKLENEN SATIR ---
+    // Program başlarken terminalin "sağlıklı" ayarlarını global değişkene kaydet.
+    tcgetattr(STDIN_FILENO, &g_original_termios);
 
-    if (sigaction(SIGINT, &sa, NULL) == -1)
-    {
-        perror("sigaction");
-        exit(1);
-    }
+    // ... main fonksiyonunuzun geri kalanı tamamen aynı kalabilir ...
+    sa.sa_handler = signal_handler;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_flags = SA_RESTART;
+    sigaction(SIGINT, &sa, NULL);
+
+    sa.sa_handler = SIG_IGN;
+    sigaction(SIGQUIT, &sa, NULL);
 
     // SIGQUIT (Ctrl-\) sinyalini görmezden gel (ignore)
-    sa.sa_handler = SIG_IGN; // SIG_IGN: Ignore Signal
     if (sigaction(SIGQUIT, &sa, NULL) == -1)
     {
         perror("sigaction");
@@ -106,18 +67,18 @@ int main(int argc, char **argv, char **envp)
     data.env = copy_env(envp);
     data.exit_value = 0;
     data.cmd = NULL;
-    while (1)
+while (1)
     {
         line = readline("minishell$ ");
 
         if (!line)
         {
-            return 0;
+            // Ctrl-D (EOF) durumu, shell'den çık. [cite: 117]
+            printf("exit\n");
+            break; 
         }
         if (line && *line)
-        {
             add_history(line);
-        }
 
         if (syntax_check(line))
         {
@@ -127,11 +88,15 @@ int main(int argc, char **argv, char **envp)
         }
 
         lexer(line, &data);
-
         expander(&data);
-
         data.cmd = parser(&data);
-        execute_commmand(&data);
+        
+        // Eğer heredoc iptal edildiyse, komutu çalıştırma.
+        if (!g_heredoc_interrupted)
+        {
+            execute_commmand(&data);
+        }
+
     }
 
     return 0;

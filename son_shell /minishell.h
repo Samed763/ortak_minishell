@@ -9,6 +9,8 @@
 #include <sys/wait.h>
 #include <signal.h>
 #include <fcntl.h>
+#include <termios.h>
+
 
 #define TOKEN_WORD 0
 #define TOKEN_PIPE 1         // |
@@ -16,6 +18,9 @@
 #define TOKEN_REDIRECT_OUT 3 // >
 #define TOKEN_APPEND 4       // >>
 #define TOKEN_HEREDOC 5      // <<
+
+extern volatile sig_atomic_t g_heredoc_interrupted;
+
 
 
 typedef struct s_heredoc_line
@@ -32,6 +37,7 @@ typedef struct s_command
     int *append_modes;       // Append modes for each output file
     int output_count;        // Number of output files
     char *heredoc_delimiter; // Heredoc delimiter
+    int  should_expand_heredoc;  //1 ise genişlet, 0 ise genişletme
     struct s_command *next;  // Next command in pipeline
     t_heredoc_line *heredoc_lines;
 } t_command;
@@ -87,15 +93,12 @@ void lexer(char *line, t_data *data);
 // parser.c
 t_command *parser(t_data *data);
 
-// heredoc.c
-void handle_heredoc(t_data *data, t_command *cmd);
-
 // expander.c
 void expander(t_data *data);
 char *expand_single_line(t_data *data, char *line);
 
 // heredoc.c
-void handle_heredoc(t_data *data, t_command *cmd);
+int handle_heredoc(t_data *data, t_command *cmd);
 
 // split.c
 char **ft_split(char const *s, char c);
@@ -117,4 +120,6 @@ void pipe_execute(t_data *data, char **splitted_path);
 
 //minishell.c
 void    signal_handler(int signum);
+void    heredoc_signal_handler(int signum);
+
 #endif

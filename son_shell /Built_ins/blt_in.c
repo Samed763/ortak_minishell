@@ -49,7 +49,7 @@ static int	handle_env_exit(t_data *data)
 	if (strcmp(data->cmd->args[0], "exit") == 0)
 	{
 		// **** DEĞİŞİKLİK BURADA ****
-		// İkinci argüman olarak 'data->exit_value' eklenmeli.
+		// İkinci argüman olarak 'data->exit_value' eklendi.
 		builtin_exit(data->cmd->args, data->exit_value);
 		return (1);
 	}
