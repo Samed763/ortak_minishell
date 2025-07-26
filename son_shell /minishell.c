@@ -44,7 +44,7 @@ int main(int argc, char **argv, char **envp)
 
     // --- YENİ EKLENEN SATIR ---
     // Program başlarken terminalin "sağlıklı" ayarlarını global değişkene kaydet.
-    tcgetattr(STDIN_FILENO, &g_original_termios);
+    
 
     // ... main fonksiyonunuzun geri kalanı tamamen aynı kalabilir ...
     sa.sa_handler = signal_handler;
@@ -65,6 +65,9 @@ int main(int argc, char **argv, char **envp)
     data.env = copy_env(envp);
     data.exit_value = 0;
     data.cmd = NULL;
+    data.word_array = NULL;
+    data.token = NULL;
+    data.splitted_path = NULL;
     while (1)
     {
         line = readline("minishell$ ");

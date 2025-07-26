@@ -33,7 +33,6 @@ static void pipe_execute_child(t_data *data, t_command *current,
 		// **** DEĞİŞİKLİK BURADA ****
 		if (apply_input_redirection(current) == -1)
 			            cleanup_and_exit(data,1); // Yönlendirme hatası varsa çocuk proses 1 ile çıksın.
-
 	}
 	if (current->next)
 	{
@@ -46,7 +45,6 @@ static void pipe_execute_child(t_data *data, t_command *current,
 		// **** DEĞİŞİKLİK BURADA ****
 		if (apply_output_redirection(current) == -1)
 			            cleanup_and_exit(data,1); // Yönlendirme hatası varsa çocuk proses 1 ile çıksın.
-
 	}
 
 	if (!current->args || !current->args[0])
@@ -54,8 +52,8 @@ static void pipe_execute_child(t_data *data, t_command *current,
 
 
 	// built-in çalıştırma bloğu doğru, try_builtin hata durumunda 0 döndürmez
-	if (try_builtin(data, 0))
-		exit(data->exit_value);
+	if (try_builtin(current, data, 0))
+		cleanup_and_exit(data, data->exit_value);
 
 	if (is_accessable(current->args[0], splitted_path, &full_path) == -1)
 	{

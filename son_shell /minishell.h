@@ -21,8 +21,6 @@
 
 extern volatile sig_atomic_t g_heredoc_interrupted;
 
-
-
 typedef struct s_heredoc_line
 {
     char *content;
@@ -48,6 +46,7 @@ typedef struct s_data
     char **env;
     int *token;
     int exit_value;
+    char **splitted_path;
     t_command *cmd;
 } t_data;
 
@@ -74,7 +73,7 @@ size_t ft_strlen(const char *str);
 
 
 // Built-in fonksiyonları için prototipler
-int	try_builtin(t_data *data, int is_parent);
+int try_builtin(t_command *current_cmd, t_data *data, int is_parent);
 int	builtin_cd(char **args);
 int	builtin_echo(char **args);
 int	builtin_env(char **env);

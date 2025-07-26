@@ -22,7 +22,7 @@ void free_command_list(t_command *head)
         tmp = head->next;
         // Argümanları temizle (args)
         free_word_array(head->args); // Bu fonksiyon zaten Tools/utils.c'de var
-
+        
         // Yönlendirme dosyalarını temizle
         if (head->input_files)
             free(head->input_files);
@@ -47,7 +47,7 @@ void free_data_resources(t_data *data)
 {
     if (!data)
         return;
-
+    
     // Lexer'dan gelen word_array ve token array'ini temizle
     if (data->word_array)
         free_word_array(data->word_array);

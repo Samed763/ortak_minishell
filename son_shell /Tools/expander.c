@@ -28,6 +28,12 @@ char *put_var(char *line, char *var_value, int key_start, int key_end)
     
     return ret_val;
 }
+
+/*
+salih=
+
+$HOME
+*/
 int is_identifier_char(int c)
 {
     return (c >= 'A' && c <= 'Z') ||

@@ -130,9 +130,7 @@ static void single_execute(t_data *data, char **splitted_path)
 
 void execute_commmand(t_data *data)
 {
-    char **splitted_path;
     char *path_val;
-
 
     if (!data->cmd)
         return;
@@ -146,7 +144,7 @@ void execute_commmand(t_data *data)
         return; // Yönlendirme de yoksa hiçbir şey yapma
     }
     path_val = find_value_by_key(data, "PATH");
-    splitted_path = ft_split(path_val, ':');
+    data->splitted_path = ft_split(path_val, ':');
     if (path_val)
             free(path_val);
     if (!data->cmd->next && is_builtin(data->cmd->args[0]))
@@ -163,7 +161,7 @@ void execute_commmand(t_data *data)
                 close(original_stdin);
             if (original_stdout != -1)
                 close(original_stdout);
-            free_word_array(splitted_path);
+            free_word_array(data->splitted_path);
             return;
         }
 
@@ -176,7 +174,7 @@ void execute_commmand(t_data *data)
         if (redir_error)
             data->exit_value = 1;
         else
-            data->exit_value = try_builtin(data, 1);
+            data->exit_value = try_builtin(data->cmd, data, 1);
 
         dup2(original_stdin, STDIN_FILENO);
         dup2(original_stdout, STDOUT_FILENO);
@@ -184,9 +182,9 @@ void execute_commmand(t_data *data)
         close(original_stdout);
     }
     else if (!data->cmd->next)
-        single_execute(data, splitted_path);
+        single_execute(data, data->splitted_path);
     else
-        pipe_execute(data, splitted_path);
+        pipe_execute(data, data->splitted_path);
 
-    free_word_array(splitted_path);
+    free_word_array(data->splitted_path);
 }

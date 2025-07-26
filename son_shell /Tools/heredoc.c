@@ -117,8 +117,8 @@ static void read_from_pipe_and_fill_list(int pipe_read_fd, t_command *cmd)
 int handle_heredoc(t_data *data, t_command *cmd)
 {
     int     pipefd[2];
-    pid_t   pid;
     int     status;
+    pid_t   pid;
 
     if (!cmd->heredoc_delimiter)
         return (0);

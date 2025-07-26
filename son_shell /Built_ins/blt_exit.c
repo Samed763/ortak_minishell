@@ -19,13 +19,18 @@ void    cleanup_and_exit(t_data *data, int exit_code)
 
         // 2. Programın başında kopyalanan environment'ı temizle
         free_word_array(data->env);
+        if (data->splitted_path)
+            free_word_array(data->splitted_path);
+
         data->env = NULL;
     }
+
+    
 
     // 3. Readline kütüphanesinin geçmişini temizle
     clear_history();
 
-    // 4. Tüm temizlik bittikten sonra programdan çık
+    // 4. Tüm temizlik bittikten sonra programdan çıka
     exit(exit_code);
 }
 /**
