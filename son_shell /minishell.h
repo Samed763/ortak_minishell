@@ -83,6 +83,8 @@ int	builtin_pwd(void);
 void builtin_export(t_data *data);
 int	builtin_unset(t_data *data);
 int	is_valid_var(const char *str);
+int	find_env_var(char **env, char *new_entry, int name_len);
+int	add_new_var(t_data *data, char *new_entry);
 
 // syntax_check.c
 int syntax_check(char *line);

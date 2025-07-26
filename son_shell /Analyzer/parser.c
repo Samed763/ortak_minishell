@@ -202,7 +202,7 @@ t_command *parser(t_data *data)
         else if (handle_redirections(data, current, &i) == -1)
         {
             // Heredoc iptal edildi, parsing işlemine devam etme.
-            // free_command_list(head); // Oluşturulan listeyi temizle.
+            free_command_list(head); // Oluşturulan listeyi temizle.
             return (NULL); // veya head (main'de kontrol edilecek)
         }
         i++;

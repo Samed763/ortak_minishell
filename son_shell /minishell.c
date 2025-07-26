@@ -87,6 +87,8 @@ int main(int argc, char **argv, char **envp)
 
         lexer(line, &data);
         expander(&data);
+
+        
         data.cmd = parser(&data);
 
         // Eğer heredoc iptal edildiyse, komutu çalıştırma.
@@ -98,6 +100,7 @@ int main(int argc, char **argv, char **envp)
         free(line);                // readline ile ayrılan satırı temizle
         g_heredoc_interrupted = 0; // Global bayrağı sıfırla
     }
+    free_data_resources(&data);
     free_word_array(data.env);
     clear_history();
     return (data.exit_value);

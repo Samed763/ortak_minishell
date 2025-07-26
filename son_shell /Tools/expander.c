@@ -98,14 +98,6 @@ void expander(t_data *data)
 
     while (data->word_array[i])
     {
-        // --- GEREKSİZ IF BLOĞU KALDIRILDI ---
-        if (i > 0 && data->token[i-1] == TOKEN_HEREDOC)
-        {
-            // Bu bir heredoc delimiter'ıdır. Atla ve bir sonraki kelimeye geç.
-            i++;
-            continue;
-        }
-
         // Önce çift tırnakları (varsa) kaldır
         old_word = data->word_array[i];
         data->word_array[i] = remove_d_quotes(data->word_array[i]);
@@ -113,7 +105,7 @@ void expander(t_data *data)
         
         // Heredoc delimiter'ları hariç her kelimeyi genişletmeyi dene.
         // Tek tırnak kontrolünü expand_single_line zaten yapıyor.
-        if (i > 0 && data->token[i-1] != TOKEN_HEREDOC)
+        if (i == 0 || (i > 0 && data->token[i - 1] != TOKEN_HEREDOC))
         {
             expanded = expand_single_line(data, data->word_array[i]);
             free(data->word_array[i]);

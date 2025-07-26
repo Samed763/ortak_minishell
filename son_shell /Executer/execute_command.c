@@ -131,6 +131,8 @@ static void single_execute(t_data *data, char **splitted_path)
 void execute_commmand(t_data *data)
 {
     char **splitted_path;
+    char *path_val;
+
 
     if (!data->cmd)
         return;
@@ -143,9 +145,10 @@ void execute_commmand(t_data *data)
         }
         return; // Yönlendirme de yoksa hiçbir şey yapma
     }
-
-    splitted_path = ft_split(find_value_by_key(data, "PATH"), ':');
-
+    path_val = find_value_by_key(data, "PATH");
+    splitted_path = ft_split(path_val, ':');
+    if (path_val)
+            free(path_val);
     if (!data->cmd->next && is_builtin(data->cmd->args[0]))
     {
         int original_stdin = dup(STDIN_FILENO);
