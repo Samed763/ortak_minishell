@@ -2,7 +2,6 @@
 #include <sys/ioctl.h>
 // Global değişkenler
 volatile sig_atomic_t g_heredoc_interrupted = 0;
-struct termios g_original_termios; // Orijinal terminal ayarlarını saklamak için
 
 // /**
 //  * @brief Heredoc için basit ve güvenli sinyal yöneticisi.

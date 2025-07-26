@@ -44,47 +44,52 @@ int is_identifier_char(int c)
 
 char *expand_single_line(t_data *data, char *line)
 {
-    char *result = ft_strdup(line);
-    int s_quotes = 0;
-    size_t j = 0;
+    char    *result;
+    int     s_quotes;
+    int     d_quotes; // <-- Çift tırnak bayrağı eklendi
+    size_t  j;
 
+    result = ft_strdup(line); // Orijinal satırı koru
+    s_quotes = 0;
+    d_quotes = 0;
+    j = 0;
     while (result[j])
     {
-        if (result[j] == '\'')
+        // Eğer çift tırnak içinde değilsek, tek tırnak durumunu değiştir
+        if (result[j] == '\'' && d_quotes == 0)
             s_quotes = !s_quotes;
-
+        // Eğer tek tırnak içinde değilsek, çift tırnak durumunu değiştir
+        else if (result[j] == '"' && s_quotes == 0)
+            d_quotes = !d_quotes;
+        
+        // Değişken genişletme sadece tek tırnak içinde DEĞİLSE yapılır.
         if (result[j] == '$' && s_quotes == 0)
         {
             char *key;
             char *value;
             int k = j + 1;
 
-            // --- YENİ EKLENEN BLOK BAŞLANGICI ---
             if (result[k] == '?')
             {
                 key = ft_strdup("?");
-                k++; // '?' karakterini atla
+                k++;
             }
-            // --- YENİ EKLENEN BLOK SONU ---
-            else // Eski mantık
+            else
             {
                 while (result[k] && is_identifier_char(result[k]))
                     k++;
                 key = ft_substr(result, j + 1, k - j - 1);
             }
-            
             value = find_value_by_key(data, key);
             result = put_var(result, value, j, k);
-            
             free(key);
-            if(value) // find_value_by_key'den dönen bellek sızıntısını önle
+            if (value)
                 free(value);
-
-            j = -1; // Döngüyü baştan başlatmak için j'yi sıfırla (-1 + 1 = 0)
+            j = -1; // Değişiklik oldu, stringi baştan tara
         }
         j++;
     }
-    return result;
+    return (result);
 }
 // Word array için variable expansion
 void set_var(t_data *data)
@@ -99,18 +104,13 @@ void set_var(t_data *data)
 void expander(t_data *data)
 {
     int i = 0;
-    char *old_word;
     char *expanded;
 
     while (data->word_array[i])
     {
-        // Önce çift tırnakları (varsa) kaldır
-        old_word = data->word_array[i];
-        data->word_array[i] = remove_d_quotes(data->word_array[i]);
-        free(old_word);
-        
         // Heredoc delimiter'ları hariç her kelimeyi genişletmeyi dene.
         // Tek tırnak kontrolünü expand_single_line zaten yapıyor.
+        // DİKKAT: remove_d_quotes çağrısını kaldırdık!
         if (i == 0 || (i > 0 && data->token[i - 1] != TOKEN_HEREDOC))
         {
             expanded = expand_single_line(data, data->word_array[i]);
