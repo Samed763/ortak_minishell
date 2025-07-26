@@ -153,6 +153,5 @@ int handle_heredoc(t_data *data, t_command *cmd)
         expand_heredoc_lines(data, cmd);
     }
     // --- DEĞİŞİKLİK SONU ---
-
     return (0);
 }

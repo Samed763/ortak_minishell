@@ -162,6 +162,7 @@ void execute_commmand(t_data *data)
             if (original_stdout != -1)
                 close(original_stdout);
             free_word_array(data->splitted_path);
+            data->splitted_path = NULL;
             return;
         }
 
@@ -187,4 +188,5 @@ void execute_commmand(t_data *data)
         pipe_execute(data, data->splitted_path);
 
     free_word_array(data->splitted_path);
+    data->splitted_path= NULL;
 }

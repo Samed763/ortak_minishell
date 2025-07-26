@@ -1,0 +1,222 @@
+==63525== Memcheck, a memory error detector
+==63525== Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
+==63525== Using Valgrind-3.22.0 and LibVEX; rerun with -h for copyright info
+==63525== Command: ./minishell
+==63525== 
+==63528== 
+==63528== HEAP SUMMARY:
+==63528==     in use at exit: 238,071 bytes in 316 blocks
+==63528==   total heap usage: 559 allocs, 243 frees, 258,955 bytes allocated
+==63528== 
+==63528== 3 bytes in 1 blocks are still reachable in loss record 1 of 88
+==63528==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==63528==    by 0x10A7F5: ft_substr (utils.c:119)
+==63528==    by 0x10ABDF: remove_d_quotes (utils.c:223)
+==63528==    by 0x109BED: expander (expander.c:109)
+==63528==    by 0x1097BC: main (minishell.c:92)
+==63528== 
+==63528== 3 bytes in 1 blocks are still reachable in loss record 2 of 88
+==63528==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==63528==    by 0x10A737: ft_strdup (utils.c:98)
+==63528==    by 0x10CCCF: remove_quotes_parser_helper (parser.c:62)
+==63528==    by 0x10D276: handle_redirections (parser.c:174)
+==63528==    by 0x10D369: parser (parser.c:202)
+==63528==    by 0x1097CB: main (minishell.c:95)
+==63528== 
+==63528== 4 bytes in 1 blocks are still reachable in loss record 5 of 88
+==63528==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==63528==    by 0x10CAE3: remove_quotes_from_word (parser.c:18)
+==63528==    by 0x10CE5B: add_argument_to_command (parser.c:106)
+==63528==    by 0x10D319: parser (parser.c:196)
+==63528==    by 0x1097CB: main (minishell.c:95)
+==63528== 
+==63528== 7 bytes in 2 blocks are still reachable in loss record 6 of 88
+==63528==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==63528==    by 0x10A737: ft_strdup (utils.c:98)
+==63528==    by 0x10997C: expand_single_line (expander.c:47)
+==63528==    by 0x109C52: expander (expander.c:116)
+==63528==    by 0x1097BC: main (minishell.c:92)
+==63528== 
+==63528== 16 bytes in 1 blocks are still reachable in loss record 20 of 88
+==63528==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==63528==    by 0x10A60C: Malloc (utils.c:53)
+==63528==    by 0x10C955: lexer (lexer.c:143)
+==63528==    by 0x1097AD: main (minishell.c:91)
+==63528== 
+==63528== 16 bytes in 1 blocks are still reachable in loss record 21 of 88
+==63528==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==63528==    by 0x10A60C: Malloc (utils.c:53)
+==63528==    by 0x10CDD3: add_argument_to_command (parser.c:94)
+==63528==    by 0x10D319: parser (parser.c:196)
+==63528==    by 0x1097CB: main (minishell.c:95)
+==63528== 
+==63528== 32 bytes in 1 blocks are still reachable in loss record 26 of 88
+==63528==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==63528==    by 0x10A60C: Malloc (utils.c:53)
+==63528==    by 0x10C93A: lexer (lexer.c:142)
+==63528==    by 0x1097AD: main (minishell.c:91)
+==63528== 
+==63528== 72 bytes in 1 blocks are still reachable in loss record 30 of 88
+==63528==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==63528==    by 0x10CCFC: create_list (parser.c:72)
+==63528==    by 0x10D2C0: parser (parser.c:190)
+==63528==    by 0x1097CB: main (minishell.c:95)
+==63528== 
+==63528== 552 bytes in 1 blocks are still reachable in loss record 38 of 88
+==63528==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==63528==    by 0x10A60C: Malloc (utils.c:53)
+==63528==    by 0x10AC37: copy_env (utils.c:232)
+==63528==    by 0x1096B4: main (minishell.c:65)
+==63528== 
+==63528== 4,524 bytes in 68 blocks are still reachable in loss record 74 of 88
+==63528==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==63528==    by 0x10A737: ft_strdup (utils.c:98)
+==63528==    by 0x10AC79: copy_env (utils.c:236)
+==63528==    by 0x1096B4: main (minishell.c:65)
+==63528== 
+==63528== LEAK SUMMARY:
+==63528==    definitely lost: 0 bytes in 0 blocks
+==63528==    indirectly lost: 0 bytes in 0 blocks
+==63528==      possibly lost: 0 bytes in 0 blocks
+==63528==    still reachable: 5,229 bytes in 78 blocks
+==63528==         suppressed: 232,842 bytes in 238 blocks
+==63528== 
+==63528== For lists of detected and suppressed errors, rerun with: -s
+==63528== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==63531== 
+==63531== HEAP SUMMARY:
+==63531==     in use at exit: 238,584 bytes in 338 blocks
+==63531==   total heap usage: 580 allocs, 242 frees, 259,668 bytes allocated
+==63531== 
+==63531== 3 bytes in 1 blocks are still reachable in loss record 1 of 93
+==63531==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==63531==    by 0x10A7F5: ft_substr (utils.c:119)
+==63531==    by 0x10ABDF: remove_d_quotes (utils.c:223)
+==63531==    by 0x109BED: expander (expander.c:109)
+==63531==    by 0x1097BC: main (minishell.c:92)
+==63531== 
+==63531== 3 bytes in 1 blocks are still reachable in loss record 2 of 93
+==63531==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==63531==    by 0x10A737: ft_strdup (utils.c:98)
+==63531==    by 0x10CCCF: remove_quotes_parser_helper (parser.c:62)
+==63531==    by 0x10D276: handle_redirections (parser.c:174)
+==63531==    by 0x10D369: parser (parser.c:202)
+==63531==    by 0x1097CB: main (minishell.c:95)
+==63531== 
+==63531== 4 bytes in 1 blocks are still reachable in loss record 3 of 93
+==63531==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==63531==    by 0x10CAE3: remove_quotes_from_word (parser.c:18)
+==63531==    by 0x10CE5B: add_argument_to_command (parser.c:106)
+==63531==    by 0x10D319: parser (parser.c:196)
+==63531==    by 0x1097CB: main (minishell.c:95)
+==63531== 
+==63531== 4 bytes in 1 blocks are still reachable in loss record 4 of 93
+==63531==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==63531==    by 0x10AAB5: ft_strjoin (utils.c:192)
+==63531==    by 0x1098D3: put_var (expander.c:20)
+==63531==    by 0x109A9A: expand_single_line (expander.c:77)
+==63531==    by 0x109F86: expand_heredoc_lines (heredoc.c:12)
+==63531==    by 0x10A44D: handle_heredoc (heredoc.c:153)
+==63531==    by 0x10D289: handle_redirections (parser.c:176)
+==63531==    by 0x10D369: parser (parser.c:202)
+==63531==    by 0x1097CB: main (minishell.c:95)
+==63531== 
+==63531== 5 bytes in 1 blocks are still reachable in loss record 5 of 93
+==63531==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==63531==    by 0x10A737: ft_strdup (utils.c:98)
+==63531==    by 0x10997C: expand_single_line (expander.c:47)
+==63531==    by 0x109F86: expand_heredoc_lines (heredoc.c:12)
+==63531==    by 0x10A44D: handle_heredoc (heredoc.c:153)
+==63531==    by 0x10D289: handle_redirections (parser.c:176)
+==63531==    by 0x10D369: parser (parser.c:202)
+==63531==    by 0x1097CB: main (minishell.c:95)
+==63531== 
+==63531== 7 bytes in 2 blocks are still reachable in loss record 6 of 93
+==63531==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==63531==    by 0x10A737: ft_strdup (utils.c:98)
+==63531==    by 0x10997C: expand_single_line (expander.c:47)
+==63531==    by 0x109C52: expander (expander.c:116)
+==63531==    by 0x1097BC: main (minishell.c:92)
+==63531== 
+==63531== 16 bytes in 1 blocks are still reachable in loss record 22 of 93
+==63531==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==63531==    by 0x10A60C: Malloc (utils.c:53)
+==63531==    by 0x10C955: lexer (lexer.c:143)
+==63531==    by 0x1097AD: main (minishell.c:91)
+==63531== 
+==63531== 16 bytes in 1 blocks are still reachable in loss record 23 of 93
+==63531==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==63531==    by 0x10A60C: Malloc (utils.c:53)
+==63531==    by 0x10CDD3: add_argument_to_command (parser.c:94)
+==63531==    by 0x10D319: parser (parser.c:196)
+==63531==    by 0x1097CB: main (minishell.c:95)
+==63531== 
+==63531== 32 bytes in 1 blocks are still reachable in loss record 28 of 93
+==63531==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==63531==    by 0x10A60C: Malloc (utils.c:53)
+==63531==    by 0x10C93A: lexer (lexer.c:142)
+==63531==    by 0x1097AD: main (minishell.c:91)
+==63531== 
+==63531== 32 bytes in 2 blocks are still reachable in loss record 29 of 93
+==63531==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==63531==    by 0x10A60C: Malloc (utils.c:53)
+==63531==    by 0x10A1B9: read_from_pipe_and_fill_list (heredoc.c:90)
+==63531==    by 0x10A3CA: handle_heredoc (heredoc.c:137)
+==63531==    by 0x10D289: handle_redirections (parser.c:176)
+==63531==    by 0x10D369: parser (parser.c:202)
+==63531==    by 0x1097CB: main (minishell.c:95)
+==63531== 
+==63531== 72 bytes in 1 blocks are still reachable in loss record 33 of 93
+==63531==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==63531==    by 0x10CCFC: create_list (parser.c:72)
+==63531==    by 0x10D2C0: parser (parser.c:190)
+==63531==    by 0x1097CB: main (minishell.c:95)
+==63531== 
+==63531== 144 bytes in 1 blocks are still reachable in loss record 38 of 93
+==63531==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==63531==    by 0x109E92: ft_split (split.c:72)
+==63531==    by 0x10B6EF: execute_commmand (execute_command.c:147)
+==63531==    by 0x1097F7: main (minishell.c:102)
+==63531== 
+==63531== 310 bytes in 17 blocks are still reachable in loss record 42 of 93
+==63531==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==63531==    by 0x109D9D: str_parse (split.c:42)
+==63531==    by 0x109EEA: ft_split (split.c:82)
+==63531==    by 0x10B6EF: execute_commmand (execute_command.c:147)
+==63531==    by 0x1097F7: main (minishell.c:102)
+==63531== 
+==63531== 552 bytes in 1 blocks are still reachable in loss record 43 of 93
+==63531==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==63531==    by 0x10A60C: Malloc (utils.c:53)
+==63531==    by 0x10AC37: copy_env (utils.c:232)
+==63531==    by 0x1096B4: main (minishell.c:65)
+==63531== 
+==63531== 4,524 bytes in 68 blocks are still reachable in loss record 79 of 93
+==63531==    at 0x4846828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==63531==    by 0x10A737: ft_strdup (utils.c:98)
+==63531==    by 0x10AC79: copy_env (utils.c:236)
+==63531==    by 0x1096B4: main (minishell.c:65)
+==63531== 
+==63531== LEAK SUMMARY:
+==63531==    definitely lost: 0 bytes in 0 blocks
+==63531==    indirectly lost: 0 bytes in 0 blocks
+==63531==      possibly lost: 0 bytes in 0 blocks
+==63531==    still reachable: 5,724 bytes in 100 blocks
+==63531==         suppressed: 232,860 bytes in 238 blocks
+==63531== 
+==63531== For lists of detected and suppressed errors, rerun with: -s
+==63531== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==63525== 
+==63525== HEAP SUMMARY:
+==63525==     in use at exit: 232,804 bytes in 234 blocks
+==63525==   total heap usage: 584 allocs, 350 frees, 259,712 bytes allocated
+==63525== 
+==63525== LEAK SUMMARY:
+==63525==    definitely lost: 0 bytes in 0 blocks
+==63525==    indirectly lost: 0 bytes in 0 blocks
+==63525==      possibly lost: 0 bytes in 0 blocks
+==63525==    still reachable: 0 bytes in 0 blocks
+==63525==         suppressed: 232,804 bytes in 234 blocks
+==63525== 
+==63525== For lists of detected and suppressed errors, rerun with: -s
+==63525== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)

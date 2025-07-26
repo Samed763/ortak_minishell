@@ -76,7 +76,7 @@ int main(int argc, char **argv, char **envp)
         {
             // Ctrl-D (EOF) durumu, shell'den çık. [cite: 117]
             printf("exit\n");
-            break;
+            cleanup_and_exit(&data, data.exit_value);
         }
         if (line && *line)
             add_history(line);
@@ -95,16 +95,18 @@ int main(int argc, char **argv, char **envp)
         data.cmd = parser(&data);
 
         // Eğer heredoc iptal edildiyse, komutu çalıştırma.
-        if (!g_heredoc_interrupted)
+       if (data.cmd != NULL)
         {
-            execute_commmand(&data);
+            if (!g_heredoc_interrupted)
+            {
+                execute_commmand(&data);
+            }
         }
+
         free_data_resources(&data);
         free(line);                // readline ile ayrılan satırı temizle
         g_heredoc_interrupted = 0; // Global bayrağı sıfırla
     }
-    free_data_resources(&data);
-    free_word_array(data.env);
-    clear_history();
+    cleanup_and_exit(&data, data.exit_value);
     return (data.exit_value);
 }

@@ -14,23 +14,24 @@ void    cleanup_and_exit(t_data *data, int exit_code)
 {
     if (data)
     {
-        // 1. Her döngüde ayrılan lexer, parser verilerini temizle
+        // 1. Döngü içi ayrılan bellek (cmd, word_array, token)
         free_data_resources(data);
 
-        // 2. Programın başında kopyalanan environment'ı temizle
-        free_word_array(data->env);
+        // 2. PATH için ayrılan bellek
         if (data->splitted_path)
             free_word_array(data->splitted_path);
+        data->splitted_path = NULL;
 
+        // 3. Ortam değişkenleri için ayrılan bellek
+        if (data->env)
+            free_word_array(data->env);
         data->env = NULL;
     }
 
-    
-
-    // 3. Readline kütüphanesinin geçmişini temizle
+    // 4. Readline geçmişini temizle
     clear_history();
 
-    // 4. Tüm temizlik bittikten sonra programdan çıka
+    // 5. Programı sonlandır
     exit(exit_code);
 }
 /**
