@@ -37,19 +37,27 @@ int main(int argc, char **argv, char **envp)
     sa.sa_handler = signal_handler;
     sigemptyset(&sa.sa_mask);
     sa.sa_flags = SA_RESTART;
-    sigaction(SIGINT, &sa, NULL);
-
-    sa.sa_handler = SIG_IGN;
-    sigaction(SIGQUIT, &sa, NULL);
-
+if (sigaction(SIGINT, &sa, NULL) == -1)
+    {
+        perror("sigaction for SIGINT");
+        exit(1);
+    }
+    
     // SIGQUIT (Ctrl-\) sinyalini görmezden gel (ignore)
+    sa.sa_handler = SIG_IGN;
     if (sigaction(SIGQUIT, &sa, NULL) == -1)
     {
-        perror("sigaction");
+        perror("sigaction for SIGQUIT");
         exit(1);
     }
 
+    // YENİ: Ortam değişkenleri kopyalanamazsa, bu kritik bir hatadır.
     data.env = copy_env(envp);
+    if (!data.env)
+    {
+        perror("Failed to copy environment variables");
+        exit(1);
+    }
     data.exit_value = 0;
     data.cmd = NULL;
     data.word_array = NULL;
@@ -76,18 +84,15 @@ int main(int argc, char **argv, char **envp)
         }
 
         lexer(line, &data); //count_word kısaltılcak onun dışında oke
-        expander(&data);
+        expander(&data); // kısaltılcak onun dışında oke
 
         
-        data.cmd = parser(&data);
+        data.cmd = parser(&data); // kısaltılcak onun dışında oke
 
-        // Eğer heredoc iptal edildiyse, komutu çalıştırma.
-       if (data.cmd != NULL)
+        if (data.cmd != NULL && !g_heredoc_interrupted)
         {
-            if (!g_heredoc_interrupted)
-            {
+            // Eğer heredoc iptal edildiyse, komutu çalıştırma.
                 execute_commmand(&data);
-            }
         }
 
         free_data_resources(&data);

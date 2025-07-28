@@ -68,14 +68,8 @@ void execute(char *full_path, t_data *data)
 static void single_execute(t_data *data, char **splitted_path)
 {
     char *full_path;
-    int status;
     pid_t pid;
-    struct sigaction sa_child;
-
-    // YENİ: Child prosesin varsayılan sinyal davranışını ayarlıyoruz
-    sa_child.sa_handler = SIG_DFL;
-    sa_child.sa_flags = 0;
-    sigemptyset(&sa_child.sa_mask);
+    int status;
 
     pid = fork();
     if (pid == -1)
@@ -84,32 +78,28 @@ static void single_execute(t_data *data, char **splitted_path)
         data->exit_value = 1;
         return;
     }
-    if (pid == 0) // ------ CHILD PROCESS ------
+    if (pid == 0) // Çocuk Proses
     {
-        // YENİ: Sinyalleri varsayılan davranışlarına geri döndür.
-        sigaction(SIGINT, &sa_child, NULL);
-        sigaction(SIGQUIT, &sa_child, NULL);
+        signal(SIGINT, SIG_DFL);
+        signal(SIGQUIT, SIG_DFL);
 
-        // **** EN ÖNEMLİ DEĞİŞİKLİK BURADA ****
-        // Yönlendirmeleri uygula ve DÖNÜŞ DEĞERLERİNİ KONTROL ET
+        // Yönlendirmeleri uygula, hata olursa 1 ile çık.
         if (apply_input_redirection(data->cmd) == -1 ||
             apply_output_redirection(data->cmd) == -1)
-        {
-            cleanup_and_exit(data,1); // Yönlendirme hatası varsa çocuk proses 1 ile çıksın.
-        }
+            cleanup_and_exit(data, 1);
 
-        // Eğer çalıştırılacak bir komut varsa (sadece yönlendirme değilse)...
-
+        // Eğer çalıştırılacak bir komut adı varsa (sadece '> out' değilse)
         if (data->cmd->args && data->cmd->args[0])
         {
             if (is_accessable(data->cmd->args[0], splitted_path, &full_path) == -1)
             {
                 fprintf(stderr, "%s: command not found\n", data->cmd->args[0]);
-                cleanup_and_exit(data,127);
+                cleanup_and_exit(data, 127); // Standart hata kodu
             }
             execute(full_path, data);
         }
-        exit(0);
+        // Komut olmasa bile (sadece yönlendirme), işlem başarılıdır. 0 ile çık.
+        cleanup_and_exit(data, 0);
     }
     else // ------ PARENT PROCESS ------
     {
@@ -136,62 +126,52 @@ static void single_execute(t_data *data, char **splitted_path)
 void execute_commmand(t_data *data)
 {
     char *path_val;
+    // --- YENİ VE BASİT YAPI ---
 
-    if (!data->cmd)
-        return;
-    if (!data->cmd->args || !data->cmd->args[0])
-    {
-        if (data->cmd->input_files || data->cmd->output_files || data->cmd->heredoc_delimiter)
-        {
-            // Bu durumu tek komut gibi çalıştır, ama çalıştıracak komut yok.
-            single_execute(data, NULL);
-        }
-        return; // Yönlendirme de yoksa hiçbir şey yapma
-    }
     path_val = find_value_by_key(data, "PATH");
     data->splitted_path = ft_split(path_val, ':');
     if (path_val)
-            free(path_val);
-    if (!data->cmd->next && is_builtin(data->cmd->args[0]))
+       free(path_val);
+    // 1. Pipe'lı bir komut mu?
+    if (data->cmd->next)
+        pipe_execute(data, data->splitted_path);
+    // 2. Tek bir built-in komut mu?
+    // Not: data->cmd->args'ın NULL olma ihtimaline karşı kontrol ekliyoruz.
+    else if (data->cmd->args && is_builtin(data->cmd->args[0]))
     {
         int original_stdin = dup(STDIN_FILENO);
         int original_stdout = dup(STDOUT_FILENO);
-        int redir_error = 0;
-
         if (original_stdin == -1 || original_stdout == -1)
         {
             perror("dup");
             data->exit_value = 1;
-            if (original_stdin != -1)
-                close(original_stdin);
-            if (original_stdout != -1)
-                close(original_stdout);
-            free_word_array(data->splitted_path);
-            data->splitted_path = NULL;
+            if (original_stdin != -1) close(original_stdin);
+            if (original_stdout != -1) close(original_stdout);
             return;
         }
-
-        if (apply_input_redirection(data->cmd) == -1)
-            redir_error = 1;
-
-        if (redir_error == 0 && apply_output_redirection(data->cmd) == -1)
-            redir_error = 1;
-
-        if (redir_error)
+        // Yönlendirmeleri uygula
+        if (apply_input_redirection(data->cmd) == -1 ||
+            apply_output_redirection(data->cmd) == -1)
             data->exit_value = 1;
         else
             data->exit_value = try_builtin(data->cmd, data, 1);
-
-        dup2(original_stdin, STDIN_FILENO);
-        dup2(original_stdout, STDOUT_FILENO);
+        
+        // Standart girdi/çıktıyı geri yükle
+         if (dup2(original_stdin, STDIN_FILENO) == -1 ||
+            dup2(original_stdout, STDOUT_FILENO) == -1)
+        {
+            perror("dup2 restore");
+            data->exit_value = 1; // Hata durumunda çıkış kodunu ayarla
+        }
         close(original_stdin);
         close(original_stdout);
     }
-    else if (!data->cmd->next)
-        single_execute(data, data->splitted_path);
+    // 3. Geriye kalan her şey (dış komut VEYA sadece yönlendirme)
     else
-        pipe_execute(data, data->splitted_path);
-
-    free_word_array(data->splitted_path);
-    data->splitted_path= NULL;
+        single_execute(data, data->splitted_path);
+    
+    // Her çalıştırmadan sonra PATH'i temizle
+    if (data->splitted_path)
+        free_word_array(data->splitted_path);
+    data->splitted_path = NULL;
 }

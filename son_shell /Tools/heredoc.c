@@ -1,6 +1,5 @@
 #include "../minishell.h"
 
-extern struct termios g_original_termios;
 extern volatile sig_atomic_t g_heredoc_interrupted; // Bu satırı da eklemek iyi bir pratik.
 
 static void expand_heredoc_lines(t_data *data,t_command *cmd)
@@ -69,12 +68,19 @@ static void read_from_pipe_and_fill_list(int pipe_read_fd, t_command *cmd)
     char    **lines;
     int     i = 0;
 
+    if (!full_content) // YENİ: İlk strdup kontrolü
+            return;
     // Pipe'taki tüm içeriği tek bir string'e topla
     while ((bytes_read = read(pipe_read_fd, buffer, 4096)) > 0)
     {
         buffer[bytes_read] = '\0';
         temp = ft_strjoin(full_content, buffer);
         free(full_content);
+        if (!temp) // YENİ: strjoin kontrolü
+        {
+            close(pipe_read_fd);
+            return;
+        }
         full_content = temp;
     }
     close(pipe_read_fd);
@@ -89,6 +95,14 @@ static void read_from_pipe_and_fill_list(int pipe_read_fd, t_command *cmd)
         // create_heredoc_node gibi bir fonksiyonunuz olmalı
         t_heredoc_line *new_node = Malloc(sizeof(t_heredoc_line));
         new_node->content = ft_strdup(lines[i]);
+        if (!new_node->content) // YENİ: strdup kontrolü
+        {
+            free(new_node);
+            free_word_array(lines);
+            free_heredoc_lines(cmd->heredoc_lines); // O ana kadar eklenenleri sil
+            cmd->heredoc_lines = NULL;
+            return;
+        }
         new_node->next = NULL;
         
         // Add to list logic... (Bu kısmı kendi listenize göre uyarlayın)

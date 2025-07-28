@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/28 16:15:10 by sadinc            #+#    #+#             */
-/*   Updated: 2025/07/28 16:15:11 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/07/28 19:54:04 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -160,11 +160,8 @@ void	expander(t_data *data)
 		expanded = expand_single_line(data, data->word_array[i]);
 		if (expanded)
 		{
-			if (expanded) // Genişletme başarılı olduysa
-			{
-				free(data->word_array[i]);      // Eskiyi sil
-				data->word_array[i] = expanded; // Yeniyi ata
-			}
+			free(data->word_array[i]);      // Eskiyi sil
+			data->word_array[i] = expanded; // Yeniyi ata
 		}
 		i++;
 	}

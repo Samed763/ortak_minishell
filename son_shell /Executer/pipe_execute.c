@@ -83,7 +83,8 @@ static void wait_all_children(t_data *data)
 	t_command *current;
 	int status;
 	int last_status; // Son komutun durumunu saklamak için
-
+	if (!data || !data->cmd)
+			return;
 	current = data->cmd;
 	while (current)
 	{

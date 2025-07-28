@@ -1,4 +1,5 @@
 #include "../minishell.h"
+#include <limits.h>
 // Bu fonksiyonları daha önce oluşturmuştuk, burada tekrar kullanacağız.
 void free_heredoc_lines(t_heredoc_line *head);
 void free_command_list(t_command *head);
@@ -10,6 +11,40 @@ int builtin_exit(t_data *data);
  * @param data Ana veri yapısı.
  * @param exit_code Programın döneceği çıkış kodu.
  */
+
+
+
+int ft_atol(const char *str, long *result)
+{
+    int sign = 1;
+    unsigned long num = 0;
+    int i = 0;
+
+    *result = 0;
+
+    if (str[0] == '-' || str[0] == '+')
+    {
+        if (str[0] == '-')
+            sign = -1;
+        i++;
+    }
+
+    while (str[i])
+    {
+        if (str[i] < '0' || str[i] > '9')
+            return (1);
+        num = num * 10 + (str[i] - '0');
+        if ((sign == 1 && num > LONG_MAX) ||
+            (sign == -1 && num > (unsigned long)LONG_MAX + 1))
+            return (1); // overflow kontrolü
+        i++;
+    }
+    *result = (long)(sign * num);
+    return (0);
+}
+
+
+
 void    cleanup_and_exit(t_data *data, int exit_code)
 {
     if (data)
@@ -42,10 +77,12 @@ void    cleanup_and_exit(t_data *data, int exit_code)
  */
 int builtin_exit(t_data *data)
 {
-    int     status;
+    long     status;
     char    **args;
+    int ctrl_overflow;
 
     args = data->cmd->args; // Argümanlara artık data yapısı üzerinden ulaşıyoruz
+    ctrl_overflow= ft_atol(data->cmd->args[1], &status);
     printf("exit\n");
 
     // 1. Argüman yoksa: Son komutun çıkış koduyla temiz bir şekilde çık.
@@ -54,20 +91,13 @@ int builtin_exit(t_data *data)
         status = data->exit_value;
         cleanup_and_exit(data, status);
     }
-
     // 2. Argümanın sayısal olup olmadığını kontrol et.
-    for (int i = 0; args[1][i]; i++)
-    {
-        if (i == 0 && (args[1][i] == '-' || args[1][i] == '+'))
-            continue;
-        if (args[1][i] < '0' || args[1][i] > '9')
+        if ( ctrl_overflow)
         {
             fprintf(stderr, "minishell: exit: %s: numeric argument required\n", args[1]);
             // Sayısal değilse, 255 koduyla temiz bir şekilde çık.
             cleanup_and_exit(data, 255);
         }
-    }
-
     // 3. İkiden fazla argüman varsa: Hata ver ama programdan çıkma.
     if (args[2])
     {
@@ -77,7 +107,7 @@ int builtin_exit(t_data *data)
     }
 
     // 4. Tek bir sayısal argüman varsa: O sayıyla temiz bir şekilde çık.
-    status = atoi(args[1]);
+   // status = atoi(args[1]);
     cleanup_and_exit(data, status % 256); // bash gibi 0-255 arası bir değere modla
 
     return (0); // Bu satıra asla ulaşılamaz

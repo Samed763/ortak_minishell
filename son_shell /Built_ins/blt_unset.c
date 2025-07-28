@@ -6,7 +6,7 @@ static int	find_env_index(char **env, char *arg)
 	int	j;
 	int	arg_len;
 
-	arg_len = ft_strlen(arg);
+	arg_len = ft_strlen(arg); // unset yakup
 	j = 0;
 	while (env[j])
 	{
@@ -23,7 +23,7 @@ static void	remove_env_var(char **env, int env_index)
 	free(env[env_index]);
 	while (env[env_index + 1])
 	{
-		env[env_index] = env[env_index + 1];
+		env[env_index] = env[env_index + 1]; 
 		env_index++;
 	}
 	env[env_index] = NULL;
@@ -32,16 +32,11 @@ static void	remove_env_var(char **env, int env_index)
 static int	process_unset_arg(t_data *data, char *arg)
 {
 	int	env_index;
-
-	if (!is_valid_var(arg))
-	{
-		fprintf(stderr, "unset: '%s': not a valid identifier\n", arg);
-		return (EXIT_FAILURE);
-	}
+	
 	env_index = find_env_index(data->env, arg);
 	if (env_index != -1)
 		remove_env_var(data->env, env_index);
-	return (EXIT_SUCCESS);
+	return (EXIT_SUCCESS);//  sonradan buraya bak 
 }
 
 int	builtin_unset(t_data *data)

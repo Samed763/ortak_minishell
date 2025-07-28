@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 19:53:19 by sadinc            #+#    #+#             */
-/*   Updated: 2025/07/26 19:53:20 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/07/28 19:50:02 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,8 @@
 static int	check_heredoc(char *line, int i)
 {
     int	j;
-
+    if (!line)
+            return (1)
     j = i + 1;
     while (line[j] && (line[j] == ' ' || line[j] == '\t'))
         j++;
@@ -28,7 +29,8 @@ static int	check_heredoc(char *line, int i)
 static int	process_char(char *line, int i, int *in_single_quote, int *in_double_quote)
 {
     int	j;
-
+    if (!line || !in_single_quote || !in_double_quote)
+            return (1); // NULL argümanları hatalı kabul edelim.
     if (line[i] == '\'' && !(*in_double_quote))
         *in_single_quote = !(*in_single_quote);
     else if (line[i] == '"' && !(*in_single_quote))
@@ -58,7 +60,8 @@ static int	syntax_validation(char *line)
     int	i;
     int	in_single_quote;
     int	in_double_quote;
-
+    if (!line)
+            return (1); 
     i = 0;
     in_single_quote = 0;
     in_double_quote = 0;

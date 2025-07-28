@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 19:59:27 by sadinc            #+#    #+#             */
-/*   Updated: 2025/07/28 15:28:09 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/07/28 19:48:18 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,8 @@ int count_word(char *line)
     int in_double_quote = 0;
     int wc = 0;
     int word = 0;
+    if (!line)
+        return (0);
 
     while (line[i])
     {
@@ -136,7 +138,8 @@ void lexer(char *line, t_data *data)
 {
     int i = 0;
     int word_index = 0;
-
+    if (!line || !data)
+        return;
     int word_count = count_word(line);
     data->word_array = malloc(sizeof(char *) * (word_count + 1));
     data->token = malloc(sizeof(int) * (word_count + 1));
