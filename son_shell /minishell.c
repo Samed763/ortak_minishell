@@ -1,19 +1,7 @@
 #include "minishell.h"
 #include <sys/ioctl.h>
-// Global değişkenler
-volatile sig_atomic_t g_heredoc_interrupted = 0;
 
-// /**
-//  * @brief Heredoc için basit ve güvenli sinyal yöneticisi.
-//  * Sadece bayrağı set eder ve readline'ı uyandırır.
-//  */
-// void    heredoc_signal_handler(int signum)
-// {
-//     (void)signum;
-//     g_heredoc_interrupted = 1;
-//     // Readline'ı sonlandırmak için terminalin girdi akışına yeni satır karakteri gönder.
-//     ioctl(STDIN_FILENO, TIOCSTI, "\n");
-// }
+volatile sig_atomic_t g_heredoc_interrupted = 0;
 
 void signal_handler(int signum)
 {
@@ -87,7 +75,7 @@ int main(int argc, char **argv, char **envp)
             continue;
         }
 
-        lexer(line, &data);
+        lexer(line, &data); //count_word kısaltılcak onun dışında oke
         expander(&data);
 
         

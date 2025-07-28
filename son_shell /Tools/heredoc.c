@@ -142,6 +142,7 @@ int handle_heredoc(t_data *data, t_command *cmd)
     {
         write(STDOUT_FILENO, "\n", 1);
         data->exit_value = 130;
+        free_heredoc_lines(cmd->heredoc_lines);
         cmd->heredoc_lines = NULL; // Bellek sızıntısı olmaması için listeyi temizle
         return (-1);
     }

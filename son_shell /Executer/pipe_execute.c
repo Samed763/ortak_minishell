@@ -6,6 +6,7 @@ void pipe_execve(char *full_path, t_data *data, t_command *current)
 	if (execve(full_path, current->args, data->env) == -1)
 	{
 		perror("execve");
+		free(full_path);
 		cleanup_and_exit(data, 1); // Yönlendirme hatası varsa çocuk proses 1 ile çıksın.
 	}
 }

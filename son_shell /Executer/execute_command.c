@@ -35,6 +35,11 @@ int is_accessable(char *command, char **splited_path, char **full_path)
         }
         return (-1);
     }
+    if (!splited_path)
+    {
+        *full_path = NULL;
+        return (-1);
+    }
     i = 0;
     while (splited_path[i])
     {
@@ -55,6 +60,7 @@ void execute(char *full_path, t_data *data)
     if (execve(full_path, data->cmd->args, data->env) == -1)
     {
         perror("execve");
+        free(full_path); 
         cleanup_and_exit(data,1);
     }
 }
@@ -102,7 +108,6 @@ static void single_execute(t_data *data, char **splitted_path)
                 cleanup_and_exit(data,127);
             }
             execute(full_path, data);
-            free(full_path); // Bu satıra sadece execve başarısız olursa ulaşılır.
         }
         exit(0);
     }

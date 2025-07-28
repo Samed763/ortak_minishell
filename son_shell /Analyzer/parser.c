@@ -125,8 +125,8 @@ static void add_output_to_command(t_command *current, char *filename, int append
     int *new_append_modes;
     int i;
 
-    new_output_files = Malloc(sizeof(char *) * (current->output_count + 1));
-    new_append_modes = Malloc(sizeof(int) * (current->output_count + 1));
+    new_output_files = malloc(sizeof(char *) * (current->output_count + 1));
+    new_append_modes = malloc(sizeof(int) * (current->output_count + 1));
 
     i = 0;
     while (i < current->output_count)

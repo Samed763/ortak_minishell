@@ -91,16 +91,6 @@ char *expand_single_line(t_data *data, char *line)
     }
     return (result);
 }
-// Word array için variable expansion
-void set_var(t_data *data)
-{
-    for (size_t i = 0; data->word_array[i]; i++)
-    {
-        char *expanded = expand_single_line(data,data->word_array[i]);
-        free(data->word_array[i]);
-        data->word_array[i] = expanded;
-    }
-}
 void expander(t_data *data)
 {
     int i = 0;
@@ -108,9 +98,7 @@ void expander(t_data *data)
 
     while (data->word_array[i])
     {
-        // Heredoc delimiter'ları hariç her kelimeyi genişletmeyi dene.
-        // Tek tırnak kontrolünü expand_single_line zaten yapıyor.
-        // DİKKAT: remove_d_quotes çağrısını kaldırdık!
+
         if (i == 0 || (i > 0 && data->token[i - 1] != TOKEN_HEREDOC))
         {
             expanded = expand_single_line(data, data->word_array[i]);
