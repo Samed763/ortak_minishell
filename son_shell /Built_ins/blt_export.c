@@ -1,5 +1,4 @@
 #include "../minishell.h"
-
 #include "built_in.h"
 
 static void	handle_var_without_value(t_data *data, char *arg)
@@ -28,7 +27,6 @@ static void	handle_var_without_value(t_data *data, char *arg)
 		data->env = new_env;
 	}
 }
-
 
 static void	handle_var_with_value(t_data *data, char *arg, char *eq)
 {
@@ -63,7 +61,9 @@ static int	validate_and_process_arg(t_data *data, char *arg)
 		temp_str = ft_strdup(arg);
 	if (!is_valid_var(temp_str))
 	{
-		fprintf(stderr, "export: '%s': not a valid identifier\n", arg);
+		write(2, "export: '", 9);
+		write(2, arg, ft_strlen(arg));
+		write(2, "': not a valid identifier\n", 26);
 		free(temp_str);
 		return (0);
 	}
@@ -77,11 +77,11 @@ static int	validate_and_process_arg(t_data *data, char *arg)
 
 void	builtin_export(t_data *data)
 {
-	int		i;
+	int	i;
 
 	if (!data || !data->cmd || !data->cmd->args || !data->env)
 	{
-		fprintf(stderr, "export: internal error\n");
+		write(2, "export: internal error\n", 23);
 		return ;
 	}
 	if (!data->cmd->args[1])

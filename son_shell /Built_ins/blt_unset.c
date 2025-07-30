@@ -1,17 +1,16 @@
 #include "../minishell.h"
 
-
 static int	find_env_index(char **env, char *arg)
 {
-	int	j;
-	int	arg_len;
+	int		j;
+	int		arg_len;
 
-	arg_len = ft_strlen(arg); // unset yakup
+	arg_len = ft_strlen(arg);
 	j = 0;
 	while (env[j])
 	{
-		if (ft_strncmp(env[j], arg, arg_len) == 0 && 
-			env[j][arg_len] == '=')
+		if (ft_strncmp(env[j], arg, arg_len) == 0
+			&& env[j][arg_len] == '=')
 			return (j);
 		j++;
 	}
@@ -23,7 +22,7 @@ static void	remove_env_var(char **env, int env_index)
 	free(env[env_index]);
 	while (env[env_index + 1])
 	{
-		env[env_index] = env[env_index + 1]; 
+		env[env_index] = env[env_index + 1];
 		env_index++;
 	}
 	env[env_index] = NULL;
@@ -32,11 +31,11 @@ static void	remove_env_var(char **env, int env_index)
 static int	process_unset_arg(t_data *data, char *arg)
 {
 	int	env_index;
-	
+
 	env_index = find_env_index(data->env, arg);
 	if (env_index != -1)
 		remove_env_var(data->env, env_index);
-	return (EXIT_SUCCESS);//  sonradan buraya bak 
+	return (0);
 }
 
 int	builtin_unset(t_data *data)
@@ -46,14 +45,14 @@ int	builtin_unset(t_data *data)
 	int	arg_status;
 
 	if (!data || !data->cmd || !data->cmd->args[1] || !data->env)
-		return (EXIT_FAILURE);
+		return (1);
 	i = 1;
-	status = EXIT_SUCCESS;
+	status = 0;
 	while (data->cmd->args[i])
 	{
 		arg_status = process_unset_arg(data, data->cmd->args[i]);
-		if (arg_status == EXIT_FAILURE)
-			status = EXIT_FAILURE;
+		if (arg_status == 1)
+			status = 1;
 		i++;
 	}
 	return (status);

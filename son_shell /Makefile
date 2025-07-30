@@ -1,9 +1,9 @@
 CC = cc
 NAME = minishell
 
-SRC = minishell.c \
-	Tools/expander.c Tools/split.c Tools/heredoc.c Tools/utils.c Tools/leak_manager.c \
-	Executer/execute_command.c Executer/apply_input.c Executer/apply_output.c Executer/pipe_execute.c \
+SRC = minishell.c main_utils.c \
+	tools/expander.c tools/expander_utils.c tools/split.c tools/heredoc.c tools/heredoc_utils.c tools/utils.c tools/leak_manager.c \
+	executer/execute_command.c executer/apply_input.c executer/apply_input_utils.c executer/apply_output.c executer/pipe_execute.c  executer/pipe_utils.c executer/execute_utils.c \
 	analyzer/lexer.c analyzer/parser.c analyzer/syntax_check.c analyzer/count_words.c analyzer/parser_utils.c analyzer/parser_utils2.c \
 	Built_ins/blt_cd.c Built_ins/blt_echo.c Built_ins/blt_env.c Built_ins/blt_exit.c \
 	Built_ins/blt_exp_utils.c Built_ins/blt_exp_utils2.c Built_ins/blt_exp_utils3.c Built_ins/blt_exp_utils4.c \

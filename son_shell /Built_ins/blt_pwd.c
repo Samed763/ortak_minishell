@@ -1,6 +1,5 @@
 #include "../minishell.h"
 
-
 int	builtin_pwd(void)
 {
 	char	cwd[4096];

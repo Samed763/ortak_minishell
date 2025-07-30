@@ -6,14 +6,11 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/02 14:33:17 by sadinc            #+#    #+#             */
-/*   Updated: 2025/07/21 21:14:28 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/07/30 19:07:54 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
-
-
-
 
 static int	str_count(char const *str, char sep)
 {
@@ -60,7 +57,6 @@ static void	*free_all(char **arr)
 	free(arr);
 	return (NULL);
 }
-
 
 char	**ft_split(char const *s, char c)
 {

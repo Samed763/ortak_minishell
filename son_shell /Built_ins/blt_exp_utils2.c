@@ -49,8 +49,8 @@ int	find_env_var(char **env, char *new_entry, int name_len)
 	j = 0;
 	while (env[j])
 	{
-		if (ft_strncmp(env[j], new_entry, name_len) == 0 && 
-			env[j][name_len] == '=')
+		if (ft_strncmp(env[j], new_entry, name_len) == 0
+			&& env[j][name_len] == '=')
 			return (j);
 		j++;
 	}

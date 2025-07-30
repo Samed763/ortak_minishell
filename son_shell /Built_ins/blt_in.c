@@ -4,8 +4,7 @@
 #include <stdlib.h>
 #include "../minishell.h"
 
-
-static int	handle_echo_cd_pwd(t_command *current_cmd,t_data *data)
+static int	handle_echo_cd_pwd(t_command *current_cmd, t_data *data)
 {
 	(void)data;
 	if (strcmp(current_cmd->args[0], "echo") == 0)
@@ -26,7 +25,7 @@ static int	handle_echo_cd_pwd(t_command *current_cmd,t_data *data)
 	return (0);
 }
 
-static int	handle_export_unset(t_command *current_cmd,t_data *data)
+static int	handle_export_unset(t_command *current_cmd, t_data *data)
 {
 	if (strcmp(current_cmd->args[0], "export") == 0)
 	{
@@ -40,7 +39,8 @@ static int	handle_export_unset(t_command *current_cmd,t_data *data)
 	}
 	return (0);
 }
-static int	handle_env_exit(t_command *current_cmd,t_data *data)
+
+static int	handle_env_exit(t_command *current_cmd, t_data *data)
 {
 	if (strcmp(current_cmd->args[0], "env") == 0)
 	{
@@ -49,26 +49,22 @@ static int	handle_env_exit(t_command *current_cmd,t_data *data)
 	}
 	if (strcmp(current_cmd->args[0], "exit") == 0)
 	{
-		// **** DEĞİŞİKLİK BURADA ****
-		// İkinci argüman olarak 'data->exit_value' eklendi.
-		//builtin_exit(data->cmd->args, data->exit_value);
 		builtin_exit(data);
 		return (1);
 	}
 	return (0);
 }
 
-int try_builtin(t_command *current_cmd, t_data *data, int is_parent)
+int	try_builtin(t_command *current_cmd, t_data *data, int is_parent)
 {
-	(void)is_parent; // Şimdilik kullanılmadığı için uyarıyı engelle
-	
+	(void)is_parent;
 	if (!data->cmd->args || !data->cmd->args[0])
 		return (0);
-	if (handle_echo_cd_pwd(current_cmd,data))
+	if (handle_echo_cd_pwd(current_cmd, data))
 		return (1);
-	if (handle_export_unset(current_cmd,data))
+	if (handle_export_unset(current_cmd, data))
 		return (1);
-	if (handle_env_exit(current_cmd,data)) // Burası artık doğru çalışacak
+	if (handle_env_exit(current_cmd, data))
 		return (1);
 	return (0);
 }

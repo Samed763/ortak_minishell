@@ -10,7 +10,7 @@ void	print_env_vars(char **copy, int count)
 	{
 		eq = ft_strchr(copy[i], '=');
 		if (eq)
-			printf("declare -x %.*s=\"%s\"\n", (int)(eq - copy[i]), 
+			printf("declare -x %.*s=\"%s\"\n", (int)(eq - copy[i]),
 				copy[i], eq + 1);
 		else
 			printf("declare -x %s\n", copy[i]);
@@ -77,8 +77,8 @@ char	*remove_quotes(const char *str)
 	len = ft_strlen(str);
 	if (len < 2)
 		return (ft_strdup(str));
-	if ((str[0] == '"' && str[len - 1] == '"') ||
-		(str[0] == '\'' && str[len - 1] == '\''))
+	if ((str[0] == '"' && str[len - 1] == '"')
+		|| (str[0] == '\'' && str[len - 1] == '\''))
 	{
 		result = ft_strndup(str + 1, len - 2);
 		if (!result)
