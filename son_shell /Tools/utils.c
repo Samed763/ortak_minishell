@@ -291,3 +291,21 @@ int ft_strncmp(const char *s1, const char *s2, size_t n)
     }
     return (0);
 }
+
+int	get_token_type(char *token)
+{
+	if (!token)
+		return (TOKEN_WORD);
+	if (ft_strcmp(token, "|") == 0)
+		return (TOKEN_PIPE);
+	else if (ft_strcmp(token, "<") == 0)
+		return (TOKEN_REDIRECT_IN);
+	else if (ft_strcmp(token, ">") == 0)
+		return (TOKEN_REDIRECT_OUT);
+	else if (ft_strcmp(token, ">>") == 0)
+		return (TOKEN_APPEND);
+	else if (ft_strcmp(token, "<<") == 0)
+		return (TOKEN_HEREDOC);
+	else
+		return (TOKEN_WORD);
+}

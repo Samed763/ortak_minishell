@@ -95,7 +95,7 @@ if (sigaction(SIGINT, &sa, NULL) == -1)
                 execute_commmand(&data);
         }
 
-        free_data_resources(&data);
+        //free_data_resources(&data);
         free(line);                // readline ile ayrılan satırı temizle
         g_heredoc_interrupted = 0; // Global bayrağı sıfırla
     }
