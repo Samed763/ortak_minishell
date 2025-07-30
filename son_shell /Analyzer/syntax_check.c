@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 19:53:19 by sadinc            #+#    #+#             */
-/*   Updated: 2025/07/28 19:50:02 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/07/30 18:02:08 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ static int	check_heredoc(char *line, int i)
 {
     int	j;
     if (!line)
-            return (1)
+            return (1);
     j = i + 1;
     while (line[j] && (line[j] == ' ' || line[j] == '\t'))
         j++;
