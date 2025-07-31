@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 19:53:31 by sadinc            #+#    #+#             */
-/*   Updated: 2025/07/30 19:53:39 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/07/31 17:33:40 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,8 @@ void	pipe_child_routine(t_pipe_data *p_data)
 	if (is_accessable(p_data->current->args[0], p_data->splitted_path,
 			&full_path) == -1)
 	{
-		fprintf(stderr, "%s: command not found\n", p_data->current->args[0]);
+		write(2, p_data->current->args[0], ft_strlen(p_data->current->args[0]));
+		write(2, ": command not found\n", 20);
 		cleanup_and_exit(p_data->data, 127);
 	}
 	if (execve(full_path, p_data->current->args, p_data->data->env) == -1)

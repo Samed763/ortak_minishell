@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 19:46:46 by sadinc            #+#    #+#             */
-/*   Updated: 2025/07/31 17:20:16 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/07/31 17:34:38 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,8 @@ static void	child_process_routine(t_data *data, char **splitted_path)
 	{
 		if (is_accessable(data->cmd->args[0], splitted_path, &full_path) == -1)
 		{
-			fprintf(stderr, "%s: command not found\n", data->cmd->args[0]);
+			write(2, data->cmd->args[0], ft_strlen(data->cmd->args[0]));
+			write(2, ": command not found\n", 20);
 			cleanup_and_exit(data, 127);
 		}
 		if (execve(full_path, data->cmd->args, data->env) == -1)
