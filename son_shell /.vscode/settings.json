@@ -1,8 +1,0 @@
-{
-    "files.associations": {
-        "*.embeddedhtml": "html",
-        "minishell.h": "c",
-        "built_in.h": "c",
-        "wait.h": "c"
-    }
-}

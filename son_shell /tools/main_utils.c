@@ -6,11 +6,11 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 20:00:14 by sadinc            #+#    #+#             */
-/*   Updated: 2025/07/30 20:00:15 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/07/31 16:53:38 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../minishell.h"
 
 void	signal_handler(int signum)
 {
