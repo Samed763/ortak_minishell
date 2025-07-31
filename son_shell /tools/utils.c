@@ -6,13 +6,12 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 16:19:20 by sadinc            #+#    #+#             */
-/*   Updated: 2025/07/31 16:32:27 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/07/31 17:19:45 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-// utils.c dosyasına ekle
 void	free_word_array(char **array)
 {
 	int	i;
