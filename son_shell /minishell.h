@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 17:17:58 by sadinc            #+#    #+#             */
-/*   Updated: 2025/07/30 20:01:04 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/07/31 16:44:35 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 # include <signal.h>
 # include <stdio.h>
 # include <stdlib.h>
+# include <string.h>
 # include <sys/wait.h>
 # include <termios.h>
 # include <unistd.h>
@@ -40,24 +41,23 @@ typedef struct s_heredoc_line
 
 typedef struct s_command
 {
-	char **args;               // Command arguments (including command itself)
-	char *input_files;         // Input redirection file
-	char **output_files;       // Multiple output files array
-	int *append_modes;         // Append modes for each output file
-	int output_count;          // Number of output files
-	char *heredoc_delimiter;   // Heredoc delimiter
-	int should_expand_heredoc; // 1 ise genişlet, 0 ise genişletme
-	struct s_command *next;    // Next command in pipeline
+	char						**args;
+	char						*input_files;
+	char						**output_files;
+	int							*append_modes;
+	int							output_count;
+	char						*heredoc_delimiter;
+	int							should_expand_heredoc;
+	struct s_command			*next;
 	t_heredoc_line				*heredoc_lines;
 }								t_command;
 
 typedef struct s_expand_state
 {
-	int	s_quotes;
-	int	d_quotes;
-	int	i;
-}	t_expand_state;
-
+	int							s_quotes;
+	int							d_quotes;
+	int							i;
+}								t_expand_state;
 
 typedef struct s_data
 {
@@ -70,15 +70,12 @@ typedef struct s_data
 }								t_data;
 typedef struct s_pipe_data
 {
-	t_data		*data;
-	t_command	*current;
-	char		**splitted_path;
-	int			*pipefd;
-	int			prev_fd;
-}t_pipe_data;
-
-// utils.c
-void							*Malloc(size_t size);
+	t_data						*data;
+	t_command					*current;
+	char						**splitted_path;
+	int							*pipefd;
+	int							prev_fd;
+}								t_pipe_data;
 void							free_word_array(char **array);
 void							*ft_memcpy(void *dst, const void *src,
 									size_t n);
@@ -100,14 +97,13 @@ char							*ft_substr(char const *s, unsigned int start,
 char							**copy_env(char **envp);
 size_t							ft_strlen(const char *str);
 int								get_token_type(char *token);
-
-// Built-in fonksiyonları için prototipler
+char							*ft_itoa(int n);
 int								try_builtin(t_command *current_cmd,
 									t_data *data, int is_parent);
 int								builtin_cd(char **args);
 int								builtin_echo(char **args);
 int								builtin_env(char **env);
-int	builtin_exit(t_data *data); //
+int								builtin_exit(t_data *data);
 int								builtin_pwd(void);
 void							builtin_export(t_data *data);
 int								builtin_unset(t_data *data);
@@ -115,32 +111,22 @@ int								is_valid_var(const char *str);
 int								find_env_var(char **env, char *new_entry,
 									int name_len);
 int								add_new_var(t_data *data, char *new_entry);
-
-// syntax_check.c
 int								syntax_check(char *line);
-
-// lexer.c
 void							lexer(char *line, t_data *data);
-
-// parser.c
 t_command						*parser(t_data *data);
-
-//parser_utils.c
-void	add_input_to_command(t_command *current, char *filename);
-t_command	*create_list(void);
-void	remove_quotes_parser_helper(const char *str, char **del, t_command *cur);
-char	*remove_quotes_from_word(char *str);
-
-//parser_utils2.c
-void	add_output_to_command(t_command *curr, char *filename, int append_mode);
-void	add_argument_to_command(t_command *cmd, char *word);
-
-
-// expander.c
+void							add_input_to_command(t_command *current,
+									char *filename);
+t_command						*create_list(void);
+void							remove_quotes_parser_helper(const char *str,
+									char **del, t_command *cur);
+char							*remove_quotes_from_word(char *str);
+void							add_output_to_command(t_command *curr,
+									char *filename, int append_mode);
+void							add_argument_to_command(t_command *cmd,
+									char *word);
 void							expander(t_data *data);
 char							*expand_single_line(t_data *data, char *line);
 
-// expander_utils.c
 int								is_identifier_char(int c);
 void							update_quoting_state(char c, int *s_quotes,
 									int *d_quotes);
@@ -148,68 +134,44 @@ char							*extract_variable_key(char *line, int start_pos,
 									int *end_pos);
 char							*put_var(char *line, char *var_value,
 									int key_start, int key_end);
-
-									
-// heredoc.c
 int								handle_heredoc(t_data *data, t_command *cmd);
-
-
-//heredoc_utils.c
-void	expand_heredoc_lines(t_data *data, t_command *cmd);
-void	read_from_pipe_and_fill_list(int pipe_read_fd, t_command *cmd);
-
-// split.c
+void							expand_heredoc_lines(t_data *data,
+									t_command *cmd);
+void							read_from_pipe_and_fill_list(int pipe_read_fd,
+									t_command *cmd);
 char							**ft_split(char const *s, char c);
-
-// execute_commad.c
 void							execute_command(t_data *data);
 void							execute(char *full_path, t_data *data);
 int								is_accessable(char *command,
 									char **splited_path, char **full_path);
-
-void	heredoc_child_process(int *pipefd, t_command *cmd);
-int		heredoc_parent_process(int *pipefd);
-
-									
-//execute_utils.c
-int	is_builtin(char *command);
-int	is_accessable(char *command, char **splited_path, char **full_path);
-void	set_exit_status(t_data *data, int status);
-void	restore_fds(int original_stdin, int original_stdout);
-
-//pipe_utils.c
-void	pipe_child_routine(t_pipe_data *p_data);
-int	pipe_parent_routine(t_command *current, int *pipefd, int prev_fd);
-void	handle_pipe_redirections(t_command *current, int *pipefd, int prev_fd);
-void	wait_for_all_children(t_data *data);
-
-// apply_input.c
+void							heredoc_child_process(int *pipefd,
+									t_command *cmd);
+int								heredoc_parent_process(int *pipefd);
+int								is_builtin(char *command);
+int								is_accessable(char *command,
+									char **splited_path, char **full_path);
+void							set_exit_status(t_data *data, int status);
+void							restore_fds(int original_stdin,
+									int original_stdout);
+void							pipe_child_routine(t_pipe_data *p_data);
+int								pipe_parent_routine(t_command *current,
+									int *pipefd, int prev_fd);
+void							handle_pipe_redirections(t_command *current,
+									int *pipefd, int prev_fd);
+void							wait_for_all_children(t_data *data);
 int								apply_input_redirection(t_command *cmd);
-
-// apply_output.c
 int								apply_output_redirection(t_command *cmd);
-
-// pipe_execute.c
-void	pipe_execute(t_data *data, char **splitted_path);
-
-// minishell.c
+void							pipe_execute(t_data *data,
+									char **splitted_path);
 void							signal_handler(int signum);
 void							heredoc_signal_handler(int signum);
-
-// leak_manager.c
 void							free_command_list(t_command *head);
 void							free_heredoc_lines(t_heredoc_line *head);
 void							free_data_resources(t_data *data);
 void							cleanup_and_exit(t_data *data, int exit_code);
-
-// count_words.c
 int								count_word(char *line);
-
-//main_utils.c
-void	signal_handler(int signum);
-void	setup_signals(void);
-void	init_data(t_data *data, char **envp);
-
-
+void							signal_handler(int signum);
+void							setup_signals(void);
+void							init_data(t_data *data, char **envp);
 
 #endif

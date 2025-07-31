@@ -6,17 +6,11 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 19:01:29 by sadinc            #+#    #+#             */
-/*   Updated: 2025/07/30 19:12:47 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/07/31 16:18:28 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
-
-int	is_identifier_char(int c)
-{
-	return ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')
-		|| (c >= '0' && c <= '9') || c == '_');
-}
 
 void	update_quoting_state(char c, int *s_quotes, int *d_quotes)
 {
@@ -42,10 +36,8 @@ char	*extract_variable_key(char *line, int start_pos, int *end_pos)
 	return (ft_substr(line, start_pos + 1, k - (start_pos + 1)));
 }
 
-static char	*build_new_string(char *start, char *middle, char *end)
+static char	*init_safe_middle(char *middle, char *start, char *end)
 {
-	char	*temp;
-	char	*result;
 	char	*safe_middle;
 
 	if (!middle)
@@ -58,6 +50,18 @@ static char	*build_new_string(char *start, char *middle, char *end)
 		free(end);
 		return (NULL);
 	}
+	return (safe_middle);
+}
+
+static char	*build_new_string(char *start, char *middle, char *end)
+{
+	char	*temp;
+	char	*result;
+	char	*safe_middle;
+
+	safe_middle = init_safe_middle(middle, start, end);
+	if (!safe_middle)
+		return (NULL);
 	temp = ft_strjoin(safe_middle, end);
 	free(safe_middle);
 	free(end);

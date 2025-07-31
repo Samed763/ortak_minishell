@@ -6,13 +6,13 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 18:37:06 by sadinc            #+#    #+#             */
-/*   Updated: 2025/07/30 18:38:39 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/07/31 16:06:14 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-static char	**realloc_args(char **old_args, char *new_word)
+static char	**realloc_args(char **old_args, char *cleaned_word)
 {
 	char	**new_args;
 	int		old_argc;
@@ -24,7 +24,7 @@ static char	**realloc_args(char **old_args, char *new_word)
 	new_args = malloc(sizeof(char *) * (old_argc + 2));
 	if (!new_args)
 	{
-		free(new_word);
+		free(cleaned_word);
 		return (NULL);
 	}
 	i = 0;
@@ -33,7 +33,7 @@ static char	**realloc_args(char **old_args, char *new_word)
 		new_args[i] = old_args[i];
 		i++;
 	}
-	new_args[i] = new_word;
+	new_args[i] = cleaned_word;
 	new_args[i + 1] = NULL;
 	if (old_args)
 		free(old_args);
@@ -54,9 +54,12 @@ void	add_argument_to_command(t_command *cmd, char *word)
 		return ;
 }
 
-static int	realloc_outputs(t_command *curr, char ***n_files, int **n_modes)
+static int	realloc_and_copy_outputs(t_command *curr, char ***n_files,
+		int **n_modes)
 {
-	*n_files = malloc(sizeof(char *) * (curr->output_count + 1));
+	int	i;
+
+	*n_files = malloc(sizeof(char *) * (curr->output_count + 2));
 	if (!*n_files)
 		return (0);
 	*n_modes = malloc(sizeof(int) * (curr->output_count + 1));
@@ -65,23 +68,13 @@ static int	realloc_outputs(t_command *curr, char ***n_files, int **n_modes)
 		free(*n_files);
 		return (0);
 	}
-	return (1);
-}
-
-static int	copy_and_add_output(t_command *c, char **n_f, int *n_m, char *fname)
-{
-	int	i;
-
 	i = 0;
-	while (i < c->output_count)
+	while (i < curr->output_count)
 	{
-		n_f[i] = c->output_files[i];
-		n_m[i] = c->append_modes[i];
+		(*n_files)[i] = curr->output_files[i];
+		(*n_modes)[i] = curr->append_modes[i];
 		i++;
 	}
-	n_f[c->output_count] = ft_strdup(fname);
-	if (!n_f[c->output_count])
-		return (0);
 	return (1);
 }
 
@@ -90,14 +83,18 @@ void	add_output_to_command(t_command *curr, char *filename, int append_mode)
 	char	**new_files;
 	int		*new_modes;
 
-	if (!curr || !filename || !realloc_outputs(curr, &new_files, &new_modes))
+	if (!curr || !filename)
 		return ;
-	if (!copy_and_add_output(curr, new_files, new_modes, filename))
+	if (!realloc_and_copy_outputs(curr, &new_files, &new_modes))
+		return ;
+	new_files[curr->output_count] = ft_strdup(filename);
+	if (!new_files[curr->output_count])
 	{
 		free(new_files);
 		free(new_modes);
 		return ;
 	}
+	new_files[curr->output_count + 1] = NULL;
 	new_modes[curr->output_count] = append_mode;
 	if (curr->output_files)
 		free(curr->output_files);

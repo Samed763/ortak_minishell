@@ -15,8 +15,6 @@
 
 # include "../minishell.h"
 
-struct s_data;
-
 char	*ft_strjoin3(char *s1, char *s2, char *s3);
 char	*ft_strndup(const char *s, size_t n);
 char	*remove_quotes(const char *str);

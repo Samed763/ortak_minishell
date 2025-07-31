@@ -1,11 +1,6 @@
 #include "../minishell.h"
 #include <limits.h>
 
-void	free_heredoc_lines(t_heredoc_line *head);
-void	free_command_list(t_command *head);
-void	free_data_resources(t_data *data);
-int		builtin_exit(t_data *data);
-
 static int	ft_atol(const char *str, long *result, int i)
 {
 	int				sign;

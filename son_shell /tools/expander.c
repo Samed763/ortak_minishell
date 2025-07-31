@@ -6,11 +6,17 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/28 16:15:10 by sadinc            #+#    #+#             */
-/*   Updated: 2025/07/30 19:12:24 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/07/31 16:10:53 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
+
+int	is_identifier_char(int c)
+{
+	return ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0'
+			&& c <= '9') || c == '_');
+}
 
 static char	*handle_variable_expansion(t_data *data, char *line, int *i)
 {

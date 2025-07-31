@@ -1,7 +1,3 @@
-#include <stdio.h>
-#include <string.h>
-#include <unistd.h>
-#include <stdlib.h>
 #include "../minishell.h"
 
 static int	handle_echo_cd_pwd(t_command *current_cmd, t_data *data)

@@ -1,4 +1,3 @@
-#include "../minishell.h"
 #include "built_in.h"
 
 static void	handle_var_without_value(t_data *data, char *arg)
