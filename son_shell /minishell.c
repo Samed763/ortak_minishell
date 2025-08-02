@@ -6,13 +6,11 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 20:00:01 by sadinc            #+#    #+#             */
-/*   Updated: 2025/07/31 16:34:28 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/02 11:22:02 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-volatile sig_atomic_t	g_heredoc_interrupted = 0;
 
 static void	process_line(char *line, t_data *data)
 {
@@ -32,11 +30,10 @@ static void	process_line(char *line, t_data *data)
 	lexer(line, data);
 	expander(data);
 	data->cmd = parser(data);
-	if (data->cmd != NULL && !g_heredoc_interrupted)
+	if (data->cmd != NULL)
 		execute_command(data);
 	free_data_resources(data);
 	free(line);
-	g_heredoc_interrupted = 0;
 }
 
 static void	main_loop(t_data *data)

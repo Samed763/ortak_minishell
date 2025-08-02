@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 17:17:58 by sadinc            #+#    #+#             */
-/*   Updated: 2025/07/31 16:44:35 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/02 11:20:43 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,8 +30,6 @@
 # define TOKEN_REDIRECT_OUT 3 // >
 # define TOKEN_APPEND 4       // >>
 # define TOKEN_HEREDOC 5      // <<
-
-extern volatile sig_atomic_t	g_heredoc_interrupted;
 
 typedef struct s_heredoc_line
 {
