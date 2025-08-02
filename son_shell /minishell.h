@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 17:17:58 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/02 11:20:43 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/02 11:27:15 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -139,7 +139,6 @@ void							read_from_pipe_and_fill_list(int pipe_read_fd,
 									t_command *cmd);
 char							**ft_split(char const *s, char c);
 void							execute_command(t_data *data);
-void							execute(char *full_path, t_data *data);
 int								is_accessable(char *command,
 									char **splited_path, char **full_path);
 void							heredoc_child_process(int *pipefd,
@@ -162,13 +161,11 @@ int								apply_output_redirection(t_command *cmd);
 void							pipe_execute(t_data *data,
 									char **splitted_path);
 void							signal_handler(int signum);
-void							heredoc_signal_handler(int signum);
 void							free_command_list(t_command *head);
 void							free_heredoc_lines(t_heredoc_line *head);
 void							free_data_resources(t_data *data);
 void							cleanup_and_exit(t_data *data, int exit_code);
 int								count_word(char *line);
-void							signal_handler(int signum);
 void							setup_signals(void);
 void							init_data(t_data *data, char **envp);
 
