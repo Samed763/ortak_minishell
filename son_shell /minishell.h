@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 17:17:58 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/02 11:27:15 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/03 10:44:34 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -141,8 +141,7 @@ char							**ft_split(char const *s, char c);
 void							execute_command(t_data *data);
 int								is_accessable(char *command,
 									char **splited_path, char **full_path);
-void							heredoc_child_process(int *pipefd,
-									t_command *cmd);
+void	heredoc_child_process(t_data *data,int *pipefd, t_command *cmd);
 int								heredoc_parent_process(int *pipefd);
 int								is_builtin(char *command);
 int								is_accessable(char *command,
@@ -150,13 +149,13 @@ int								is_accessable(char *command,
 void							set_exit_status(t_data *data, int status);
 void							restore_fds(int original_stdin,
 									int original_stdout);
-void							pipe_child_routine(t_pipe_data *p_data);
+void	pipe_child_routine(t_data *data,t_pipe_data *p_data);
 int								pipe_parent_routine(t_command *current,
 									int *pipefd, int prev_fd);
-void							handle_pipe_redirections(t_command *current,
-									int *pipefd, int prev_fd);
+void	handle_pipe_redirections(t_data *data,t_command *current, int *pipefd, int prev_fd);
+									
 void							wait_for_all_children(t_data *data);
-int								apply_input_redirection(t_command *cmd);
+int	apply_input_redirection(t_data *data,t_command *cmd);
 int								apply_output_redirection(t_command *cmd);
 void							pipe_execute(t_data *data,
 									char **splitted_path);

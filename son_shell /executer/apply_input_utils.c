@@ -6,13 +6,13 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 19:53:45 by sadinc            #+#    #+#             */
-/*   Updated: 2025/07/30 19:53:46 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/02 17:42:54 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-void	heredoc_child_process(int *pipefd, t_command *cmd)
+void	heredoc_child_process(t_data *data, int *pipefd, t_command *cmd)
 {
 	t_heredoc_line	*current_line;
 
@@ -26,7 +26,11 @@ void	heredoc_child_process(int *pipefd, t_command *cmd)
 		current_line = current_line->next;
 	}
 	close(pipefd[1]);
-	exit(0);
+	if (execve("/bin/true", (char *[]){"/bin/true", NULL}, (char *[]){NULL}))
+	{
+		perror("execve");
+		cleanup_and_exit(data, 1);
+	}
 }
 
 int	heredoc_parent_process(int *pipefd)

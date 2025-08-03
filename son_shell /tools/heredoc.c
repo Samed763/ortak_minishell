@@ -6,13 +6,14 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 19:06:41 by sadinc            #+#    #+#             */
-/*   Updated: 2025/07/30 19:07:16 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/02 17:42:33 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-static void	heredoc_child_routine(int pipe_write_fd, char *delimiter)
+static void	heredoc_child_routine(t_data *data, int pipe_write_fd,
+		char *delimiter)
 {
 	char	*line;
 
@@ -32,7 +33,11 @@ static void	heredoc_child_routine(int pipe_write_fd, char *delimiter)
 		free(line);
 	}
 	close(pipe_write_fd);
-	exit(0);
+	if (execve("/bin/true", (char *[]){"/bin/true", NULL}, (char *[]){NULL}))
+	{
+		perror("execve");
+		cleanup_and_exit(data, 1);
+	}
 }
 
 static int	wait_and_process_child(t_data *data, t_command *cmd, pid_t pid,
@@ -74,7 +79,7 @@ int	handle_heredoc(t_data *data, t_command *cmd)
 		return (-1);
 	}
 	if (pid == 0)
-		heredoc_child_routine(pipefd[1], cmd->heredoc_delimiter);
+		heredoc_child_routine(data, pipefd[1], cmd->heredoc_delimiter);
 	close(pipefd[1]);
 	if (wait_and_process_child(data, cmd, pid, pipefd[0]) == -1)
 		return (-1);

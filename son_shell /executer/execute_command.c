@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 19:46:46 by sadinc            #+#    #+#             */
-/*   Updated: 2025/07/31 17:34:38 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/02 17:45:41 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ static void	child_process_routine(t_data *data, char **splitted_path)
 
 	signal(SIGINT, SIG_DFL);
 	signal(SIGQUIT, SIG_DFL);
-	if (apply_input_redirection(data->cmd) == -1
+	if (apply_input_redirection(data, data->cmd) == -1
 		|| apply_output_redirection(data->cmd) == -1)
 		cleanup_and_exit(data, 1);
 	if (data->cmd->args && data->cmd->args[0])
@@ -56,7 +56,7 @@ static void	execute_single_builtin(t_data *data)
 			close(original_stdout);
 		return ;
 	}
-	if (apply_input_redirection(data->cmd) == -1
+	if (apply_input_redirection(data, data->cmd) == -1
 		|| apply_output_redirection(data->cmd) == -1)
 		data->exit_value = 1;
 	else

@@ -6,13 +6,13 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 19:42:50 by sadinc            #+#    #+#             */
-/*   Updated: 2025/07/30 19:53:54 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/02 17:44:52 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-static int	input_heredoc(t_command *cmd)
+static int	input_heredoc(t_data *data, t_command *cmd)
 {
 	pid_t	pid;
 	int		pipefd[2];
@@ -29,7 +29,7 @@ static int	input_heredoc(t_command *cmd)
 		return (-1);
 	}
 	else if (pid == 0)
-		heredoc_child_process(pipefd, cmd);
+		heredoc_child_process(data, pipefd, cmd);
 	else
 		return (heredoc_parent_process(pipefd));
 	return (0);
@@ -55,12 +55,12 @@ static int	input_file(t_command *cmd)
 	return (0);
 }
 
-static int	handle_heredoc_input(t_command *cmd)
+static int	handle_heredoc_input(t_data *data, t_command *cmd)
 {
 	int	fd;
 
 	if (cmd->heredoc_lines != NULL)
-		return (input_heredoc(cmd));
+		return (input_heredoc(data, cmd));
 	else
 	{
 		fd = open("/dev/null", O_RDONLY);
@@ -80,10 +80,10 @@ static int	handle_heredoc_input(t_command *cmd)
 	return (0);
 }
 
-int	apply_input_redirection(t_command *cmd)
+int	apply_input_redirection(t_data *data, t_command *cmd)
 {
 	if (cmd->heredoc_delimiter)
-		return (handle_heredoc_input(cmd));
+		return (handle_heredoc_input(data, cmd));
 	else if (cmd->input_files != NULL)
 		return (input_file(cmd));
 	return (0);

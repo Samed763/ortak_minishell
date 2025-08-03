@@ -6,19 +6,20 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 19:53:31 by sadinc            #+#    #+#             */
-/*   Updated: 2025/07/31 17:33:40 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/03 10:44:50 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-void	pipe_child_routine(t_pipe_data *p_data)
+void	pipe_child_routine(t_data *data, t_pipe_data *p_data)
 {
 	char	*full_path;
 
 	signal(SIGINT, SIG_DFL);
 	signal(SIGQUIT, SIG_DFL);
-	handle_pipe_redirections(p_data->current, p_data->pipefd, p_data->prev_fd);
+	handle_pipe_redirections(data, p_data->current, p_data->pipefd,
+		p_data->prev_fd);
 	if (!p_data->current->args || !p_data->current->args[0])
 		cleanup_and_exit(p_data->data, 0);
 	if (try_builtin(p_data->current, p_data->data, 0))
@@ -50,7 +51,8 @@ int	pipe_parent_routine(t_command *current, int *pipefd, int prev_fd)
 	return (-1);
 }
 
-void	handle_pipe_redirections(t_command *current, int *pipefd, int prev_fd)
+void	handle_pipe_redirections(t_data *data, t_command *current, int *pipefd,
+		int prev_fd)
 {
 	if (prev_fd != -1)
 	{
@@ -60,7 +62,7 @@ void	handle_pipe_redirections(t_command *current, int *pipefd, int prev_fd)
 	}
 	else
 	{
-		if (apply_input_redirection(current) == -1)
+		if (apply_input_redirection(data, current) == -1)
 			exit(1);
 	}
 	if (current->next)
