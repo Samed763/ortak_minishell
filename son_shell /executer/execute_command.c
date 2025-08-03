@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 19:46:46 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/02 17:45:41 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/03 17:35:05 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,7 @@ static void	execute_single_builtin(t_data *data)
 		|| apply_output_redirection(data->cmd) == -1)
 		data->exit_value = 1;
 	else
-		data->exit_value = try_builtin(data->cmd, data, 1);
+		try_builtin(data->cmd, data, 1);
 	restore_fds(original_stdin, original_stdout);
 }
 
@@ -98,7 +98,7 @@ void	execute_command(t_data *data)
 	if (path_val)
 		free(path_val);
 	if (data->cmd->next)
-		pipe_execute(data, data->splitted_path);
+		pipe_execute(data);
 	else if (data->cmd->args && is_builtin(data->cmd->args[0]))
 		execute_single_builtin(data);
 	else

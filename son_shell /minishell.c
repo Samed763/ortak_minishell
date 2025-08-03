@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 20:00:01 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/02 11:22:02 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/03 15:52:18 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,8 @@ int	main(int argc, char **argv, char **envp)
 	(void)argc;
 	(void)argv;
 	init_data(&data, envp);
-	setup_signals();
+	if (setup_signals() == -1)
+		cleanup_and_exit(&data, 1);
 	main_loop(&data);
 	cleanup_and_exit(&data, data.exit_value);
 	return (data.exit_value);

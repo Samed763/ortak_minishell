@@ -86,19 +86,19 @@ static int	validate_and_process_arg(t_data *data, char *arg)
 	return (1);
 }
 
-void	builtin_export(t_data *data)
+//başarılı = 0  , başarısız = 1
+int	builtin_export(t_data *data) //export başaralı başarız return dönücek şu anda yanlış 
 {
 	int	i;
-
 	if (!data || !data->cmd || !data->cmd->args || !data->env)
 	{
 		write(2, "export: internal error\n", 23);
-		return ;
+		return 1;
 	}
 	if (!data->cmd->args[1])
 	{
 		print_sorted_env(data->env);
-		return ;
+		return 1;
 	}
 	i = 1;
 	while (data->cmd->args[i])
@@ -106,4 +106,5 @@ void	builtin_export(t_data *data)
 		validate_and_process_arg(data, data->cmd->args[i]);
 		i++;
 	}
+	return 0;
 }

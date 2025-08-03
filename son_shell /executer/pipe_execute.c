@@ -6,13 +6,13 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 19:44:56 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/03 10:44:10 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/03 15:29:41 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-static pid_t	fork_and_execute(t_data *data, t_pipe_data *p_data)
+static pid_t	fork_and_execute(t_pipe_data *p_data)
 {
 	pid_t	pid;
 
@@ -23,11 +23,11 @@ static pid_t	fork_and_execute(t_data *data, t_pipe_data *p_data)
 		return (-1);
 	}
 	else if (pid == 0)
-		pipe_child_routine(data, p_data);
+		pipe_child_routine(p_data);
 	return (pid);
 }
 
-static void	execute_pipe_loop(t_data *data, t_pipe_data *p_data)
+static void	execute_pipe_loop( t_pipe_data *p_data)
 {
 	pid_t	pid;
 
@@ -40,7 +40,7 @@ static void	execute_pipe_loop(t_data *data, t_pipe_data *p_data)
 			perror("pipe");
 			return ;
 		}
-		pid = fork_and_execute(data, p_data);
+		pid = fork_and_execute(p_data);
 		if (pid == -1)
 			return ;
 		p_data->prev_fd = pipe_parent_routine(p_data->current, p_data->pipefd,
@@ -51,15 +51,14 @@ static void	execute_pipe_loop(t_data *data, t_pipe_data *p_data)
 		close(p_data->prev_fd);
 }
 
-void	pipe_execute(t_data *data, char **splitted_path)
+void	pipe_execute(t_data *data)
 {
 	t_pipe_data	p_data;
 	int			pipefd[2];
 
 	p_data.data = data;
-	p_data.splitted_path = splitted_path;
 	p_data.pipefd = pipefd;
-	execute_pipe_loop(data, &p_data);
+	execute_pipe_loop(&p_data);
 	signal(SIGINT, SIG_IGN);
 	signal(SIGQUIT, SIG_IGN);
 	wait_for_all_children(data);

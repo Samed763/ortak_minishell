@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 16:19:20 by sadinc            #+#    #+#             */
-/*   Updated: 2025/07/31 17:19:45 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/03 17:30:00 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,23 +27,10 @@ void	free_word_array(char **array)
 	free(array);
 }
 
-char	*remove_d_quotes(char *str)
+void	safe_dup2(int fd, int fd2, t_data *data)
 {
-	int		len;
-	int		start;
-	int		end;
-	char	*result;
-
-	len = ft_strlen(str);
-	start = 0;
-	end = len - 1;
-	if (len >= 2 && ((str[0] == '"' && str[end] == '"')))
-	{
-		start = 1;
-		end = len - 2;
-	}
-	result = ft_substr(str, start, end - start + 1);
-	return (result);
+	if (dup2(fd, fd2) == -1)
+		cleanup_and_exit(data, 1);
 }
 
 char	**copy_env(char **envp)

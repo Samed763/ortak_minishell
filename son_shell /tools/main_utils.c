@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 20:00:14 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/02 11:14:26 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/03 15:51:17 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ void	signal_handler(int signum)
 	}
 }
 
-void	setup_signals(void)
+int	setup_signals(void)
 {
 	struct sigaction	sa;
 
@@ -33,14 +33,15 @@ void	setup_signals(void)
 	if (sigaction(SIGINT, &sa, NULL) == -1)
 	{
 		perror("sigaction for SIGINT");
-		exit(1);
+		return (-1);
 	}
 	sa.sa_handler = SIG_IGN;
 	if (sigaction(SIGQUIT, &sa, NULL) == -1)
 	{
 		perror("sigaction for SIGQUIT");
-		exit(1);
+		return (-1);
 	}
+	return (0);
 }
 
 void	init_data(t_data *data, char **envp)
