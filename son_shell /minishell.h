@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 17:17:58 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/03 17:38:53 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/04 00:24:56 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,6 @@
 # include <stdlib.h>
 # include <string.h>
 # include <sys/wait.h>
-# include <termios.h>
 # include <unistd.h>
 
 # define TOKEN_WORD 0
@@ -117,8 +116,7 @@ void						add_output_to_command(t_command *curr,
 								char *filename, int append_mode);
 void						add_argument_to_command(t_command *cmd, char *word);
 void						expander(t_data *data);
-char						*expand_single_line(t_data *data, char *line);
-
+char	*expand_single_line(t_data *data, char *line,int f);
 int							is_identifier_char(int c);
 void						update_quoting_state(char c, int *s_quotes,
 								int *d_quotes);

@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 19:01:29 by sadinc            #+#    #+#             */
-/*   Updated: 2025/07/31 16:18:28 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/03 23:33:08 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,11 @@ char	*extract_variable_key(char *line, int start_pos, int *end_pos)
 	{
 		*end_pos = k + 1;
 		return (ft_strdup("?"));
+	}
+	else if (line[k] == '~')
+	{
+		*end_pos = k + 1;
+		return (ft_strdup("~"));
 	}
 	while (line[k] && is_identifier_char(line[k]))
 		k++;

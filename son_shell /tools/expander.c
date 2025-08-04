@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/28 16:15:10 by sadinc            #+#    #+#             */
-/*   Updated: 2025/07/31 16:10:53 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/04 00:25:06 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ static char	*handle_variable_expansion(t_data *data, char *line, int *i)
 	return (new_line);
 }
 
-char	*expand_single_line(t_data *data, char *line)
+char	*expand_single_line(t_data *data, char *line,int f)
 {
 	t_expand_state	state;
 	char			*result;
@@ -54,7 +54,7 @@ char	*expand_single_line(t_data *data, char *line)
 	{
 		update_quoting_state(result[state.i], &state.s_quotes,
 			&state.d_quotes);
-		if (result[state.i] == '$' && state.s_quotes == 0)
+		if (result[state.i] == '$' && (f == 1 || state.s_quotes == 0))
 		{
 			result = handle_variable_expansion(data, result, &state.i);
 			if (!result)
@@ -81,7 +81,7 @@ void	expander(t_data *data)
 			i++;
 			continue ;
 		}
-		expanded = expand_single_line(data, data->word_array[i]);
+		expanded = expand_single_line(data, data->word_array[i],0);
 		if (expanded)
 		{
 			free(data->word_array[i]);

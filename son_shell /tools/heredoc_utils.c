@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 19:07:05 by sadinc            #+#    #+#             */
-/*   Updated: 2025/07/31 16:43:58 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/04 00:24:59 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ void	expand_heredoc_lines(t_data *data, t_command *cmd)
 	current = cmd->heredoc_lines;
 	while (current)
 	{
-		expanded = expand_single_line(data, current->content);
+		expanded = expand_single_line(data, current->content,1);
 		free(current->content);
 		current->content = expanded;
 		current = current->next;

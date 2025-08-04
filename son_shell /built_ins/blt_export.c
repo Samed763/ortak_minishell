@@ -98,7 +98,7 @@ int	builtin_export(t_data *data) //export başaralı başarız return dönücek 
 	if (!data->cmd->args[1])
 	{
 		print_sorted_env(data->env);
-		return 1;
+		return 0;
 	}
 	i = 1;
 	while (data->cmd->args[i])

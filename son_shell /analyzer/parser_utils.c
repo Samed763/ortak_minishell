@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 18:36:57 by sadinc            #+#    #+#             */
-/*   Updated: 2025/07/30 18:38:42 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/03 23:52:26 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,9 +46,7 @@ char	*remove_quotes_from_word(char *str)
 		if (str[i] == '\'' || str[i] == '"')
 			process_quoted_section(str, new_str, &i, &j);
 		else
-		{
 			new_str[j++] = str[i++];
-		}
 	}
 	new_str[j] = '\0';
 	return (new_str);
