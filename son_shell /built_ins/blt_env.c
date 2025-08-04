@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../minishell.h"
+#include "built_in.h"
 
 int	builtin_env(char **env)
 {

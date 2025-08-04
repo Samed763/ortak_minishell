@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/02 11:22:22 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/02 11:22:25 by sadinc           ###   ########.fr       */
+/*   Created: 2025/08/04 09:13:05 by sadinc            #+#    #+#             */
+/*   Updated: 2025/08/04 09:37:28 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,10 +22,8 @@ char	**create_new_env(char **env, char *new_entry);
 void	bubble_sort_env(char **copy, int count);
 void	cleanup_and_return(char *var_name, char *var_value);
 void	print_env_vars(char **copy, int count);
-void	print_sorted_env(char **env);
-int		find_env_var(char **env, char *new_entry, int name_len);
+int		print_sorted_env(char **env);
 int		find_exact_var(char **env, char *arg);
-int		is_valid_var(const char *str);
 int		add_new_var(t_data *data, char *new_entry);
 int		prepare_var_data(char *arg, char *eq, char **var_name,
 			char **var_value);

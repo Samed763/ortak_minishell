@@ -20,7 +20,7 @@ void	expand_heredoc_lines(t_data *data, t_command *cmd)
 	current = cmd->heredoc_lines;
 	while (current)
 	{
-		expanded = expand_single_line(data, current->content,1);
+		expanded = expand_single_line(data, current->content, 1);
 		free(current->content);
 		current->content = expanded;
 		current = current->next;

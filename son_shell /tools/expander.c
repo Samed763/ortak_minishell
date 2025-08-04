@@ -39,7 +39,7 @@ static char	*handle_variable_expansion(t_data *data, char *line, int *i)
 	return (new_line);
 }
 
-char	*expand_single_line(t_data *data, char *line,int f)
+char	*expand_single_line(t_data *data, char *line, int f)
 {
 	t_expand_state	state;
 	char			*result;
@@ -52,8 +52,7 @@ char	*expand_single_line(t_data *data, char *line,int f)
 	state.i = 0;
 	while (result && result[state.i])
 	{
-		update_quoting_state(result[state.i], &state.s_quotes,
-			&state.d_quotes);
+		update_quoting_state(result[state.i], &state.s_quotes, &state.d_quotes);
 		if (result[state.i] == '$' && (f == 1 || state.s_quotes == 0))
 		{
 			result = handle_variable_expansion(data, result, &state.i);
@@ -81,7 +80,7 @@ void	expander(t_data *data)
 			i++;
 			continue ;
 		}
-		expanded = expand_single_line(data, data->word_array[i],0);
+		expanded = expand_single_line(data, data->word_array[i], 0);
 		if (expanded)
 		{
 			free(data->word_array[i]);

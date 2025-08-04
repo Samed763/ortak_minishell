@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 17:18:03 by sadinc            #+#    #+#             */
-/*   Updated: 2025/07/30 18:43:00 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/04 08:45:05 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@ static int	handle_redirections(t_data *data, t_command *current, int *i)
 		add_output_to_command(current, data->word_array[*i], 1);
 	else if (token_type == TOKEN_HEREDOC)
 	{
+		multiple_heredoc(data, current->heredoc_delimiter);
 		remove_quotes_parser_helper(data->word_array[*i],
 			&current->heredoc_delimiter, current);
 		if (handle_heredoc(data, current) == -1)

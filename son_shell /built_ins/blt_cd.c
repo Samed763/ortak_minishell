@@ -6,11 +6,11 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/02 11:22:50 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/02 11:22:50 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/04 09:34:45 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../minishell.h"
+#include "built_in.h"
 
 int	builtin_cd(char **args)
 {

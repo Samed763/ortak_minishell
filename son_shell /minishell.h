@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 17:17:58 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/04 00:24:56 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/04 09:38:50 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,16 +19,15 @@
 # include <signal.h>
 # include <stdio.h>
 # include <stdlib.h>
-# include <string.h>
 # include <sys/wait.h>
 # include <unistd.h>
 
 # define TOKEN_WORD 0
-# define TOKEN_PIPE 1         // |
-# define TOKEN_REDIRECT_IN 2  // <
-# define TOKEN_REDIRECT_OUT 3 // >
-# define TOKEN_APPEND 4       // >>
-# define TOKEN_HEREDOC 5      // <<
+# define TOKEN_PIPE 1
+# define TOKEN_REDIRECT_IN 2
+# define TOKEN_REDIRECT_OUT 3
+# define TOKEN_APPEND 4
+# define TOKEN_HEREDOC 5
 
 typedef struct s_heredoc_line
 {
@@ -97,7 +96,7 @@ int							builtin_echo(char **args);
 int							builtin_env(char **env);
 int							builtin_exit(t_data *data);
 int							builtin_pwd(void);
-int	builtin_export(t_data *data);
+int							builtin_export(t_data *data);
 int							builtin_unset(t_data *data);
 int							is_valid_var(const char *str);
 int							find_env_var(char **env, char *new_entry,
@@ -116,7 +115,9 @@ void						add_output_to_command(t_command *curr,
 								char *filename, int append_mode);
 void						add_argument_to_command(t_command *cmd, char *word);
 void						expander(t_data *data);
-char	*expand_single_line(t_data *data, char *line,int f);
+char						*expand_single_line(t_data *data, char *line,
+								int f);
+void						multiple_heredoc(t_data *data, char *delimiter);
 int							is_identifier_char(int c);
 void						update_quoting_state(char c, int *s_quotes,
 								int *d_quotes);
@@ -130,8 +131,6 @@ void						read_from_pipe_and_fill_list(int pipe_read_fd,
 								t_command *cmd);
 char						**ft_split(char const *s, char c);
 void						execute_command(t_data *data);
-int							is_accessable(char *command, char **splited_path,
-								char **full_path);
 void						heredoc_child_process(t_data *data, int *pipefd,
 								t_command *cmd);
 int							heredoc_parent_process(int *pipefd);

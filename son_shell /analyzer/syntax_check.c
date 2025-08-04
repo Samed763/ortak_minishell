@@ -16,17 +16,17 @@ static int	check_token_syntax(char *line, int i)
 {
 	int	j;
 
-    if (line[i] == '|' && line[i + 1] && line[i + 1] == '|')
-        return (1);
-    else if ((line[i] == '<' || line[i] == '>') && line[i + 1]
-        && line[i] == line[i + 1])
-        i++;
-    j = i + 1;
-    while (line[j] && (line[j] == ' ' || line[j] == '\t'))
-        j++;
-    if (line[j] == '\0' || is_token(line[j]))
-        return (1);
-    return (0);
+	if (line[i] == '|' && line[i + 1] && line[i + 1] == '|')
+		return (1);
+	else if ((line[i] == '<' || line[i] == '>') && line[i + 1]
+		&& line[i] == line[i + 1])
+		i++;
+	j = i + 1;
+	while (line[j] && (line[j] == ' ' || line[j] == '\t'))
+		j++;
+	if (line[j] == '\0' || is_token(line[j]))
+		return (1);
+	return (0);
 }
 
 static int	process_char(char *line, int i, int *in_s_quote, int *in_d_quote)

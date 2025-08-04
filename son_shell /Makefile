@@ -11,13 +11,12 @@ SRC = minishell.c tools/main_utils.c \
 
 OBJ = $(SRC:.c=.o)
 
-CFLAGS = -Wall -Wextra -Werror -g
+CFLAGS = -Wall -Wextra -Werror
 
-all: $(NAME) clean
+all: $(NAME)
 
 $(NAME): $(OBJ)
 	$(CC) $(CFLAGS) -o $(NAME) $(OBJ) -lreadline
-	@echo "\033[0;32mCompilation complete. Executable: $(NAME)\033[0m"
 
 clean:
 	rm -f $(OBJ)
