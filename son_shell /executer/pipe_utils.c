@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 19:53:31 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/03 17:57:44 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/06 18:53:50 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ void	handle_pipe_redirections(t_data *data, t_command *current, int *pipefd,
 	}
 	else
 	{
-		if (apply_input_redirection(data, current) == -1)
+		if (apply_input_redirection(current) == -1)
 			cleanup_and_exit(data, 1);
 	}
 	if (current->next)

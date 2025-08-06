@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 19:06:41 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/06 16:47:52 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/06 18:55:01 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ void	heredoc_child_process(t_data *data, int *pipefd, t_heredoc *heredoc)
 		free(line);
 	}
 	close(pipefd[1]);
-	cleanup_and_exit(data,0);
+	cleanup_and_exit(data, 0);
 }
 
 static int	process_single_heredoc(t_data *data, t_heredoc *heredoc)

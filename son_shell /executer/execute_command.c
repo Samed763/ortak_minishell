@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 19:46:46 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/06 14:10:44 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/06 18:56:17 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ static void	child_process_routine(t_data *data, char **splitted_path)
 
 	signal(SIGINT, SIG_DFL);
 	signal(SIGQUIT, SIG_DFL);
-	if (apply_input_redirection(data, data->cmd) == -1
+	if (apply_input_redirection(data->cmd) == -1
 		|| apply_output_redirection(data->cmd) == -1)
 		cleanup_and_exit(data, 1);
 	if (data->cmd->args && data->cmd->args[0])
@@ -56,7 +56,7 @@ static void	execute_single_builtin(t_data *data)
 			close(original_stdout);
 		return ;
 	}
-	if (apply_input_redirection(data, data->cmd) == -1
+	if (apply_input_redirection(data->cmd) == -1
 		|| apply_output_redirection(data->cmd) == -1)
 		data->exit_value = 1;
 	else
@@ -89,9 +89,8 @@ static void	execute_single_external(t_data *data, char **splitted_path)
 	}
 }
 
-void	execute_command(t_data *data)
+static int	handle_all_heredocs(t_data *data)
 {
-	char		*path_val;
 	t_command	*current_cmd;
 
 	current_cmd = data->cmd;
@@ -102,11 +101,22 @@ void	execute_command(t_data *data)
 			if (handle_heredoc(data, current_cmd) == -1)
 			{
 				data->exit_value = 1;
-				return ;
+				return (-1);
 			}
 		}
 		current_cmd = current_cmd->next;
 	}
+	return (0);
+}
+
+void	execute_command(t_data *data)
+{
+	char		*path_val;
+	t_command	*current_cmd;
+
+	current_cmd = data->cmd;
+	if (handle_all_heredocs(data) == -1)
+		return ;
 	path_val = find_value_by_key(data, "PATH");
 	data->splitted_path = ft_split(path_val, ':');
 	if (path_val)
