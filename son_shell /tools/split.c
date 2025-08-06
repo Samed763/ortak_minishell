@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/02 14:33:17 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/04 09:33:18 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/06 13:39:57 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,13 +85,4 @@ char	**ft_split(char const *s, char c)
 	}
 	*arr = NULL;
 	return (start);
-}
-
-void	multiple_heredoc(t_data *data, char *delimiter)
-{
-	if (delimiter != NULL)
-	{
-		printf("multiple heredoc delimiters not allowed\n");
-		cleanup_and_exit(data, 1);
-	}
 }

@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 18:36:57 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/03 23:52:26 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/06 15:38:37 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ static void	process_quoted_section(char *str, char *new_str, int *i, int *j)
 		(*i)++;
 }
 
-char	*remove_quotes_from_word(char *str)
+char	*remove_quotes_from_word(char *str, int *should_expand)
 {
 	char	*new_str;
 	int		i;
@@ -36,6 +36,8 @@ char	*remove_quotes_from_word(char *str)
 
 	if (!str)
 		return (NULL);
+	*should_expand = (ft_strchr(str, '\'') == NULL
+			&& ft_strchr(str, '\"') == NULL);
 	new_str = (char *)malloc(ft_strlen(str) + 1);
 	if (!new_str)
 		return (NULL);
@@ -59,17 +61,11 @@ void	remove_quotes_parser_helper(const char *str, char **del, t_command *cur)
 	if (!str || !del || !cur)
 		return ;
 	len = ft_strlen(str);
-	if (len >= 2 && ((str[0] == '"' && str[len - 1] == '"')
-			|| (str[0] == '\'' && str[len - 1] == '\'')))
-	{
+	if (len >= 2 && ((str[0] == '"' && str[len - 1] == '"') || (str[0] == '\''
+				&& str[len - 1] == '\'')))
 		*del = ft_substr(str, 1, len - 2);
-		cur->should_expand_heredoc = 0;
-	}
 	else
-	{
 		*del = ft_strdup(str);
-		cur->should_expand_heredoc = 1;
-	}
 	if (!*del)
 		*del = ft_strdup("");
 }
@@ -86,10 +82,8 @@ t_command	*create_list(void)
 	cmd->output_files = NULL;
 	cmd->append_modes = NULL;
 	cmd->output_count = 0;
-	cmd->heredoc_delimiter = NULL;
-	cmd->heredoc_lines = NULL;
+	cmd->heredocs = NULL;
 	cmd->next = NULL;
-	cmd->should_expand_heredoc = 1;
 	return (cmd);
 }
 

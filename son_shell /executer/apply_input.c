@@ -6,85 +6,69 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 19:42:50 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/02 17:44:52 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/06 18:44:34 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-static int	input_heredoc(t_data *data, t_command *cmd)
+static int	apply_heredoc_input(t_heredoc *heredoc)
 {
-	pid_t	pid;
-	int		pipefd[2];
+	int				pipefd[2];
+	t_heredoc_line	*current_line;
 
 	if (pipe(pipefd) == -1)
+		return (-1);
+	current_line = heredoc->lines;
+	while (current_line)
 	{
-		perror("pipe");
+		write(pipefd[1], current_line->content,
+			ft_strlen(current_line->content));
+		write(pipefd[1], "\n", 1);
+		current_line = current_line->next;
+	}
+	close(pipefd[1]);
+	if (dup2(pipefd[0], STDIN_FILENO) == -1)
+	{
+		close(pipefd[0]);
 		return (-1);
 	}
-	pid = fork();
-	if (pid == -1)
-	{
-		perror("fork");
-		return (-1);
-	}
-	else if (pid == 0)
-		heredoc_child_process(data, pipefd, cmd);
-	else
-		return (heredoc_parent_process(pipefd));
-	return (0);
-}
-
-static int	input_file(t_command *cmd)
-{
-	int	fd;
-
-	fd = open(cmd->input_files, O_RDONLY);
-	if (fd == -1)
-	{
-		perror(cmd->input_files);
-		return (-1);
-	}
-	if (dup2(fd, STDIN_FILENO) == -1)
-	{
-		perror("dup2");
-		close(fd);
-		return (-1);
-	}
-	close(fd);
-	return (0);
-}
-
-static int	handle_heredoc_input(t_data *data, t_command *cmd)
-{
-	int	fd;
-
-	if (cmd->heredoc_lines != NULL)
-		return (input_heredoc(data, cmd));
-	else
-	{
-		fd = open("/dev/null", O_RDONLY);
-		if (fd == -1)
-		{
-			perror("/dev/null");
-			return (-1);
-		}
-		if (dup2(fd, STDIN_FILENO) == -1)
-		{
-			perror("dup2");
-			close(fd);
-			return (-1);
-		}
-		close(fd);
-	}
+	close(pipefd[0]);
 	return (0);
 }
 
 int	apply_input_redirection(t_data *data, t_command *cmd)
 {
-	if (cmd->heredoc_delimiter)
-		return (handle_heredoc_input(data, cmd));
-	else if (cmd->input_files != NULL)
-		return (input_file(cmd));
+	int			fd;
+	t_heredoc	*current_heredoc;
+	t_heredoc	*last_heredoc;
+
+	(void)data;
+	if (cmd->input_files && *cmd->input_files)
+	{
+		fd = open(cmd->input_files, O_RDONLY);
+		if (fd == -1)
+		{
+			perror(cmd->input_files);
+			return (-1);
+		}
+		if (dup2(fd, STDIN_FILENO) == -1)
+		{
+			close(fd);
+			return (-1);
+		}
+		close(fd);
+	}
+	else if (cmd->heredocs)
+	{
+		current_heredoc = cmd->heredocs;
+		last_heredoc = current_heredoc;
+		while (current_heredoc)
+		{
+			last_heredoc = current_heredoc;
+			current_heredoc = current_heredoc->next;
+		}
+		return (apply_heredoc_input(last_heredoc));
+	}
 	return (0);
 }

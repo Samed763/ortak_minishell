@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 17:18:03 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/04 08:45:05 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/06 16:10:48 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,24 +14,23 @@
 
 static int	handle_redirections(t_data *data, t_command *current, int *i)
 {
-	int	token_type;
+	char		*raw_word;
+	int			token_type;
 
 	token_type = data->token[*i];
 	(*i)++;
 	if (!data->word_array[*i])
 		return (-1);
+	raw_word = data->word_array[*i];
 	if (token_type == TOKEN_REDIRECT_IN)
-		add_input_to_command(current, data->word_array[*i]);
+		add_input_to_command(current, raw_word);
 	else if (token_type == TOKEN_REDIRECT_OUT)
-		add_output_to_command(current, data->word_array[*i], 0);
+		add_output_to_command(current, raw_word, 0);
 	else if (token_type == TOKEN_APPEND)
-		add_output_to_command(current, data->word_array[*i], 1);
+		add_output_to_command(current, raw_word, 1);
 	else if (token_type == TOKEN_HEREDOC)
 	{
-		multiple_heredoc(data, current->heredoc_delimiter);
-		remove_quotes_parser_helper(data->word_array[*i],
-			&current->heredoc_delimiter, current);
-		if (handle_heredoc(data, current) == -1)
+		if (add_heredoc_to_command(current, raw_word) == -1)
 			return (-1);
 	}
 	(*i)++;

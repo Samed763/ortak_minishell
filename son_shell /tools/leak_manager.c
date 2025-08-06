@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 16:09:43 by sadinc            #+#    #+#             */
-/*   Updated: 2025/07/31 16:09:44 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/06 15:37:10 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,39 +14,51 @@
 
 void	free_heredoc_lines(t_heredoc_line *head)
 {
-	t_heredoc_line	*tmp;
+	t_heredoc_line	*current;
+	t_heredoc_line	*next;
 
-	while (head)
+	current = head;
+	while (current)
 	{
-		tmp = head->next;
-		if (head->content)
-			free(head->content);
-		free(head);
-		head = tmp;
+		next = current->next;
+		free(current->content);
+		free(current);
+		current = next;
+	}
+}
+
+void	free_heredoc_list(t_heredoc *head)
+{
+	t_heredoc	*current;
+	t_heredoc	*next;
+
+	current = head;
+	while (current)
+	{
+		next = current->next;
+		free(current->delimiter);
+		free_heredoc_lines(current->lines);
+		free(current);
+		current = next;
 	}
 }
 
 void	free_command_list(t_command *head)
 {
-	t_command	*tmp;
+	t_command	*current;
+	t_command	*next;
 
-	while (head)
+	current = head;
+	while (current)
 	{
-		tmp = head->next;
-		if (head->args)
-			free_word_array(head->args);
-		if (head->input_files)
-			free(head->input_files);
-		if (head->output_files)
-			free_word_array(head->output_files);
-		if (head->append_modes)
-			free(head->append_modes);
-		if (head->heredoc_delimiter)
-			free(head->heredoc_delimiter);
-		if (head->heredoc_lines)
-			free_heredoc_lines(head->heredoc_lines);
-		free(head);
-		head = tmp;
+		next = current->next;
+		free_word_array(current->args);
+		free(current->input_files);
+		free_word_array(current->output_files);
+		free(current->append_modes);
+		free_heredoc_list(current->heredocs);
+		free(current);
+		current = next;
 	}
 }
 

@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 19:07:05 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/04 00:24:59 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/06 16:54:59 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,20 +14,29 @@
 
 void	expand_heredoc_lines(t_data *data, t_command *cmd)
 {
-	t_heredoc_line	*current;
+	t_heredoc		*current_heredoc;
+	t_heredoc_line	*current_line;
 	char			*expanded;
 
-	current = cmd->heredoc_lines;
-	while (current)
+	current_heredoc = cmd->heredocs;
+	while (current_heredoc)
 	{
-		expanded = expand_single_line(data, current->content, 1);
-		free(current->content);
-		current->content = expanded;
-		current = current->next;
+		if (current_heredoc->should_expand)
+		{
+			current_line = current_heredoc->lines;
+			while (current_line)
+			{
+				expanded = expand_single_line(data, current_line->content, 1);
+				free(current_line->content);
+				current_line->content = expanded;
+				current_line = current_line->next;
+			}
+		}
+		current_heredoc = current_heredoc->next;
 	}
 }
 
-static void	add_line_to_list(t_command *cmd, char *line)
+static void	add_line_to_list(t_heredoc *heredoc, char *line)
 {
 	t_heredoc_line	*new_node;
 	t_heredoc_line	*current;
@@ -42,11 +51,11 @@ static void	add_line_to_list(t_command *cmd, char *line)
 		return ;
 	}
 	new_node->next = NULL;
-	if (cmd->heredoc_lines == NULL)
-		cmd->heredoc_lines = new_node;
+	if (heredoc->lines == NULL)
+		heredoc->lines = new_node;
 	else
 	{
-		current = cmd->heredoc_lines;
+		current = heredoc->lines;
 		while (current->next)
 			current = current->next;
 		current->next = new_node;
@@ -79,26 +88,57 @@ static char	*read_pipe_content(int pipe_read_fd)
 	return (full_content);
 }
 
-void	read_from_pipe_and_fill_list(int pipe_read_fd, t_command *cmd)
+void	read_pipe_fill_list(int pipe_read_fd, t_heredoc *heredoc)
 {
 	char	*full_content;
-	char	**lines;
+	char	*line_start;
 	int		i;
 
 	full_content = read_pipe_content(pipe_read_fd);
 	close(pipe_read_fd);
 	if (!full_content)
 		return ;
-	lines = ft_split(full_content, '\n');
-	free(full_content);
-	if (!lines)
-		return ;
+	line_start = full_content;
 	i = 0;
-	while (lines[i])
+	while (full_content[i])
 	{
-		add_line_to_list(cmd, lines[i]);
-		free(lines[i]);
+		if (full_content[i] == '\n')
+		{
+			full_content[i] = '\0';
+			add_line_to_list(heredoc, line_start);
+			line_start = &full_content[i + 1];
+		}
 		i++;
 	}
-	free(lines);
+	if (*line_start)
+		add_line_to_list(heredoc, line_start);
+	free(full_content);
+}
+
+void	add_line_to_heredoc(t_heredoc *heredoc, char *content)
+{
+	t_heredoc_line	*new_line;
+	t_heredoc_line	*current;
+
+	if (!heredoc || !content)
+		return ;
+	new_line = malloc(sizeof(t_heredoc_line));
+	if (!new_line)
+		return ;
+	new_line->content = ft_strdup(content);
+	if (!new_line->content)
+	{
+		free(new_line);
+		return ;
+	}
+	new_line->next = NULL;
+	if (heredoc->lines == NULL)
+		heredoc->lines = new_line;
+	else
+	{
+		current = heredoc->lines;
+		while (current->next)
+			current = current->next;
+		current->next = new_line;
+	}
 }

@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 19:46:46 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/04 09:23:48 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/06 14:10:44 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,8 +91,22 @@ static void	execute_single_external(t_data *data, char **splitted_path)
 
 void	execute_command(t_data *data)
 {
-	char	*path_val;
+	char		*path_val;
+	t_command	*current_cmd;
 
+	current_cmd = data->cmd;
+	while (current_cmd)
+	{
+		if (current_cmd->heredocs)
+		{
+			if (handle_heredoc(data, current_cmd) == -1)
+			{
+				data->exit_value = 1;
+				return ;
+			}
+		}
+		current_cmd = current_cmd->next;
+	}
 	path_val = find_value_by_key(data, "PATH");
 	data->splitted_path = ft_split(path_val, ':');
 	if (path_val)

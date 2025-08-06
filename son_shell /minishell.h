@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 17:17:58 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/04 09:38:50 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/06 15:39:31 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,14 @@ typedef struct s_heredoc_line
 	struct s_heredoc_line	*next;
 }							t_heredoc_line;
 
+typedef struct s_heredoc
+{
+	char					*delimiter;
+	int						should_expand;
+	t_heredoc_line			*lines;
+	struct s_heredoc		*next;
+}							t_heredoc;
+
 typedef struct s_command
 {
 	char					**args;
@@ -42,12 +50,9 @@ typedef struct s_command
 	char					**output_files;
 	int						*append_modes;
 	int						output_count;
-	char					*heredoc_delimiter;
-	int						should_expand_heredoc;
+	t_heredoc				*heredocs;
 	struct s_command		*next;
-	t_heredoc_line			*heredoc_lines;
 }							t_command;
-
 typedef struct s_expand_state
 {
 	int						s_quotes;
@@ -110,14 +115,14 @@ void						add_input_to_command(t_command *current,
 t_command					*create_list(void);
 void						remove_quotes_parser_helper(const char *str,
 								char **del, t_command *cur);
-char						*remove_quotes_from_word(char *str);
+char						*remove_quotes_from_word(char *str,
+								int *should_expand);
 void						add_output_to_command(t_command *curr,
 								char *filename, int append_mode);
 void						add_argument_to_command(t_command *cmd, char *word);
 void						expander(t_data *data);
 char						*expand_single_line(t_data *data, char *line,
 								int f);
-void						multiple_heredoc(t_data *data, char *delimiter);
 int							is_identifier_char(int c);
 void						update_quoting_state(char c, int *s_quotes,
 								int *d_quotes);
@@ -127,12 +132,12 @@ char						*put_var(char *line, char *var_value, int key_start,
 								int key_end);
 int							handle_heredoc(t_data *data, t_command *cmd);
 void						expand_heredoc_lines(t_data *data, t_command *cmd);
-void						read_from_pipe_and_fill_list(int pipe_read_fd,
-								t_command *cmd);
+void						read_pipe_fill_list(int pipe_read_fd,
+								t_heredoc *heredoc);
 char						**ft_split(char const *s, char c);
 void						execute_command(t_data *data);
 void						heredoc_child_process(t_data *data, int *pipefd,
-								t_command *cmd);
+								t_heredoc *heredoc);
 int							heredoc_parent_process(int *pipefd);
 int							is_builtin(char *command);
 int							is_accessable(char *command, char **splited_path,
@@ -160,5 +165,12 @@ int							count_word(char *line);
 int							setup_signals(void);
 void						init_data(t_data *data, char **envp);
 void						safe_dup2(int fd, int fd2, t_data *data);
+
+t_heredoc					*create_heredoc(char *delimiter, int should_expand);
+int							add_heredoc_to_command(t_command *cmd,
+								char *raw_word);
+void						free_heredoc_list(t_heredoc *head);
+void						add_line_to_heredoc(t_heredoc *heredoc,
+								char *content);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 18:37:06 by sadinc            #+#    #+#             */
-/*   Updated: 2025/07/31 16:06:14 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/06 15:40:03 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,10 +43,11 @@ static char	**realloc_args(char **old_args, char *cleaned_word)
 void	add_argument_to_command(t_command *cmd, char *word)
 {
 	char	*cleaned_word;
+	int		dummy_expand;
 
 	if (!cmd || !word)
 		return ;
-	cleaned_word = remove_quotes_from_word(word);
+	cleaned_word = remove_quotes_from_word(word, &dummy_expand);
 	if (!cleaned_word)
 		return ;
 	cmd->args = realloc_args(cmd->args, cleaned_word);
