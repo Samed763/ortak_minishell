@@ -78,7 +78,7 @@ int	builtin_exit(t_data *data)
 		write(2, "minishell: exit: ", 17);
 		write(2, args[1], ft_strlen(args[1]));
 		write(2, ": numeric argument required\n", 28);
-		cleanup_and_exit(data, 255);
+		cleanup_and_exit(data, 2);
 	}
 	if (args[2])
 	{

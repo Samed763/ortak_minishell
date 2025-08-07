@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 09:13:05 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/04 09:37:28 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/07 15:16:50 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,6 @@
 # include "../minishell.h"
 
 char	*ft_strjoin3(char *s1, char *s2, char *s3);
-char	*ft_strndup(const char *s, size_t n);
-char	*remove_quotes(const char *str);
 char	**create_new_env(char **env, char *new_entry);
 void	bubble_sort_env(char **copy, int count);
 void	cleanup_and_return(char *var_name, char *var_value);

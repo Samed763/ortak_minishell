@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/02 11:22:38 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/04 09:31:59 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/07 15:16:03 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,30 +73,10 @@ int	add_new_var(t_data *data, char *new_entry)
 	{
 		free(new_entry);
 		perror("export");
-		return (0);
+		return (1);
 	}
 	free(data->env);
 	data->env = new_env;
-	return (1);
+	return (0);
 }
 
-char	*remove_quotes(const char *str)
-{
-	size_t	len;
-	char	*result;
-
-	if (!str)
-		return (NULL);
-	len = ft_strlen(str);
-	if (len < 2)
-		return (ft_strdup(str));
-	if ((str[0] == '"' && str[len - 1] == '"')
-		|| (str[0] == '\'' && str[len - 1] == '\''))
-	{
-		result = ft_strndup(str + 1, len - 2);
-		if (!result)
-			return (NULL);
-		return (result);
-	}
-	return (ft_strdup(str));
-}

@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 18:36:57 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/06 15:38:37 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/07 15:37:46 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,33 @@ static void	process_quoted_section(char *str, char *new_str, int *i, int *j)
 	if (str[*i] == quote_char)
 		(*i)++;
 }
+
+
+char	*remove_quotes(char *str)
+{
+	char	*new_str;
+	int		i;
+	int		j;
+
+	if (!str)
+		return (NULL);
+	new_str = (char *)malloc(ft_strlen(str) + 1);
+	if (!new_str)
+		return (NULL);
+	i = 0;
+	j = 0;
+	while (str[i])
+	{
+		if (str[i] == '\'' || str[i] == '"')
+			process_quoted_section(str, new_str, &i, &j);
+		else
+			new_str[j++] = str[i++];
+	}
+	new_str[j] = '\0';
+	return (new_str);
+}
+
+
 
 char	*remove_quotes_from_word(char *str, int *should_expand)
 {
@@ -93,7 +120,7 @@ void	add_input_to_command(t_command *current, char *filename)
 
 	if (!current || !filename)
 		return ;
-	new_input_file = ft_strdup(filename);
+	new_input_file = remove_quotes_2(filename);
 	if (!new_input_file)
 		return ;
 	if (current->input_files)

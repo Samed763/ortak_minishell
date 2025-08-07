@@ -18,7 +18,7 @@ int	prepare_var_data(char *arg, char *eq, char **var_name, char **var_value)
 
 	name_len = eq - arg;
 	*var_name = ft_strndup(arg, name_len);
-	*var_value = remove_quotes(eq + 1);
+	*var_value = remove_quotes_2(eq + 1);
 	if (!*var_name || !*var_value)
 	{
 		cleanup_and_return(*var_name, *var_value);

@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 16:20:02 by sadinc            #+#    #+#             */
-/*   Updated: 2025/07/31 16:20:09 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/07 14:39:03 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,3 +30,11 @@ int	is_valid_filename_char(int c)
 			&& c <= '9') || c == '_' || c == '-' || c == '.' || c == '/'
 		|| c == '~' || c == '\'' || c == '"' || c == '$');
 }
+int is_valid_to_expand(int c)
+{
+    // Değişken adı harf veya alt çizgi ile başlayabilir.
+    // '?' ise özel durum olan $? içindir.
+    return ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_'
+            || c == '?');
+}
+

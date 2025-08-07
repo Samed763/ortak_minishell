@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/02 11:22:34 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/02 11:22:34 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/07 14:49:42 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,23 +96,28 @@ static int	validate_and_process_arg(t_data *data, char *arg)
 int	builtin_export(t_data *data)
 {
 	int	i;
+	int	status;
 
 	if (!data || !data->cmd || !data->cmd->args || !data->env)
 	{
 		write(2, "export: internal error\n", 23);
 		return (1);
 	}
+	// Argüman yoksa, sıralı env'yi yazdır ve başarılı olarak çık.
 	if (!data->cmd->args[1])
 	{
 		if (print_sorted_env(data->env))
-			return (1);
+			return (1); // Yazdırma hatası
+		return (0);
 	}
 	i = 1;
+	status = 0; // Başlangıç durumunu başarılı (0) olarak ayarla.
 	while (data->cmd->args[i])
 	{
+		// Eğer bir argüman geçersizse, status'ü 1 yap ama döngüye devam et.
 		if (validate_and_process_arg(data, data->cmd->args[i]))
-			return (1);
+			status = 1;
 		i++;
 	}
-	return (0);
+	return (status); // Tüm argümanlar işlendikten sonra nihai durumu döndür.
 }

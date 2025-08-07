@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/28 16:15:10 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/04 00:25:06 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/07 14:39:28 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,10 +55,13 @@ char	*expand_single_line(t_data *data, char *line, int f)
 		update_quoting_state(result[state.i], &state.s_quotes, &state.d_quotes);
 		if (result[state.i] == '$' && (f == 1 || state.s_quotes == 0))
 		{
-			result = handle_variable_expansion(data, result, &state.i);
-			if (!result)
-				return (NULL);
-			state.i = -1;
+			if (result[state.i + 1] && is_valid_to_expand(result[state.i + 1]))
+			{
+				result = handle_variable_expansion(data, result, &state.i);
+				if (!result)
+					return (NULL);
+				state.i = -1;
+			}
 		}
 		state.i++;
 	}

@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 18:37:06 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/06 15:40:03 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/07 15:47:14 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,15 +39,56 @@ static char	**realloc_args(char **old_args, char *cleaned_word)
 		free(old_args);
 	return (new_args);
 }
+char	*remove_quotes_2(const char *str)
+{
+	size_t	len;
+	char	*result;
+
+	if (!str)
+		return (NULL);
+	len = ft_strlen(str);
+	if (len < 2)
+		return (ft_strdup(str));
+	if ((str[0] == '"' && str[len - 1] == '"')
+		|| (str[0] == '\'' && str[len - 1] == '\''))
+	{
+		result = ft_strndup(str + 1, len - 2);
+		if (!result)
+			return (NULL);
+		return (result);
+	}
+	return (ft_strdup(str));
+}
+
+char	*ft_strndup(const char *s, size_t n)
+{
+	char	*dup;
+	size_t	len;
+	size_t	i;
+
+	len = 0;
+	while (s[len] && len < n)
+		len++;
+	dup = (char *)malloc(sizeof(char) * (len + 1));
+	if (!dup)
+		return (NULL);
+	i = 0;
+	while (i < len)
+	{
+		dup[i] = s[i];
+		i++;
+	}
+	dup[i] = '\0';
+	return (dup);
+}
 
 void	add_argument_to_command(t_command *cmd, char *word)
 {
 	char	*cleaned_word;
-	int		dummy_expand;
 
 	if (!cmd || !word)
 		return ;
-	cleaned_word = remove_quotes_from_word(word, &dummy_expand);
+	cleaned_word = remove_quotes_2(word);
 	if (!cleaned_word)
 		return ;
 	cmd->args = realloc_args(cmd->args, cleaned_word);
@@ -88,7 +129,7 @@ void	add_output_to_command(t_command *curr, char *filename, int append_mode)
 		return ;
 	if (!realloc_and_copy_outputs(curr, &new_files, &new_modes))
 		return ;
-	new_files[curr->output_count] = ft_strdup(filename);
+	new_files[curr->output_count] = remove_quotes(filename);
 	if (!new_files[curr->output_count])
 	{
 		free(new_files);
