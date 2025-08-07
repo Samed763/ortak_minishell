@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 20:00:14 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/03 22:28:52 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/07 14:13:20 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,4 +57,6 @@ void	init_data(t_data *data, char **envp)
 	data->word_array = NULL;
 	data->token = NULL;
 	data->splitted_path = NULL;
+	data->original_stdin = -1;
+	data->original_stdout = -1;
 }

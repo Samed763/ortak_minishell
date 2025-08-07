@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 19:37:55 by sadinc            #+#    #+#             */
-/*   Updated: 2025/07/30 19:44:27 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/07 14:13:56 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,13 +82,20 @@ void	set_exit_status(t_data *data, int status)
 		data->exit_value = 1;
 }
 
-void	restore_fds(int original_stdin, int original_stdout)
+void	restore_fds(t_data *data)
 {
-	if (dup2(original_stdin, STDIN_FILENO) == -1
-		|| dup2(original_stdout, STDOUT_FILENO) == -1)
+	if (data->original_stdin != -1)
 	{
-		perror("dup2 restore");
+		if (dup2(data->original_stdin, STDIN_FILENO) == -1)
+			perror("dup2 restore");
+		close(data->original_stdin);
+		data->original_stdin = -1;
 	}
-	close(original_stdin);
-	close(original_stdout);
+	if (data->original_stdout != -1)
+	{
+		if (dup2(data->original_stdout, STDOUT_FILENO) == -1)
+			perror("dup2 restore");
+		close(data->original_stdout);
+		data->original_stdout = -1;
+	}
 }

@@ -45,6 +45,10 @@ void	cleanup_and_exit(t_data *data, int exit_code)
 {
 	if (data)
 	{
+		if (data->original_stdin != -1)
+			close(data->original_stdin);
+		if (data->original_stdout != -1)
+			close(data->original_stdout);
 		free_data_resources(data);
 		if (data->splitted_path)
 			free_word_array(data->splitted_path);

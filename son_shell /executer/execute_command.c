@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 19:46:46 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/06 18:56:17 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/07 14:15:10 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,19 +41,17 @@ static void	child_process_routine(t_data *data, char **splitted_path)
 
 static void	execute_single_builtin(t_data *data)
 {
-	int	original_stdin;
-	int	original_stdout;
+	data->original_stdin = dup(STDIN_FILENO);
+	data->original_stdout = dup(STDOUT_FILENO);
 
-	original_stdin = dup(STDIN_FILENO);
-	original_stdout = dup(STDOUT_FILENO);
-	if (original_stdin == -1 || original_stdout == -1)
+	if (data->original_stdin == -1 || data->original_stdout == -1)
 	{
 		perror("dup");
 		data->exit_value = 1;
-		if (original_stdin != -1)
-			close(original_stdin);
-		if (original_stdout != -1)
-			close(original_stdout);
+		if (data->original_stdin != -1)
+			close(data->original_stdin);
+		if (data->original_stdout != -1)
+			close(data->original_stdout);
 		return ;
 	}
 	if (apply_input_redirection(data->cmd) == -1
@@ -61,7 +59,8 @@ static void	execute_single_builtin(t_data *data)
 		data->exit_value = 1;
 	else
 		try_builtin(data->cmd, data, 1);
-	restore_fds(original_stdin, original_stdout);
+	
+	restore_fds(data);
 }
 
 static void	execute_single_external(t_data *data, char **splitted_path)
@@ -112,9 +111,7 @@ static int	handle_all_heredocs(t_data *data)
 void	execute_command(t_data *data)
 {
 	char		*path_val;
-	t_command	*current_cmd;
 
-	current_cmd = data->cmd;
 	if (handle_all_heredocs(data) == -1)
 		return ;
 	path_val = find_value_by_key(data, "PATH");

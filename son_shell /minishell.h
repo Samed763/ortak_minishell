@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 17:17:58 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/06 18:53:20 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/07 14:14:08 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,8 @@ typedef struct s_data
 	int						*token;
 	int						exit_value;
 	char					**splitted_path;
+	int						original_stdin;
+	int						original_stdout;
 	t_command				*cmd;
 }							t_data;
 typedef struct s_pipe_data
@@ -143,8 +145,7 @@ int							is_builtin(char *command);
 int							is_accessable(char *command, char **splited_path,
 								char **full_path);
 void						set_exit_status(t_data *data, int status);
-void						restore_fds(int original_stdin,
-								int original_stdout);
+void	restore_fds(t_data *data);
 void						pipe_child_routine(t_pipe_data *p_data);
 int							pipe_parent_routine(t_command *current, int *pipefd,
 								int prev_fd);
