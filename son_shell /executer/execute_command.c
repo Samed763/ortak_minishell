@@ -6,15 +6,26 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 19:46:46 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/07 14:15:10 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/07 18:56:44 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
+void	write_error_and_exit(t_data *data, int exit_val, char *arg, char *error)
+{
+	write(2, "minishell: ", 11);
+	write(2, arg, ft_strlen(arg));
+	write(2, ": ", 2);
+	write(2, error, ft_strlen(error));
+	write(2, "\n", 1);
+	cleanup_and_exit(data, exit_val);
+}
+
 static void	child_process_routine(t_data *data, char **splitted_path)
 {
 	char	*full_path;
+	int		access_ret;
 
 	signal(SIGINT, SIG_DFL);
 	signal(SIGQUIT, SIG_DFL);
@@ -23,12 +34,11 @@ static void	child_process_routine(t_data *data, char **splitted_path)
 		cleanup_and_exit(data, 1);
 	if (data->cmd->args && data->cmd->args[0])
 	{
-		if (is_accessable(data->cmd->args[0], splitted_path, &full_path) == -1)
-		{
-			write(2, data->cmd->args[0], ft_strlen(data->cmd->args[0]));
-			write(2, ": command not found\n", 20);
-			cleanup_and_exit(data, 127);
-		}
+		access_ret = is_accessable(data->cmd->args[0], splitted_path, &full_path);
+		if (access_ret == -1)
+			write_error_and_exit(data, 127, data->cmd->args[0], "command not found");
+		else if (access_ret == -2)
+			write_error_and_exit(data, 126, data->cmd->args[0], "Permission denied");
 		if (execve(full_path, data->cmd->args, data->env) == -1)
 		{
 			perror("execve");
@@ -43,7 +53,6 @@ static void	execute_single_builtin(t_data *data)
 {
 	data->original_stdin = dup(STDIN_FILENO);
 	data->original_stdout = dup(STDOUT_FILENO);
-
 	if (data->original_stdin == -1 || data->original_stdout == -1)
 	{
 		perror("dup");
@@ -59,7 +68,6 @@ static void	execute_single_builtin(t_data *data)
 		data->exit_value = 1;
 	else
 		try_builtin(data->cmd, data, 1);
-	
 	restore_fds(data);
 }
 
@@ -110,7 +118,7 @@ static int	handle_all_heredocs(t_data *data)
 
 void	execute_command(t_data *data)
 {
-	char		*path_val;
+	char	*path_val;
 
 	if (handle_all_heredocs(data) == -1)
 		return ;

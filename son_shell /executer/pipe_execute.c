@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 19:44:56 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/03 15:29:41 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/07 18:34:00 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,7 @@ static void	execute_pipe_loop( t_pipe_data *p_data)
 		pid = fork_and_execute(p_data);
 		if (pid == -1)
 			return ;
+		p_data->current->pid = pid;
 		p_data->prev_fd = pipe_parent_routine(p_data->current, p_data->pipefd,
 				p_data->prev_fd);
 		p_data->current = p_data->current->next;

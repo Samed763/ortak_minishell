@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 19:37:55 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/07 14:13:56 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/07 19:07:19 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,8 @@ int	is_accessable(char *command, char **splited_path, char **full_path)
 {
 	if (ft_strchr(command, '/'))
 	{
+		if (!access(command, F_OK))
+			return -2;
 		if (access(command, X_OK) == 0)
 		{
 			*full_path = ft_strdup(command);

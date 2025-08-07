@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 18:37:06 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/07 15:47:14 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/07 17:59:12 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,8 +49,8 @@ char	*remove_quotes_2(const char *str)
 	len = ft_strlen(str);
 	if (len < 2)
 		return (ft_strdup(str));
-	if ((str[0] == '"' && str[len - 1] == '"')
-		|| (str[0] == '\'' && str[len - 1] == '\''))
+	if ((str[0] == '"' && str[len - 1] == '"') || (str[0] == '\'' && str[len
+			- 1] == '\''))
 	{
 		result = ft_strndup(str + 1, len - 2);
 		if (!result)
@@ -86,9 +86,9 @@ void	add_argument_to_command(t_command *cmd, char *word)
 {
 	char	*cleaned_word;
 
-	if (!cmd || !word)
+	if (!cmd || !word || !*word)
 		return ;
-	cleaned_word = remove_quotes_2(word);
+	cleaned_word = remove_quotes(word);
 	if (!cleaned_word)
 		return ;
 	cmd->args = realloc_args(cmd->args, cleaned_word);

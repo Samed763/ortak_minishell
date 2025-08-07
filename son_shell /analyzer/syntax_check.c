@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 19:53:19 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/03 22:39:44 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/07 16:25:09 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ static int	check_token_syntax(char *line, int i)
 	j = i + 1;
 	while (line[j] && (line[j] == ' ' || line[j] == '\t'))
 		j++;
-	if (line[j] == '\0' || is_token(line[j]))
+	if (line[j] == '\0')
 		return (1);
 	return (0);
 }

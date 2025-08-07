@@ -32,8 +32,6 @@ char	*ft_strjoin3(char *s1, char *s2, char *s3)
 	return (result);
 }
 
-
-
 int	ft_isalpha(int c)
 {
 	return ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z'));

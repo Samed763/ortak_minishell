@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 17:17:58 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/07 15:18:28 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/07 18:33:08 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,7 @@ typedef struct s_command
 	char					**output_files;
 	int						*append_modes;
 	int						output_count;
+	pid_t					pid;
 	t_heredoc				*heredocs;
 	struct s_command		*next;
 }							t_command;
@@ -119,8 +120,9 @@ void						remove_quotes_parser_helper(const char *str,
 								char **del, t_command *cur);
 char						*remove_quotes_from_word(char *str,
 								int *should_expand);
-								char	*ft_strndup(const char *s, size_t n);
-char	*remove_quotes_2(const char *str);char	*remove_quotes(char *str);
+char						*ft_strndup(const char *s, size_t n);
+char						*remove_quotes_2(const char *str);
+char						*remove_quotes(char *str);
 void						add_output_to_command(t_command *curr,
 								char *filename, int append_mode);
 void						add_argument_to_command(t_command *cmd, char *word);
@@ -128,7 +130,7 @@ void						expander(t_data *data);
 char						*expand_single_line(t_data *data, char *line,
 								int f);
 int							is_identifier_char(int c);
-int is_valid_to_expand(int c);
+int							is_valid_to_expand(int c);
 void						update_quoting_state(char c, int *s_quotes,
 								int *d_quotes);
 char						*extract_variable_key(char *line, int start_pos,
@@ -148,7 +150,7 @@ int							is_builtin(char *command);
 int							is_accessable(char *command, char **splited_path,
 								char **full_path);
 void						set_exit_status(t_data *data, int status);
-void	restore_fds(t_data *data);
+void						restore_fds(t_data *data);
 void						pipe_child_routine(t_pipe_data *p_data);
 int							pipe_parent_routine(t_command *current, int *pipefd,
 								int prev_fd);

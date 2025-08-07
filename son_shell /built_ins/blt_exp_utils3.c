@@ -79,4 +79,3 @@ int	add_new_var(t_data *data, char *new_entry)
 	data->env = new_env;
 	return (0);
 }
-

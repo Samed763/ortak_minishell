@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 19:53:31 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/06 18:53:50 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/07 18:37:01 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,21 +77,42 @@ void	handle_pipe_redirections(t_data *data, t_command *current, int *pipefd,
 	}
 }
 
+static int	get_last_pid_and_count(t_command *cmd, pid_t *last_pid)
+{
+	t_command	*iter;
+	int			count;
+
+	iter = cmd;
+	count = 0;
+	*last_pid = -1;
+	while (iter)
+	{
+		count++;
+		if (iter->next == NULL)
+			*last_pid = iter->pid;
+		iter = iter->next;
+	}
+	return (count);
+}
+
 void	wait_for_all_children(t_data *data)
 {
-	t_command	*current;
-	int			status;
-	int			last_status;
+	int		cmd_count;
+	pid_t	last_pid;
+	pid_t	waited_pid;
+	int		status;
+	int		last_status;
 
 	if (!data || !data->cmd)
 		return ;
-	current = data->cmd;
+	cmd_count = get_last_pid_and_count(data->cmd, &last_pid);
 	last_status = 0;
-	while (current)
+	while (cmd_count > 0)
 	{
-		wait(&status);
-		last_status = status;
-		current = current->next;
+		waited_pid = wait(&status);
+		if (waited_pid == last_pid)
+			last_status = status;
+		cmd_count--;
 	}
 	set_exit_status(data, last_status);
 }

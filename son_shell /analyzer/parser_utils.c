@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 18:36:57 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/07 15:37:46 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/07 18:33:30 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,6 @@ static void	process_quoted_section(char *str, char *new_str, int *i, int *j)
 	if (str[*i] == quote_char)
 		(*i)++;
 }
-
 
 char	*remove_quotes(char *str)
 {
@@ -53,8 +52,6 @@ char	*remove_quotes(char *str)
 	return (new_str);
 }
 
-
-
 char	*remove_quotes_from_word(char *str, int *should_expand)
 {
 	char	*new_str;
@@ -63,8 +60,8 @@ char	*remove_quotes_from_word(char *str, int *should_expand)
 
 	if (!str)
 		return (NULL);
-	*should_expand = (ft_strchr(str, '\'') == NULL
-			&& ft_strchr(str, '\"') == NULL);
+	*should_expand = (ft_strchr(str, '\'') == NULL && ft_strchr(str,
+				'\"') == NULL);
 	new_str = (char *)malloc(ft_strlen(str) + 1);
 	if (!new_str)
 		return (NULL);
@@ -110,6 +107,7 @@ t_command	*create_list(void)
 	cmd->append_modes = NULL;
 	cmd->output_count = 0;
 	cmd->heredocs = NULL;
+	cmd->pid = -1;
 	cmd->next = NULL;
 	return (cmd);
 }
