@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 19:53:31 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/07 18:37:01 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/07 20:42:19 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,28 +54,36 @@ int	pipe_parent_routine(t_command *current, int *pipefd, int prev_fd)
 void	handle_pipe_redirections(t_data *data, t_command *current, int *pipefd,
 		int prev_fd)
 {
-	if (prev_fd != -1)
+	if (current->input_files || current->heredocs)
+	{
+		if (apply_input_redirection(current) == -1)
+			cleanup_and_exit(data, 1);
+		if (prev_fd != -1)
+			close(prev_fd);
+	}
+	else if (prev_fd != -1)
 	{
 		safe_dup2(prev_fd, STDIN_FILENO, data);
 		close(prev_fd);
 	}
-	else
+	if (current->output_count > 0)
 	{
-		if (apply_input_redirection(current) == -1)
+		if (apply_output_redirection(current) == -1)
 			cleanup_and_exit(data, 1);
+		if (current->next)
+		{
+			close(pipefd[0]);
+			close(pipefd[1]);
+		}
 	}
-	if (current->next)
+	else if (current->next)
 	{
 		close(pipefd[0]);
 		safe_dup2(pipefd[1], STDOUT_FILENO, data);
 		close(pipefd[1]);
 	}
-	else
-	{
-		if (apply_output_redirection(current) == -1)
-			cleanup_and_exit(data, 1);
-	}
 }
+
 
 static int	get_last_pid_and_count(t_command *cmd, pid_t *last_pid)
 {
