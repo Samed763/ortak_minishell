@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/02 11:22:32 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/04 09:38:19 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/08 14:56:02 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ static int	handle_echo_cd_pwd(t_command *current_cmd, t_data *data)
 	}
 	if (ft_strcmp(current_cmd->args[0], "cd") == 0)
 	{
-		data->exit_value = builtin_cd(current_cmd->args);
+		data->exit_value = builtin_cd(data,current_cmd->args);
 		return (1);
 	}
 	if (ft_strcmp(current_cmd->args[0], "pwd") == 0)
@@ -48,7 +48,7 @@ static int	handle_export_unset(t_command *current_cmd, t_data *data)
 	return (0);
 }
 
-static int	handle_env_exit(t_command *current_cmd, t_data *data)
+static int	handle_env_exit(t_command *current_cmd, t_data *data, int is_parent)
 {
 	if (ft_strcmp(current_cmd->args[0], "env") == 0)
 	{
@@ -57,22 +57,25 @@ static int	handle_env_exit(t_command *current_cmd, t_data *data)
 	}
 	if (ft_strcmp(current_cmd->args[0], "exit") == 0)
 	{
-		data->exit_value = builtin_exit(data);
+		// `builtin_exit` sadece "too many arguments" durumunda döner.
+		// Bu durumda dönen `1` değerini `data->exit_value`'ya atıyoruz.
+		data->exit_value = builtin_exit(current_cmd, data, is_parent);
 		return (1);
 	}
 	return (0);
 }
 
+// GÜNCELLENDİ: `try_builtin` içindeki küçük bir mantık hatası düzeltildi.
 int	try_builtin(t_command *current_cmd, t_data *data, int is_parent)
 {
-	(void)is_parent;
-	if (!data->cmd->args || !data->cmd->args[0])
+	// HATA DÜZELTMESİ: Global `data->cmd` yerine mevcut komutu kontrol et.
+	if (!current_cmd->args || !current_cmd->args[0])
 		return (0);
 	if (handle_echo_cd_pwd(current_cmd, data))
 		return (1);
 	if (handle_export_unset(current_cmd, data))
 		return (1);
-	if (handle_env_exit(current_cmd, data))
+	if (handle_env_exit(current_cmd, data, is_parent))
 		return (1);
 	return (0);
 }

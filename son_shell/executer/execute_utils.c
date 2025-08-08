@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 19:37:55 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/07 19:07:19 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/08 14:14:12 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,17 +58,23 @@ static int	search_in_path(char *command, char **splited_path,
 
 int	is_accessable(char *command, char **splited_path, char **full_path)
 {
+	struct stat	path_stat;
+
 	if (ft_strchr(command, '/'))
 	{
-		if (!access(command, F_OK))
-			return -2;
-		if (access(command, X_OK) == 0)
+		if (stat(command, &path_stat) == 0)
 		{
-			*full_path = ft_strdup(command);
-			return (0);
+			if (S_ISDIR(path_stat.st_mode))
+				return (-3); // YENİ: Dizin hatası
 		}
-		return (-1);
+		if (access(command, F_OK) != 0)
+			return (-4);
+		if (access(command, X_OK) != 0)
+			return (-2); // İzin reddedildi
+		*full_path = ft_strdup(command);
+		return (0);
 	}
+	
 	return (search_in_path(command, splited_path, full_path));
 }
 

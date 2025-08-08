@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 17:17:58 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/08 10:46:47 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/08 15:07:03 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@
 # include <stdlib.h>
 # include <sys/wait.h>
 # include <unistd.h>
+#include <sys/stat.h>
 
 # define TOKEN_WORD 0
 # define TOKEN_PIPE 1
@@ -80,6 +81,7 @@ typedef struct s_data
 	int						original_stdout;
 	t_command				*cmd;
 }							t_data;
+
 typedef struct s_pipe_data
 {
 	t_data					*data;
@@ -108,10 +110,11 @@ int							get_token_type(char *token);
 char						*ft_itoa(int n);
 int							try_builtin(t_command *current_cmd, t_data *data,
 								int is_parent);
-int							builtin_cd(char **args);
+int	builtin_cd(t_data *data, char **args);
+
 int							builtin_echo(char **args);
 int							builtin_env(char **env);
-int							builtin_exit(t_data *data);
+int	builtin_exit(t_command *cmd, t_data *data, int is_parent);
 int							builtin_pwd(void);
 int							builtin_export(t_data *data);
 int							builtin_unset(t_data *data);
@@ -191,6 +194,7 @@ void						add_redir_to_list(t_command *cmd, char *filename, int type);
 void						add_argument_to_command(t_command *cmd, char *word);
 char						*ft_strndup(const char *s, size_t n);
 char						*remove_quotes_2(const char *str);
-int handle_redirections_out(t_command *cmd);
+int	 handle_redirections(t_command *cmd);
+int	apply_specific_heredoc(t_heredoc *heredoc);
 
 #endif

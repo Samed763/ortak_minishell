@@ -6,12 +6,11 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 19:42:50 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/08 09:58:12 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/08 11:38:37 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
-
 static int	apply_heredoc_input(t_heredoc *heredoc)
 {
 	int				pipefd[2];

@@ -6,13 +6,13 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 17:18:03 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/08 10:07:52 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/08 11:10:45 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-static int	handle_redirections(t_data *data, t_command *current, int *i)
+static int	handle_redirections_2(t_data *data, t_command *current, int *i)
 {
 	char	*raw_word;
 	int		token_type;
@@ -77,7 +77,7 @@ static int	dispatch_token(t_data *data, t_command **curr, t_command *head,
 	else
 	{
 		// Yeniden yazdığımız handle_redirections fonksiyonunu çağırıyoruz.
-		if (handle_redirections(data, *curr, i) == -1)
+		if (handle_redirections_2(data, *curr, i) == -1)
 		{
 			free_command_list(head); // Hata durumunda hafızayı temizle.
 			return (1);

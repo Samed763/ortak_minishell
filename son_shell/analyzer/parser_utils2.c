@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 18:37:06 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/08 10:06:12 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/08 11:01:52 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,32 +90,44 @@ void	add_redir_to_list(t_command *cmd, char *filename, int type)
         current->next = new_redir;
     }
 }
+static char	**realloc_args(char **old_args, char *cleaned_word)
+{
+	char	**new_args;
+	int		old_argc;
+	int		i;
 
-// YENİ FONKSİYON
+	old_argc = 0;
+	while (old_args && old_args[old_argc])
+		old_argc++;
+	new_args = malloc(sizeof(char *) * (old_argc + 2));
+	if (!new_args)
+	{
+		free(cleaned_word);
+		return (NULL);
+	}
+	i = 0;
+	while (i < old_argc)
+	{
+		new_args[i] = old_args[i];
+		i++;
+	}
+	new_args[i] = cleaned_word;
+	new_args[i + 1] = NULL;
+	if (old_args)
+		free(old_args);
+	return (new_args);
+}
+
 void	add_argument_to_command(t_command *cmd, char *word)
 {
-    int		i;
-    char	**new_args;
+	char	*cleaned_word;
 
-    i = 0;
-    if (cmd->args)
-        while (cmd->args[i])
-            i++;
-    new_args = malloc(sizeof(char *) * (i + 2));
-    if (!new_args)
-        return ;
-    i = 0;
-    if (cmd->args)
-    {
-        while (cmd->args[i])
-        {
-            new_args[i] = cmd->args[i];
-            i++;
-        }
-    }
-    new_args[i] = ft_strdup(word);
-    new_args[i + 1] = NULL;
-    if (cmd->args)
-        free(cmd->args);
-    cmd->args = new_args;
+	if (!cmd || !word || !*word)
+		return ;
+	cleaned_word = remove_quotes(word);
+	if (!cleaned_word)
+		return ;
+	cmd->args = realloc_args(cmd->args, cleaned_word);
+	if (!cmd->args)
+		return ;
 }

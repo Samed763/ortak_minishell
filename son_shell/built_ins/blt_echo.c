@@ -28,13 +28,25 @@ static int	is_valid_n_flag(char *str)
 	return (i > 1);
 }
 
-int	builtin_echo(char **args)
+static int	has_valid_next_arg(char **args, int current_index)
+{
+	int	j;
+
+	j = current_index + 1;
+	while (args[j])
+	{
+		if (args[j] && ft_strlen(args[j]) > 0)
+			return (1);
+		j++;
+	}
+	return (0);
+}
+
+int	builtin_echo(char **args)// buraya data'yı al 
 {
 	int	i;
 	int	newline;
 
-	if (!args)
-		return (1);
 	newline = 1;
 	i = 1;
 	if (args[i] && is_valid_n_flag(args[i]))
@@ -45,9 +57,12 @@ int	builtin_echo(char **args)
 	}
 	while (args[i])
 	{
-		write(STDOUT_FILENO, args[i], ft_strlen(args[i]));
-		if (args[i + 1])
-			write(STDOUT_FILENO, " ", 1);
+		if (args[i] && ft_strlen(args[i]) > 0)
+		{
+			write(STDOUT_FILENO, args[i], ft_strlen(args[i]));
+			if (has_valid_next_arg(args, i))
+				write(STDOUT_FILENO, " ", 1);
+		}
 		i++;
 	}
 	if (newline)

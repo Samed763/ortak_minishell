@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 19:46:46 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/08 10:09:07 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/08 14:14:27 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,59 +25,7 @@ void write_error_and_exit(t_data *data, int exit_val, char *arg, char *error)
 	cleanup_and_exit(data, exit_val);
 }
 
-// YENİ: Birleşik yönlendirme fonksiyonu.
-// Yönlendirmeleri sırayla işler ve ilk hatada durur.
-int handle_redirections_out(t_command *cmd)
-{
-	t_redir *redir;
-	int fd;
-	t_heredoc *heredoc_iter;
-	int heredoc_count;
 
-	redir = cmd->redirs;
-	heredoc_iter = cmd->heredocs;
-	heredoc_count = 0;
-	while (redir)
-	{
-		if (redir->type == TOKEN_REDIRECT_OUT || redir->type == TOKEN_APPEND)
-		{
-			fd = open(redir->filename,
-					  (O_WRONLY | O_CREAT | (O_TRUNC * (redir->type == TOKEN_REDIRECT_OUT)) | (O_APPEND * (redir->type == TOKEN_APPEND))), 0644);
-			if (fd == -1)
-			{
-				perror(redir->filename);
-				return (-1);
-			}
-			dup2(fd, STDOUT_FILENO);
-			close(fd);
-		}
-		else if (redir->type == TOKEN_REDIRECT_IN)
-		{
-			fd = open(redir->filename, O_RDONLY);
-			if (fd == -1)
-			{
-				perror(redir->filename);
-				return (-1);
-			}
-			dup2(fd, STDIN_FILENO);
-			close(fd);
-		}
-		else if (redir->type == TOKEN_HEREDOC)
-		{
-			heredoc_count++;
-			// Sadece son heredoc'u uygula
-			if (heredoc_iter && heredoc_count > 0)
-			{
-				apply_input_redirection(cmd);
-				heredoc_iter = heredoc_iter->next;
-			}
-		}
-		redir = redir->next;
-	}
-	return (0);
-}
-
-// Çocuk prosesin çalıştıracağı ana fonksiyon.
 static void child_process_routine(t_data *data, char **splitted_path)
 {
 	char *full_path;
@@ -85,7 +33,7 @@ static void child_process_routine(t_data *data, char **splitted_path)
 
 	signal(SIGINT, SIG_DFL);
 	signal(SIGQUIT, SIG_DFL);
-	if (handle_redirections_out(data->cmd) == -1)
+	if (handle_redirections(data->cmd) == -1)
 		cleanup_and_exit(data, 1);
 	if (data->cmd->args && data->cmd->args[0])
 	{
@@ -93,10 +41,16 @@ static void child_process_routine(t_data *data, char **splitted_path)
 								   &full_path);
 		if (access_ret == -1)
 			write_error_and_exit(data, 127, data->cmd->args[0],
-								 "command not found");
+				"command not found");
 		else if (access_ret == -2)
 			write_error_and_exit(data, 126, data->cmd->args[0],
-								 "Permission denied");
+				"Permission denied");
+		else if (access_ret == -3)
+			write_error_and_exit(data, 126, data->cmd->args[0],
+				"Is a directory");
+		else if (access_ret == -4) // YENİ: Dosya/dizin yok hatası
+			write_error_and_exit(data, 127, data->cmd->args[0],
+				"No such file or directory");
 		if (execve(full_path, data->cmd->args, data->env) == -1)
 		{
 			perror("execve");
@@ -107,12 +61,11 @@ static void child_process_routine(t_data *data, char **splitted_path)
 	cleanup_and_exit(data, 0);
 }
 
-// Dahili bir komutu çalıştıran fonksiyon.
 static void execute_single_builtin(t_data *data)
 {
 	data->original_stdin = dup(STDIN_FILENO);
 	data->original_stdout = dup(STDOUT_FILENO);
-	if (handle_redirections_out(data->cmd) == -1)
+	if (handle_redirections(data->cmd) == -1)
 		data->exit_value = 1;
 	else
 		try_builtin(data->cmd, data, 1);
@@ -177,9 +130,9 @@ void execute_command(t_data *data)
 	data->splitted_path = ft_split(path_val, ':');
 	if (path_val)
 		free(path_val);
-	// if (data->cmd->next)
-	// 	//pipe_execute(data);
-	if (data->cmd->args && is_builtin(data->cmd->args[0]))
+	if (data->cmd->next)
+		pipe_execute(data);
+	else if (data->cmd->args && is_builtin(data->cmd->args[0]))
 		execute_single_builtin(data);
 	else
 		execute_single_external(data, data->splitted_path);

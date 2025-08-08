@@ -6,16 +6,19 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 20:00:14 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/07 14:13:20 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/08 14:04:40 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
+extern int g_signal_received;
+
 void	signal_handler(int signum)
 {
 	if (signum == SIGINT)
 	{
+		g_signal_received = SIGINT;
 		write(1, "\n", 1);
 		rl_on_new_line();
 		rl_replace_line("", 0);

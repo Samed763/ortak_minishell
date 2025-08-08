@@ -61,31 +61,37 @@ void	cleanup_and_exit(t_data *data, int exit_code)
 	exit(exit_code);
 }
 
-int	builtin_exit(t_data *data)
+int	builtin_exit(t_command *cmd, t_data *data, int is_parent)
 {
 	long	status;
 	char	**args;
 
-	args = data->cmd->args;
-	printf("exit\n");
+	args = cmd->args;
+	if (is_parent)
+		printf("exit\n");
 	if (!args[1])
-	{
 		status = data->exit_value;
-		cleanup_and_exit(data, status);
-	}
-	if (ft_atol(data->cmd->args[1], &status, 0))
+	else if (ft_atol(args[1], &status, 0))
 	{
 		write(2, "minishell: exit: ", 17);
 		write(2, args[1], ft_strlen(args[1]));
 		write(2, ": numeric argument required\n", 28);
-		cleanup_and_exit(data, 2);
+		status = 2; // Hata kodu 2
 	}
-	if (args[2])
+	if (args[1] && args[2])
 	{
-		write(2, "minishell: exit: too many arguments\n", 37);
-		data->exit_value = 1;
-		return (1);
+		// Sadece ana prosesteyken hata mesajı yaz ve çıkma.
+		if (is_parent)
+		{
+			write(2, "minishell: exit: too many arguments\n", 37);
+			data->exit_value = 1; // Çıkış kodunu 1 yap.
+			return (1); // 1 döndürerek "builtin çalıştı" de.
+		}
+		// Alt proses ise, ilk argümanı dikkate alarak devam eder (bash davranışı).
 	}
-	cleanup_and_exit(data, status % 256);
+	if (is_parent)
+		cleanup_and_exit(data, status % 256);
+	else
+		exit(status % 256);
 	return (0);
 }
