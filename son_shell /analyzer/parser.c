@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 17:18:03 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/06 16:10:48 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/08 10:07:52 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,25 +14,32 @@
 
 static int	handle_redirections(t_data *data, t_command *current, int *i)
 {
-	char		*raw_word;
-	int			token_type;
+	char	*raw_word;
+	int		token_type;
 
 	token_type = data->token[*i];
 	(*i)++;
-	if (!data->word_array[*i])
-		return (-1);
-	raw_word = data->word_array[*i];
-	if (token_type == TOKEN_REDIRECT_IN)
-		add_input_to_command(current, raw_word);
-	else if (token_type == TOKEN_REDIRECT_OUT)
-		add_output_to_command(current, raw_word, 0);
-	else if (token_type == TOKEN_APPEND)
-		add_output_to_command(current, raw_word, 1);
-	else if (token_type == TOKEN_HEREDOC)
+	if (!data->word_array[*i]) // Token'dan sonra dosya adı yoksa sentaks hatasıdır.
 	{
+		printf("syntax error near unexpected token\n");
+		return (-1);
+	}
+	raw_word = data->word_array[*i];
+
+	// Heredoc'u özel olarak ele almalıyız çünkü "should_expand" bayrağını belirlememiz gerekiyor.
+	// Bu, komutun yürütülmesi sırasında (executor'da) heredoc'u genişletip genişletmeyeceğimize karar verir.
+	if (token_type == TOKEN_HEREDOC)
+	{
+		// add_heredoc_to_command fonksiyonunu, t_heredoc listesine içerik için
+		// bir düğüm ekleyecek şekilde güncelleyeceğiz.
 		if (add_heredoc_to_command(current, raw_word) == -1)
 			return (-1);
 	}
+
+	// Tüm yönlendirme türlerini, heredoc dahil, yeni t_redir listesine ekliyoruz.
+	// Bu, yürütme sırasında orijinal sırayı korumamızı sağlar.
+	add_redir_to_list(current, raw_word, token_type);
+
 	(*i)++;
 	return (0);
 }
@@ -48,6 +55,10 @@ static t_command	*handle_pipe_token(t_command *current, t_command *head)
 	return (current->next);
 }
 
+/*
+** DEĞİŞTİRİLDİ: dispatch_token ve process_token
+** Mantık aynı kaldı, sadece handle_redirections'ın yeni versiyonunu kullanıyor.
+*/
 static int	dispatch_token(t_data *data, t_command **curr, t_command *head,
 		int *i)
 {
@@ -65,9 +76,10 @@ static int	dispatch_token(t_data *data, t_command **curr, t_command *head,
 	}
 	else
 	{
+		// Yeniden yazdığımız handle_redirections fonksiyonunu çağırıyoruz.
 		if (handle_redirections(data, *curr, i) == -1)
 		{
-			free_command_list(head);
+			free_command_list(head); // Hata durumunda hafızayı temizle.
 			return (1);
 		}
 	}

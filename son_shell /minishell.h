@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 17:17:58 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/07 18:33:08 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/08 10:13:16 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,17 +43,25 @@ typedef struct s_heredoc
 	struct s_heredoc		*next;
 }							t_heredoc;
 
+// YENİ: Her bir yönlendirmeyi temsil eden struct
+typedef struct s_redir
+{
+	char			*filename;      // Dosya adı veya heredoc için delimiter
+	int				type;           // TOKEN_REDIRECT_IN, OUT, APPEND, HEREDOC
+	struct s_redir	*next;
+}					t_redir;
+
+
+// GÜNCELLENMİŞ: t_command struct'ı
 typedef struct s_command
 {
-	char					**args;
-	char					*input_files;
-	char					**output_files;
-	int						*append_modes;
-	int						output_count;
-	pid_t					pid;
-	t_heredoc				*heredocs;
-	struct s_command		*next;
-}							t_command;
+	char				**args;
+	pid_t				pid;
+	t_redir				*redirs; // Bütün yönlendirmeler artık burada, sırayla tutulacak.
+	t_heredoc			*heredocs; // Heredoc içeriklerini tutmak için bu yapıyı koruyabiliriz.
+	struct s_command	*next;
+}						t_command;
+
 typedef struct s_expand_state
 {
 	int						s_quotes;
@@ -77,17 +85,7 @@ typedef struct s_pipe_data
 	t_data					*data;
 	t_command				*current;
 	int						*pipefd;
-	int						prev_fd;
-}							t_pipe_data;
-void						free_word_array(char **array);
-void						*ft_memcpy(void *dst, const void *src, size_t n);
-int							is_token(int c);
-int							is_valid_after_pipe(int c);
-int							is_valid_filename_char(int c);
-int							ft_strcmp(const char *s1, const char *s2);
-int							ft_strncmp(const char *s1, const char *s2,
-								size_t n);
-char						*ft_strdup(const char *s1);
+	int						prev_fd;zzzz
 char						*ft_strchr(const char *s, int c);
 char						*ft_strjoin(char const *s1, char const *s2);
 char						*find_value_by_key(t_data *data, char *key);
@@ -160,6 +158,7 @@ void						handle_pipe_redirections(t_data *data,
 void						wait_for_all_children(t_data *data);
 int							apply_input_redirection(t_command *cmd);
 int							apply_output_redirection(t_command *cmd);
+int redirection(t_data * data);
 void						pipe_execute(t_data *data);
 void						signal_handler(int signum);
 void						free_command_list(t_command *head);
@@ -177,5 +176,10 @@ int							add_heredoc_to_command(t_command *cmd,
 void						free_heredoc_list(t_heredoc *head);
 void						add_line_to_heredoc(t_heredoc *heredoc,
 								char *content);
+void						add_redir_to_list(t_command *cmd, char *filename, int type);
+void						add_argument_to_command(t_command *cmd, char *word);
+char						*ft_strndup(const char *s, size_t n);
+char						*remove_quotes_2(const char *str);
+int handle_redirections_out(t_command *cmd);
 
 #endif

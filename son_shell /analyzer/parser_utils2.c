@@ -6,143 +6,116 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 18:37:06 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/07 17:59:12 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/08 10:06:12 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-static char	**realloc_args(char **old_args, char *cleaned_word)
+t_heredoc	*create_heredoc(char *delimiter, int should_expand)
 {
-	char	**new_args;
-	int		old_argc;
-	int		i;
+	t_heredoc	*new_heredoc;
 
-	old_argc = 0;
-	while (old_args && old_args[old_argc])
-		old_argc++;
-	new_args = malloc(sizeof(char *) * (old_argc + 2));
-	if (!new_args)
+	new_heredoc = malloc(sizeof(t_heredoc));
+	if (!new_heredoc)
+		return (NULL);
+	new_heredoc->delimiter = ft_strdup(delimiter);
+	if (!new_heredoc->delimiter)
 	{
-		free(cleaned_word);
+		free(new_heredoc);
 		return (NULL);
 	}
-	i = 0;
-	while (i < old_argc)
-	{
-		new_args[i] = old_args[i];
-		i++;
-	}
-	new_args[i] = cleaned_word;
-	new_args[i + 1] = NULL;
-	if (old_args)
-		free(old_args);
-	return (new_args);
+	new_heredoc->should_expand = should_expand;
+	new_heredoc->lines = NULL;
+	new_heredoc->next = NULL;
+	return (new_heredoc);
 }
-char	*remove_quotes_2(const char *str)
+
+/*
+** GÜNCELLENDİ: add_heredoc_to_command
+** Bu fonksiyon artık sadece heredoc içeriklerini (delimiter, satırlar vb.)
+** tutacak olan t_heredoc listesine bir eleman ekler.
+** Yönlendirmenin kendisi (t_redir) zaten parser tarafından listeye ekleniyor.
+*/
+int	add_heredoc_to_command(t_command *cmd, char *raw_word)
 {
-	size_t	len;
-	char	*result;
+	t_heredoc	*new_heredoc;
+	t_heredoc	*current;
+	char		*cleaned_delimiter;
+	int			should_expand;
 
-	if (!str)
-		return (NULL);
-	len = ft_strlen(str);
-	if (len < 2)
-		return (ft_strdup(str));
-	if ((str[0] == '"' && str[len - 1] == '"') || (str[0] == '\'' && str[len
-			- 1] == '\''))
+	if (!cmd || !raw_word)
+		return (0);
+	// delimiter'daki tırnakları temizle ve genişletme bayrağını ayarla
+	cleaned_delimiter = remove_quotes_from_word(raw_word, &should_expand);
+	if (!cleaned_delimiter)
+		return (-1);
+
+	new_heredoc = create_heredoc(cleaned_delimiter, should_expand);
+	free(cleaned_delimiter);
+	if (!new_heredoc)
+		return (-1);
+
+	// Yeni heredoc'u komutun heredoc listesinin sonuna ekle
+	if (cmd->heredocs == NULL)
+		cmd->heredocs = new_heredoc;
+	else
 	{
-		result = ft_strndup(str + 1, len - 2);
-		if (!result)
-			return (NULL);
-		return (result);
+		current = cmd->heredocs;
+		while (current->next)
+			current = current->next;
+		current->next = new_heredoc;
 	}
-	return (ft_strdup(str));
+	return (0);
 }
-
-char	*ft_strndup(const char *s, size_t n)
+// YENİ FONKSİYON
+void	add_redir_to_list(t_command *cmd, char *filename, int type)
 {
-	char	*dup;
-	size_t	len;
-	size_t	i;
+    t_redir	*new_redir;
+    t_redir	*current;
 
-	len = 0;
-	while (s[len] && len < n)
-		len++;
-	dup = (char *)malloc(sizeof(char) * (len + 1));
-	if (!dup)
-		return (NULL);
-	i = 0;
-	while (i < len)
-	{
-		dup[i] = s[i];
-		i++;
-	}
-	dup[i] = '\0';
-	return (dup);
+    new_redir = malloc(sizeof(t_redir));
+    if (!new_redir)
+        return ;
+    new_redir->filename = remove_quotes(filename); // Dosya adındaki tırnakları temizle
+    new_redir->type = type;
+    new_redir->next = NULL;
+    if (!cmd->redirs)
+        cmd->redirs = new_redir;
+    else
+    {
+        current = cmd->redirs;
+        while (current->next)
+            current = current->next;
+        current->next = new_redir;
+    }
 }
 
+// YENİ FONKSİYON
 void	add_argument_to_command(t_command *cmd, char *word)
 {
-	char	*cleaned_word;
+    int		i;
+    char	**new_args;
 
-	if (!cmd || !word || !*word)
-		return ;
-	cleaned_word = remove_quotes(word);
-	if (!cleaned_word)
-		return ;
-	cmd->args = realloc_args(cmd->args, cleaned_word);
-	if (!cmd->args)
-		return ;
-}
-
-static int	realloc_and_copy_outputs(t_command *curr, char ***n_files,
-		int **n_modes)
-{
-	int	i;
-
-	*n_files = malloc(sizeof(char *) * (curr->output_count + 2));
-	if (!*n_files)
-		return (0);
-	*n_modes = malloc(sizeof(int) * (curr->output_count + 1));
-	if (!*n_modes)
-	{
-		free(*n_files);
-		return (0);
-	}
-	i = 0;
-	while (i < curr->output_count)
-	{
-		(*n_files)[i] = curr->output_files[i];
-		(*n_modes)[i] = curr->append_modes[i];
-		i++;
-	}
-	return (1);
-}
-
-void	add_output_to_command(t_command *curr, char *filename, int append_mode)
-{
-	char	**new_files;
-	int		*new_modes;
-
-	if (!curr || !filename)
-		return ;
-	if (!realloc_and_copy_outputs(curr, &new_files, &new_modes))
-		return ;
-	new_files[curr->output_count] = remove_quotes(filename);
-	if (!new_files[curr->output_count])
-	{
-		free(new_files);
-		free(new_modes);
-		return ;
-	}
-	new_files[curr->output_count + 1] = NULL;
-	new_modes[curr->output_count] = append_mode;
-	if (curr->output_files)
-		free(curr->output_files);
-	if (curr->append_modes)
-		free(curr->append_modes);
-	curr->output_files = new_files;
-	curr->append_modes = new_modes;
-	curr->output_count++;
+    i = 0;
+    if (cmd->args)
+        while (cmd->args[i])
+            i++;
+    new_args = malloc(sizeof(char *) * (i + 2));
+    if (!new_args)
+        return ;
+    i = 0;
+    if (cmd->args)
+    {
+        while (cmd->args[i])
+        {
+            new_args[i] = cmd->args[i];
+            i++;
+        }
+    }
+    new_args[i] = ft_strdup(word);
+    new_args[i + 1] = NULL;
+    if (cmd->args)
+        free(cmd->args);
+    cmd->args = new_args;
 }

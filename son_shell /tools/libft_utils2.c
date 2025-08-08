@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 16:21:26 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/03 14:28:08 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/08 10:06:36 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,4 +61,25 @@ int	ft_strncmp(const char *s1, const char *s2, size_t n)
 		i++;
 	}
 	return (0);
+}
+
+char	*ft_strndup(const char *s, size_t n)
+{
+    char	*new_s;
+    size_t	len;
+
+    len = 0;
+    while (len < n && s[len])
+        len++;
+    new_s = malloc(sizeof(char) * (len + 1));
+    if (!new_s)
+        return (NULL);
+    new_s[len] = '\0';
+    while (len-- > 0)
+        new_s[len] = s[len];
+    return (new_s);
+}
+char	*remove_quotes_2(const char *str)
+{
+    return (remove_quotes((char *)str));
 }
