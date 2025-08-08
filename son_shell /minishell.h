@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 17:17:58 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/08 10:13:16 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/08 10:46:47 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,7 +85,18 @@ typedef struct s_pipe_data
 	t_data					*data;
 	t_command				*current;
 	int						*pipefd;
-	int						prev_fd;zzzz
+	int						prev_fd;
+}							t_pipe_data;
+
+void						free_word_array(char **array);
+void						*ft_memcpy(void *dst, const void *src, size_t n);
+int							is_token(int c);
+int							is_valid_after_pipe(int c);
+int							is_valid_filename_char(int c);
+int							ft_strcmp(const char *s1, const char *s2);
+int							ft_strncmp(const char *s1, const char *s2,
+								size_t n);
+char						*ft_strdup(const char *s1);
 char						*ft_strchr(const char *s, int c);
 char						*ft_strjoin(char const *s1, char const *s2);
 char						*find_value_by_key(t_data *data, char *key);
