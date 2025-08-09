@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   blt_cd.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yant <yant@student.42>                     +#+  +:+       +#+        */
+/*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/02 11:22:50 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/07 23:39:23 by yant             ###   ########.fr       */
+/*   Updated: 2025/08/08 18:26:39 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,16 +30,16 @@ static int	cd_to_home(t_data *data)
    if (home == NULL)
    {
    	write(2, "minishell: cd: HOME not set\n", 28);
-	free(home);
+	   free(home);
    	return (1);
    }
    if (chdir(home) != 0)
    {
    	perror("minishell: cd");
-	free(home);
+	   free(home);
    	return (1);
    }
-
+   free(home);
    return (0);
 }
 
