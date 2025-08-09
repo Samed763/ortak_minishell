@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 19:44:56 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/07 18:34:00 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/09 22:53:07 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,6 +63,5 @@ void	pipe_execute(t_data *data)
 	signal(SIGINT, SIG_IGN);
 	signal(SIGQUIT, SIG_IGN);
 	wait_for_all_children(data);
-	signal(SIGINT, signal_handler);
-	signal(SIGQUIT, SIG_IGN);
+	setup_signals();
 }

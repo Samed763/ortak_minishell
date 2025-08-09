@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 16:19:20 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/09 22:24:34 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/09 22:35:03 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,12 +25,6 @@ void	free_word_array(char **array)
 		i++;
 	}
 	free(array);
-}
-
-void	safe_dup2(int fd, int fd2)
-{
-	if (dup2(fd, fd2) == -1)
-		cleanup_and_exit(1);
 }
 
 char	**copy_env(char **envp)

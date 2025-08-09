@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 18:37:06 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/08 11:01:52 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/09 22:59:06 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,17 +46,13 @@ int	add_heredoc_to_command(t_command *cmd, char *raw_word)
 
 	if (!cmd || !raw_word)
 		return (0);
-	// delimiter'daki tırnakları temizle ve genişletme bayrağını ayarla
 	cleaned_delimiter = remove_quotes_from_word(raw_word, &should_expand);
 	if (!cleaned_delimiter)
 		return (-1);
-
 	new_heredoc = create_heredoc(cleaned_delimiter, should_expand);
 	free(cleaned_delimiter);
 	if (!new_heredoc)
 		return (-1);
-
-	// Yeni heredoc'u komutun heredoc listesinin sonuna ekle
 	if (cmd->heredocs == NULL)
 		cmd->heredocs = new_heredoc;
 	else

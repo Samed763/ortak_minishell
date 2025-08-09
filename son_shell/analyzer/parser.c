@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 17:18:03 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/08 11:10:45 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/09 22:58:45 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,9 +25,6 @@ static int	handle_redirections_2(t_data *data, t_command *current, int *i)
 		return (-1);
 	}
 	raw_word = data->word_array[*i];
-
-	// Heredoc'u özel olarak ele almalıyız çünkü "should_expand" bayrağını belirlememiz gerekiyor.
-	// Bu, komutun yürütülmesi sırasında (executor'da) heredoc'u genişletip genişletmeyeceğimize karar verir.
 	if (token_type == TOKEN_HEREDOC)
 	{
 		// add_heredoc_to_command fonksiyonunu, t_heredoc listesine içerik için
@@ -35,11 +32,7 @@ static int	handle_redirections_2(t_data *data, t_command *current, int *i)
 		if (add_heredoc_to_command(current, raw_word) == -1)
 			return (-1);
 	}
-
-	// Tüm yönlendirme türlerini, heredoc dahil, yeni t_redir listesine ekliyoruz.
-	// Bu, yürütme sırasında orijinal sırayı korumamızı sağlar.
 	add_redir_to_list(current, raw_word, token_type);
-
 	(*i)++;
 	return (0);
 }

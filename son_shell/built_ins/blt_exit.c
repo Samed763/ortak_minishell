@@ -83,14 +83,12 @@ int	builtin_exit(t_command *cmd, t_data *data, int is_parent)
 	}
 	if (args[1] && args[2])
 	{
-		// Sadece ana prosesteyken hata mesajı yaz ve çıkma.
 		if (is_parent)
 		{
 			write(2, "minishell: exit: too many arguments\n", 37);
 			data->exit_value = 1; // Çıkış kodunu 1 yap.
 			return (1); // 1 döndürerek "builtin çalıştı" de.
 		}
-		// Alt proses ise, ilk argümanı dikkate alarak devam eder (bash davranışı).
 	}
 	if (is_parent)
 		cleanup_and_exit(status % 256);

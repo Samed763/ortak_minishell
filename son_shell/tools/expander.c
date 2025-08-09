@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/28 16:15:10 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/09 20:56:57 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/09 22:56:05 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,8 +56,6 @@ char	*expand_single_line(t_data *data, char *line, int f)
 		if (result[state.i] == '$' && !state.s_quotes && !state.d_quotes
 			&& (result[state.i + 1] == '"' || result[state.i + 1] == '\''))
 		{
-			// Bu, $"..." veya $'...' durumudur. '$' karakterini atla.
-			// put_var fonksiyonunu kullanarak '$' karakterini silebiliriz.
 			char *temp_result = result;
 			result = put_var(result, "", state.i, state.i + 1); // put_var, araya boş string koyarak karakteri siler.
 			if (!result)
@@ -65,8 +63,6 @@ char	*expand_single_line(t_data *data, char *line, int f)
 				free(temp_result); // Hata durumunda eski string'i serbest bırak.
 				return (NULL);
 			}
-			// İndeksi bir azaltarak, yeni eklenen tırnak karakterinin
-			// bir sonraki döngüde "update_quoting_state" tarafından işlenmesini sağla.
 			if (state.i > 0)
 				state.i--;
 			continue; // Döngünün başına dön.

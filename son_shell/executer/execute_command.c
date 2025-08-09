@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 19:46:46 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/09 22:25:12 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/09 22:58:10 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,22 @@ void write_error_and_exit(int exit_val, char *arg, char *error)
 }
 
 
+void check_error(int access_ret,t_data *data)
+{
+	if (access_ret == -1)
+			write_error_and_exit( 127, data->cmd->args[0],
+				"command not found");
+		else if (access_ret == -2)
+			write_error_and_exit( 126, data->cmd->args[0],
+				"Permission denied");
+		else if (access_ret == -3)
+			write_error_and_exit( 126, data->cmd->args[0],
+				"Is a directory");
+		else if (access_ret == -4) // YENİ: Dosya/dizin yok hatası
+			write_error_and_exit( 127, data->cmd->args[0],
+				"No such file or directory");
+}
+
 static void child_process_routine(t_data *data, char **splitted_path)
 {
 	char *full_path;
@@ -39,18 +55,7 @@ static void child_process_routine(t_data *data, char **splitted_path)
 	{
 		access_ret = is_accessable(data->cmd->args[0], splitted_path,
 								   &full_path);
-		if (access_ret == -1)
-			write_error_and_exit( 127, data->cmd->args[0],
-				"command not found");
-		else if (access_ret == -2)
-			write_error_and_exit( 126, data->cmd->args[0],
-				"Permission denied");
-		else if (access_ret == -3)
-			write_error_and_exit( 126, data->cmd->args[0],
-				"Is a directory");
-		else if (access_ret == -4) // YENİ: Dosya/dizin yok hatası
-			write_error_and_exit( 127, data->cmd->args[0],
-				"No such file or directory");
+		check_error(access_ret,data);
 		if (execve(full_path, data->cmd->args, data->env) == -1)
 		{
 			perror("execve");
@@ -93,8 +98,7 @@ static void execute_single_external(t_data *data, char **splitted_path)
 		signal(SIGQUIT, SIG_IGN);
 		wait(&status);
 		set_exit_status(data, status);
-		signal(SIGINT, signal_handler);
-		signal(SIGQUIT, SIG_IGN);
+		setup_signals();
 	}
 }
 
