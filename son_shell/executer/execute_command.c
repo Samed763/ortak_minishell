@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 19:46:46 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/08 14:14:27 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/09 22:25:12 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,14 +15,14 @@
 #include "../minishell.h"
 
 // Hata mesajı yazıp çıkan yardımcı fonksiyon.
-void write_error_and_exit(t_data *data, int exit_val, char *arg, char *error)
+void write_error_and_exit(int exit_val, char *arg, char *error)
 {
 	write(2, "minishell: ", 11);
 	write(2, arg, ft_strlen(arg));
 	write(2, ": ", 2);
 	write(2, error, ft_strlen(error));
 	write(2, "\n", 1);
-	cleanup_and_exit(data, exit_val);
+	cleanup_and_exit(exit_val);
 }
 
 
@@ -34,31 +34,31 @@ static void child_process_routine(t_data *data, char **splitted_path)
 	signal(SIGINT, SIG_DFL);
 	signal(SIGQUIT, SIG_DFL);
 	if (handle_redirections(data->cmd) == -1)
-		cleanup_and_exit(data, 1);
+		cleanup_and_exit(1);
 	if (data->cmd->args && data->cmd->args[0])
 	{
 		access_ret = is_accessable(data->cmd->args[0], splitted_path,
 								   &full_path);
 		if (access_ret == -1)
-			write_error_and_exit(data, 127, data->cmd->args[0],
+			write_error_and_exit( 127, data->cmd->args[0],
 				"command not found");
 		else if (access_ret == -2)
-			write_error_and_exit(data, 126, data->cmd->args[0],
+			write_error_and_exit( 126, data->cmd->args[0],
 				"Permission denied");
 		else if (access_ret == -3)
-			write_error_and_exit(data, 126, data->cmd->args[0],
+			write_error_and_exit( 126, data->cmd->args[0],
 				"Is a directory");
 		else if (access_ret == -4) // YENİ: Dosya/dizin yok hatası
-			write_error_and_exit(data, 127, data->cmd->args[0],
+			write_error_and_exit( 127, data->cmd->args[0],
 				"No such file or directory");
 		if (execve(full_path, data->cmd->args, data->env) == -1)
 		{
 			perror("execve");
 			free(full_path);
-			cleanup_and_exit(data, 1);
+			cleanup_and_exit(1);
 		}
 	}
-	cleanup_and_exit(data, 0);
+	cleanup_and_exit(0);
 }
 
 static void execute_single_builtin(t_data *data)

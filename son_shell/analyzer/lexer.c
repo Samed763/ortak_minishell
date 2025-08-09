@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 19:59:27 by sadinc            #+#    #+#             */
-/*   Updated: 2025/07/30 17:37:02 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/09 22:22:37 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,7 @@ static void	fill_token_arrays(char *line, t_data *data)
 			data->word_array[word_index] = extract_word(line, &i);
 		if (!data->word_array[word_index])
 		{
-			cleanup_and_exit(data, 1);
+			cleanup_and_exit( 1);
 			return ;
 		}
 		data->token[word_index] = get_token_type(data->word_array[word_index]);
@@ -98,7 +98,7 @@ void	lexer(char *line, t_data *data)
 	data->token = malloc(sizeof(int) * (word_count + 1));
 	if (!data->word_array || !data->token)
 	{
-		cleanup_and_exit(data, 1);
+		cleanup_and_exit( 1);
 		return ;
 	}
 	fill_token_arrays(line, data);

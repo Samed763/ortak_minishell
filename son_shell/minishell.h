@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 17:17:58 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/08 15:07:03 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/09 22:29:45 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -155,8 +155,7 @@ void						read_pipe_fill_list(int pipe_read_fd,
 								t_heredoc *heredoc);
 char						**ft_split(char const *s, char c);
 void						execute_command(t_data *data);
-void						heredoc_child_process(t_data *data, int *pipefd,
-								t_heredoc *heredoc);
+void	heredoc_child_process(int *pipefd, t_heredoc *heredoc);
 int							heredoc_parent_process(int *pipefd);
 int							is_builtin(char *command);
 int							is_accessable(char *command, char **splited_path,
@@ -166,23 +165,21 @@ void						restore_fds(t_data *data);
 void						pipe_child_routine(t_pipe_data *p_data);
 int							pipe_parent_routine(t_command *current, int *pipefd,
 								int prev_fd);
-void						handle_pipe_redirections(t_data *data,
-								t_command *current, int *pipefd, int prev_fd);
-
+void						handle_pipe_redirections(t_command *current, int *pipefd, int prev_fd);
+void	init_data_instance(t_data *data);
+t_data	*get_data_instance(t_data *data_to_set);
 void						wait_for_all_children(t_data *data);
 int							apply_input_redirection(t_command *cmd);
-int							apply_output_redirection(t_command *cmd);
 int redirection(t_data * data);
 void						pipe_execute(t_data *data);
 void						signal_handler(int signum);
 void						free_command_list(t_command *head);
 void						free_heredoc_lines(t_heredoc_line *head);
 void						free_data_resources(t_data *data);
-void						cleanup_and_exit(t_data *data, int exit_code);
 int							count_word(char *line);
 int							setup_signals(void);
 void						init_data(t_data *data, char **envp);
-void						safe_dup2(int fd, int fd2, t_data *data);
+void						safe_dup2(int fd, int fd2);
 
 t_heredoc					*create_heredoc(char *delimiter, int should_expand);
 int							add_heredoc_to_command(t_command *cmd,
@@ -195,6 +192,11 @@ void						add_argument_to_command(t_command *cmd, char *word);
 char						*ft_strndup(const char *s, size_t n);
 char						*remove_quotes_2(const char *str);
 int	 handle_redirections(t_command *cmd);
-int	apply_specific_heredoc(t_heredoc *heredoc);
+int	handle_redirections(t_command *cmd);
+void						free_data_resources(t_data *data);
+// Değişen prototip (artık argüman almıyor)
+void						cleanup_and_exit(int exit_code);
+// Yeni prototip
+void						init_data_instance(t_data *data);
 
 #endif

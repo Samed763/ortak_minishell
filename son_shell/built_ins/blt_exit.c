@@ -41,8 +41,11 @@ static int	ft_atol(const char *str, long *result, int i)
 	return (0);
 }
 
-void	cleanup_and_exit(t_data *data, int exit_code)
+void	cleanup_and_exit(int exit_code)
 {
+	t_data	*data;
+
+	data = get_data_instance(NULL);
 	if (data)
 	{
 		if (data->original_stdin != -1)
@@ -90,7 +93,7 @@ int	builtin_exit(t_command *cmd, t_data *data, int is_parent)
 		// Alt proses ise, ilk argümanı dikkate alarak devam eder (bash davranışı).
 	}
 	if (is_parent)
-		cleanup_and_exit(data, status % 256);
+		cleanup_and_exit(status % 256);
 	else
 		exit(status % 256);
 	return (0);

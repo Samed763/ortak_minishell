@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 20:00:01 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/08 18:12:30 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/09 22:26:27 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,12 +14,26 @@
 
 int	g_signal_received = 0;
 
+t_data	*get_data_instance(t_data *data_to_set)
+{
+	static t_data	*data_instance = NULL;
+
+	if (data_to_set)
+		data_instance = data_to_set;
+	return (data_instance);
+}
+
+// YENİ: Programın başında çağrılarak singleton'ı başlatır.
+void	init_data_instance(t_data *data)
+{
+	get_data_instance(data);
+}
 static void	process_line(char *line, t_data *data)
 {
 	if (!line)
 	{
 		printf("exit\n");
-		cleanup_and_exit(data, data->exit_value);
+		cleanup_and_exit(data->exit_value);
 	}
 	if (line && *line)
 		add_history(line);
@@ -59,9 +73,10 @@ int	main(int argc, char **argv, char **envp)
 	(void)argc;
 	(void)argv;
 	init_data(&data, envp);
+	init_data_instance(&data);
 	if (setup_signals() == -1)
-		cleanup_and_exit(&data, 1);
+		cleanup_and_exit(1);
 	main_loop(&data);
-	cleanup_and_exit(&data, data.exit_value);
+	cleanup_and_exit(data.exit_value);
 	return (data.exit_value);
 }

@@ -6,13 +6,13 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 19:06:41 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/06 18:55:01 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/09 22:24:26 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-void	heredoc_child_process(t_data *data, int *pipefd, t_heredoc *heredoc)
+void	heredoc_child_process(int *pipefd, t_heredoc *heredoc)
 {
 	char	*line;
 
@@ -34,10 +34,10 @@ void	heredoc_child_process(t_data *data, int *pipefd, t_heredoc *heredoc)
 		free(line);
 	}
 	close(pipefd[1]);
-	cleanup_and_exit(data, 0);
+	cleanup_and_exit(0);
 }
 
-static int	process_single_heredoc(t_data *data, t_heredoc *heredoc)
+static int	process_single_heredoc(t_heredoc *heredoc)
 {
 	int		pipefd[2];
 	pid_t	pid;
@@ -53,7 +53,7 @@ static int	process_single_heredoc(t_data *data, t_heredoc *heredoc)
 		return (-1);
 	}
 	if (pid == 0)
-		heredoc_child_process(data, pipefd, heredoc);
+		heredoc_child_process(pipefd, heredoc);
 	else
 	{
 		close(pipefd[1]);
@@ -72,7 +72,7 @@ int	handle_heredoc(t_data *data, t_command *cmd)
 	current_heredoc = cmd->heredocs;
 	while (current_heredoc)
 	{
-		if (process_single_heredoc(data, current_heredoc) == -1)
+		if (process_single_heredoc(current_heredoc) == -1)
 			return (-1);
 		current_heredoc = current_heredoc->next;
 	}
