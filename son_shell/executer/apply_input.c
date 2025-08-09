@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 19:42:50 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/08 11:38:37 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/09 20:30:16 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,6 @@ int	apply_input_redirection(t_command *cmd)
 	t_heredoc	*heredoc_iter;
 	int			heredoc_idx;
 	int			target_heredoc_idx;
-	int			fd;
 
 	if (!cmd || !cmd->redirs)
 		return (0);
@@ -70,23 +69,6 @@ int	apply_input_redirection(t_command *cmd)
 	}
 	if (!last_in_redir)
 		return (0);
-	// 2. Son yönlendirmeyi uygula.
-	if (last_in_redir->type == TOKEN_REDIRECT_IN)
-	{
-		fd = open(last_in_redir->filename, O_RDONLY);
-		if (fd == -1)
-		{
-			perror(last_in_redir->filename);
-			return (-1);
-		}
-		if (dup2(fd, STDIN_FILENO) == -1)
-		{
-			close(fd);
-			perror("dup2");
-			return (-1);
-		}
-		close(fd);
-	}
 	else if (last_in_redir->type == TOKEN_HEREDOC)
 	{
 		// Doğru heredoc'u bul ve içeriğini pipe aracılığıyla STDIN'e yönlendir.

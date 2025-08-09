@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/28 16:15:10 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/07 14:39:28 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/09 20:56:57 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 int	is_identifier_char(int c)
 {
 	return ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0'
-			&& c <= '9') || c == '_');
+			&& c <= '9') || c == '_' );
 }
 
 static char	*handle_variable_expansion(t_data *data, char *line, int *i)
@@ -53,6 +53,25 @@ char	*expand_single_line(t_data *data, char *line, int f)
 	while (result && result[state.i])
 	{
 		update_quoting_state(result[state.i], &state.s_quotes, &state.d_quotes);
+		if (result[state.i] == '$' && !state.s_quotes && !state.d_quotes
+			&& (result[state.i + 1] == '"' || result[state.i + 1] == '\''))
+		{
+			// Bu, $"..." veya $'...' durumudur. '$' karakterini atla.
+			// put_var fonksiyonunu kullanarak '$' karakterini silebiliriz.
+			char *temp_result = result;
+			result = put_var(result, "", state.i, state.i + 1); // put_var, araya boş string koyarak karakteri siler.
+			if (!result)
+			{
+				free(temp_result); // Hata durumunda eski string'i serbest bırak.
+				return (NULL);
+			}
+			// İndeksi bir azaltarak, yeni eklenen tırnak karakterinin
+			// bir sonraki döngüde "update_quoting_state" tarafından işlenmesini sağla.
+			if (state.i > 0)
+				state.i--;
+			continue; // Döngünün başına dön.
+		}
+		
 		if (result[state.i] == '$' && (f == 1 || state.s_quotes == 0))
 		{
 			if (result[state.i + 1] && is_valid_to_expand(result[state.i + 1]))
