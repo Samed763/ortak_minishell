@@ -6,15 +6,18 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 19:53:31 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/09 22:46:15 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/10 15:15:22 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
+# include <signal.h>
+# include <unistd.h>
+# include <sys/wait.h>
+# include <stdio.h>
 
-
-
-int	handle_pipe_redirections(t_command *current, int *pipefd, int prev_fd)
+static int	handle_pipe_redirections(t_command *current, int *pipefd,
+		int prev_fd)
 {
 	if (prev_fd != -1)
 	{
@@ -27,7 +30,7 @@ int	handle_pipe_redirections(t_command *current, int *pipefd, int prev_fd)
 		close(pipefd[0]);
 		if (dup2(pipefd[1], STDOUT_FILENO) == -1)
 		{
-			close(pipefd[1]); // Hata olursa sızıntıyı önle!
+			close(pipefd[1]);
 			return (perror("dup2"), -1);
 		}
 		close(pipefd[1]);
@@ -52,7 +55,8 @@ void	pipe_child_routine(t_pipe_data *p_data)
 		cleanup_and_exit(p_data->data->exit_value);
 	if (is_accessable(p_data->current->args[0], p_data->data->splitted_path,
 			&full_path) == -1)
-		write_error_and_exit(127,p_data->current->args[0],": command not found\n");
+		write_error_and_exit(127, p_data->current->args[0],
+			": command not found\n");
 	if (execve(full_path, p_data->current->args, p_data->data->env) == -1)
 	{
 		perror("execve");
@@ -61,7 +65,6 @@ void	pipe_child_routine(t_pipe_data *p_data)
 	}
 }
 
-// ... (dosyanın geri kalanı aynı)
 int	pipe_parent_routine(t_command *current, int *pipefd, int prev_fd)
 {
 	if (prev_fd != -1)
@@ -73,6 +76,7 @@ int	pipe_parent_routine(t_command *current, int *pipefd, int prev_fd)
 	}
 	return (-1);
 }
+
 static int	get_last_pid_and_count(t_command *cmd, pid_t *last_pid)
 {
 	t_command	*iter;
@@ -90,6 +94,7 @@ static int	get_last_pid_and_count(t_command *cmd, pid_t *last_pid)
 	}
 	return (count);
 }
+
 void	wait_for_all_children(t_data *data)
 {
 	int		cmd_count;

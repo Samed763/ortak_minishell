@@ -6,44 +6,20 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 19:46:46 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/10 10:34:19 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/10 15:12:12 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
+# include <signal.h>
+# include <stdio.h>
+# include <unistd.h>
+# include <sys/wait.h>
 
-// Hata mesajı yazıp çıkan yardımcı fonksiyon.
-void write_error_and_exit(int exit_val, char *arg, char *error)
+static void	child_process_routine(t_data *data, char **splitted_path)
 {
-	write(2, "minishell: ", 11);
-	write(2, arg, ft_strlen(arg));
-	write(2, ": ", 2);
-	write(2, error, ft_strlen(error));
-	write(2, "\n", 1);
-	cleanup_and_exit(exit_val);
-}
-
-
-void check_error(int access_ret,t_data *data)
-{
-	if (access_ret == -1)
-			write_error_and_exit( 127, data->cmd->args[0],
-				"command not found");
-		else if (access_ret == -2)
-			write_error_and_exit( 126, data->cmd->args[0],
-				"Permission denied");
-		else if (access_ret == -3)
-			write_error_and_exit( 126, data->cmd->args[0],
-				"Is a directory");
-		else if (access_ret == -4) // YENİ: Dosya/dizin yok hatası
-			write_error_and_exit( 127, data->cmd->args[0],
-				"No such file or directory");
-}
-
-static void child_process_routine(t_data *data, char **splitted_path)
-{
-	char *full_path;
-	int access_ret;
+	char	*full_path;
+	int		access_ret;
 
 	signal(SIGINT, SIG_DFL);
 	signal(SIGQUIT, SIG_DFL);
@@ -52,8 +28,8 @@ static void child_process_routine(t_data *data, char **splitted_path)
 	if (data->cmd->args && data->cmd->args[0])
 	{
 		access_ret = is_accessable(data->cmd->args[0], splitted_path,
-								   &full_path);
-		check_error(access_ret,data);
+				&full_path);
+		check_error(access_ret, data);
 		if (execve(full_path, data->cmd->args, data->env) == -1)
 		{
 			perror("execve");
@@ -64,7 +40,7 @@ static void child_process_routine(t_data *data, char **splitted_path)
 	cleanup_and_exit(0);
 }
 
-static void execute_single_builtin(t_data *data)
+static void	execute_single_builtin(t_data *data)
 {
 	data->original_stdin = dup(STDIN_FILENO);
 	data->original_stdout = dup(STDOUT_FILENO);
@@ -75,18 +51,17 @@ static void execute_single_builtin(t_data *data)
 	restore_fds(data);
 }
 
-// Harici bir komutu çalıştıran fonksiyon.
-static void execute_single_external(t_data *data, char **splitted_path)
+static void	execute_single_external(t_data *data, char **splitted_path)
 {
-	pid_t pid;
-	int status;
+	pid_t	pid;
+	int		status;
 
 	pid = fork();
 	if (pid == -1)
 	{
 		perror("fork");
 		data->exit_value = 1;
-		return;
+		return ;
 	}
 	if (pid == 0)
 		child_process_routine(data, splitted_path);
@@ -100,10 +75,9 @@ static void execute_single_external(t_data *data, char **splitted_path)
 	}
 }
 
-// Tüm heredoc'ları okuyan fonksiyon.
-static int handle_all_heredocs(t_data *data)
+static int	handle_all_heredocs(t_data *data)
 {
-	t_command *current_cmd;
+	t_command	*current_cmd;
 
 	current_cmd = data->cmd;
 	while (current_cmd)
@@ -121,13 +95,12 @@ static int handle_all_heredocs(t_data *data)
 	return (0);
 }
 
-// Komut yürütmenin ana giriş noktası.
-void execute_command(t_data *data)
+void	execute_command(t_data *data)
 {
-	char *path_val;
+	char	*path_val;
 
 	if (handle_all_heredocs(data) == -1)
-		return;
+		return ;
 	path_val = find_value_by_key(data, "PATH");
 	data->splitted_path = ft_split(path_val, ':');
 	if (path_val)

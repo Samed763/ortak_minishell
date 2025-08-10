@@ -6,49 +6,13 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 22:10:08 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/10 08:40:42 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/10 15:12:27 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
-
-// YENİ: Heredoc satırlarını pipe'ın yazma ucuna yazan yardımcı fonksiyon.
-static void	write_heredoc_to_pipe(int write_fd, t_heredoc *heredoc)
-{
-	t_heredoc_line	*current_line;
-
-	current_line = heredoc->lines;
-	while (current_line)
-	{
-		write(write_fd, current_line->content,
-			ft_strlen(current_line->content));
-		write(write_fd, "\n", 1);
-		current_line = current_line->next;
-	}
-}
-
-int	apply_specific_heredoc(t_heredoc *heredoc)
-{
-	int	pipefd[2];
-
-	if (!heredoc)
-		return (0);
-	if (pipe(pipefd) == -1)
-	{
-		perror("pipe");
-		return (-1);
-	}
-	write_heredoc_to_pipe(pipefd[1], heredoc);
-	close(pipefd[1]);
-	if (dup2(pipefd[0], STDIN_FILENO) == -1)
-	{
-		perror("dup2");
-		close(pipefd[0]);
-		return (-1);
-	}
-	close(pipefd[0]);
-	return (0);
-}
+# include <unistd.h>
+# include <stdio.h>
 
 static int	apply_output_redirection(t_redir *redir)
 {
@@ -95,7 +59,6 @@ static int	apply_input_file_redirection(t_redir *redir)
 	return (0);
 }
 
-// YENİ: Tek bir yönlendirmeyi işleyen yardımcı fonksiyon.
 static int	process_single_redirection(t_redir *redir, t_heredoc **heredoc_iter)
 {
 	if (redir->type == TOKEN_REDIRECT_OUT || redir->type == TOKEN_APPEND)
@@ -118,7 +81,6 @@ static int	process_single_redirection(t_redir *redir, t_heredoc **heredoc_iter)
 	return (0);
 }
 
-// GÜNCELLENDİ: Artık Norm'a uygun ve daha kısa.
 int	handle_redirections(t_command *cmd)
 {
 	t_redir		*redir_iter;

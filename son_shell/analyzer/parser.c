@@ -6,20 +6,21 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 17:18:03 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/09 22:58:45 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/10 15:16:17 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
+# include <stdio.h>
 
-static int	handle_redirections_2(t_data *data, t_command *current, int *i)
+static int	parse_redirections(t_data *data, t_command *current, int *i)
 {
 	char	*raw_word;
 	int		token_type;
 
 	token_type = data->token[*i];
 	(*i)++;
-	if (!data->word_array[*i]) // Token'dan sonra dosya adı yoksa sentaks hatasıdır.
+	if (!data->word_array[*i])
 	{
 		printf("syntax error near unexpected token\n");
 		return (-1);
@@ -27,8 +28,6 @@ static int	handle_redirections_2(t_data *data, t_command *current, int *i)
 	raw_word = data->word_array[*i];
 	if (token_type == TOKEN_HEREDOC)
 	{
-		// add_heredoc_to_command fonksiyonunu, t_heredoc listesine içerik için
-		// bir düğüm ekleyecek şekilde güncelleyeceğiz.
 		if (add_heredoc_to_command(current, raw_word) == -1)
 			return (-1);
 	}
@@ -48,10 +47,6 @@ static t_command	*handle_pipe_token(t_command *current, t_command *head)
 	return (current->next);
 }
 
-/*
-** DEĞİŞTİRİLDİ: dispatch_token ve process_token
-** Mantık aynı kaldı, sadece handle_redirections'ın yeni versiyonunu kullanıyor.
-*/
 static int	dispatch_token(t_data *data, t_command **curr, t_command *head,
 		int *i)
 {
@@ -69,10 +64,9 @@ static int	dispatch_token(t_data *data, t_command **curr, t_command *head,
 	}
 	else
 	{
-		// Yeniden yazdığımız handle_redirections fonksiyonunu çağırıyoruz.
-		if (handle_redirections_2(data, *curr, i) == -1)
+		if (parse_redirections(data, *curr, i) == -1)
 		{
-			free_command_list(head); // Hata durumunda hafızayı temizle.
+			free_command_list(head);
 			return (1);
 		}
 	}

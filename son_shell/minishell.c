@@ -6,13 +6,34 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 20:00:01 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/10 10:31:08 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/10 15:10:47 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+# include <readline/history.h>
+# include <readline/readline.h>
+# include <signal.h>
 
 int	g_signal_received = 0;
+
+static void	init_data(t_data *data, char **envp)
+{
+	data->env = copy_env(envp);
+	if (!data->env)
+	{
+		perror("Failed to copy environment variables");
+		exit(1);
+	}
+	data->exit_value = 0;
+	data->cmd = NULL;
+	data->word_array = NULL;
+	data->token = NULL;
+	data->splitted_path = NULL;
+	data->original_stdin = -1;
+	data->original_stdout = -1;
+	get_data_instance(data);
+}
 
 t_data	*get_data_instance(t_data *data_to_set)
 {
@@ -67,10 +88,8 @@ int	main(int argc, char **argv, char **envp)
 	(void)argc;
 	(void)argv;
 	init_data(&data, envp);
-	get_data_instance(&data);
 	if (setup_signals() == -1)
 		cleanup_and_exit(1);
-	printf("%d",getpid());
 	main_loop(&data);
 	cleanup_and_exit(data.exit_value);
 	return (data.exit_value);

@@ -6,11 +6,13 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/02 11:22:50 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/08 18:26:39 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/10 15:16:26 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "built_in.h"
+# include <stdio.h>
+# include <unistd.h>
 
 static int	count_args(char **args)
 {

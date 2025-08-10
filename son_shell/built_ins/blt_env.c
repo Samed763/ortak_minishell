@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "built_in.h"
+# include <stdio.h>
 
 int	builtin_env(char **env)
 {

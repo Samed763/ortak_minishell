@@ -6,13 +6,13 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 18:37:06 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/09 22:59:06 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/10 12:54:27 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-t_heredoc	*create_heredoc(char *delimiter, int should_expand)
+static t_heredoc	*create_heredoc(char *delimiter, int should_expand)
 {
 	t_heredoc	*new_heredoc;
 
@@ -31,12 +31,6 @@ t_heredoc	*create_heredoc(char *delimiter, int should_expand)
 	return (new_heredoc);
 }
 
-/*
-** GÜNCELLENDİ: add_heredoc_to_command
-** Bu fonksiyon artık sadece heredoc içeriklerini (delimiter, satırlar vb.)
-** tutacak olan t_heredoc listesine bir eleman ekler.
-** Yönlendirmenin kendisi (t_redir) zaten parser tarafından listeye ekleniyor.
-*/
 int	add_heredoc_to_command(t_command *cmd, char *raw_word)
 {
 	t_heredoc	*new_heredoc;
@@ -64,28 +58,29 @@ int	add_heredoc_to_command(t_command *cmd, char *raw_word)
 	}
 	return (0);
 }
-// YENİ FONKSİYON
+
 void	add_redir_to_list(t_command *cmd, char *filename, int type)
 {
-    t_redir	*new_redir;
-    t_redir	*current;
+	t_redir	*new_redir;
+	t_redir	*current;
 
-    new_redir = malloc(sizeof(t_redir));
-    if (!new_redir)
-        return ;
-    new_redir->filename = remove_quotes(filename); // Dosya adındaki tırnakları temizle
-    new_redir->type = type;
-    new_redir->next = NULL;
-    if (!cmd->redirs)
-        cmd->redirs = new_redir;
-    else
-    {
-        current = cmd->redirs;
-        while (current->next)
-            current = current->next;
-        current->next = new_redir;
-    }
+	new_redir = malloc(sizeof(t_redir));
+	if (!new_redir)
+		return ;
+	new_redir->filename = remove_quotes(filename);
+	new_redir->type = type;
+	new_redir->next = NULL;
+	if (!cmd->redirs)
+		cmd->redirs = new_redir;
+	else
+	{
+		current = cmd->redirs;
+		while (current->next)
+			current = current->next;
+		current->next = new_redir;
+	}
 }
+
 static char	**realloc_args(char **old_args, char *cleaned_word)
 {
 	char	**new_args;

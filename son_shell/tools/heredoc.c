@@ -6,11 +6,16 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 19:06:41 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/10 10:34:15 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/10 15:11:39 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
+# include <readline/history.h>
+# include <readline/readline.h>
+# include <signal.h>
+# include <unistd.h>
+# include <sys/wait.h>
 
 void	heredoc_child_process(int *pipefd, t_heredoc *heredoc)
 {

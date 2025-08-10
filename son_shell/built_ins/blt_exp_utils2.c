@@ -41,17 +41,17 @@ int	is_valid_var(const char *str)
 	int	i;
 
 	if (!str || !*str)
-		return (1);
+		return (0);
 	if (!(ft_isalpha(*str) || *str == '_'))
-		return (1);
+		return (0);
 	i = 1;
 	while (str[i] && str[i] != '=')
 	{
 		if (!(ft_isalnum(str[i]) || str[i] == '_'))
-			return (1);
+			return (0);
 		i++;
 	}
-	return (0);
+	return (1);
 }
 
 int	find_env_var(char **env, char *new_entry, int name_len)

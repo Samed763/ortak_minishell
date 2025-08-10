@@ -6,11 +6,15 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 19:37:55 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/08 14:14:12 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/10 15:16:13 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
+#include <sys/stat.h>
+# include <unistd.h>
+# include <stdio.h>
+# include <signal.h>
 
 int	is_builtin(char *command)
 {
@@ -33,8 +37,7 @@ int	is_builtin(char *command)
 	return (0);
 }
 
-static int	search_in_path(char *command, char **splited_path,
-							char **full_path)
+static int	search_in_path(char *command, char **splited_path, char **full_path)
 {
 	int		i;
 	char	*temp_path;
@@ -65,16 +68,15 @@ int	is_accessable(char *command, char **splited_path, char **full_path)
 		if (stat(command, &path_stat) == 0)
 		{
 			if (S_ISDIR(path_stat.st_mode))
-				return (-3); // YENİ: Dizin hatası
+				return (-3);
 		}
 		if (access(command, F_OK) != 0)
 			return (-4);
 		if (access(command, X_OK) != 0)
-			return (-2); // İzin reddedildi
+			return (-2);
 		*full_path = ft_strdup(command);
 		return (0);
 	}
-	
 	return (search_in_path(command, splited_path, full_path));
 }
 

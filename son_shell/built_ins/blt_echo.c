@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "built_in.h"
+# include <unistd.h>
 
 static int	is_valid_n_flag(char *str)
 {

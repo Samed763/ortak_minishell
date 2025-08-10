@@ -11,6 +11,8 @@
 /* ************************************************************************** */
 
 #include "built_in.h"
+# include <stdio.h>
+# include <unistd.h>
 
 int	builtin_pwd(void)
 {

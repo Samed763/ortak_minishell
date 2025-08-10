@@ -6,11 +6,12 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 19:07:05 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/06 16:54:59 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/10 15:11:52 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
+# include <unistd.h>
 
 void	expand_heredoc_lines(t_data *data, t_command *cmd)
 {

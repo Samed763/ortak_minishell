@@ -12,6 +12,9 @@
 
 #include "../minishell.h"
 #include <limits.h>
+# include <unistd.h>
+# include <stdio.h>
+# include <readline/history.h>
 
 static int	ft_atol(const char *str, long *result, int i)
 {

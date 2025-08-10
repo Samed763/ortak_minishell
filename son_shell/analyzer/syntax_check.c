@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 19:53:19 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/09 16:14:21 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/10 12:55:40 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,24 +17,23 @@ static int	check_token_syntax(char *line, int i)
 	int	j;
 
 	if (line[i] == '|' && line[i + 1] && line[i + 1] == '|')
-		return (1); // Hata: '||' desteklenmiyor
-	if ((line[i] == '>' || line[i] == '<') && line[i + 1] == line[i] && line[i
-		+ 2] == line[i])
+		return (1);
+	if ((line[i] == '>' || line[i] == '<') && line[i + 1] == line[i]
+		&& line[i + 2] == line[i])
 		return (1);
 	j = i;
 	if ((line[j] == '<' || line[j] == '>') && line[j + 1] == line[j])
-		j++; // '<<' veya '>>' ise bir karakter atla
+		j++;
 	j++;
 	while (line[j] && (line[j] == ' ' || line[j] == '\t'))
 		j++;
 	if (is_token(line[i]))
 	{
-		if (line[j] == '\0') // Satır sonu ise hata
+		if (line[j] == '\0')
 			return (1);
 		if (line[i] != '|' && is_token(line[j]))
-			// Yönlendirme sonrası başka bir token gelirse hata
 			return (1);
-		if (line[i] == '|' && line[j] == '|') // '||' durumu
+		if (line[i] == '|' && line[j] == '|')
 			return (1);
 	}
 	return (0);

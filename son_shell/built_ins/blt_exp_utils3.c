@@ -6,11 +6,12 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/02 11:22:38 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/07 15:16:03 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/02 11:22:38 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "built_in.h"
+#include "../minishell.h"
 
 void	print_env_vars(char **copy, int count)
 {
@@ -22,8 +23,8 @@ void	print_env_vars(char **copy, int count)
 	{
 		eq = ft_strchr(copy[i], '=');
 		if (eq)
-			printf("declare -x %.*s=\"%s\"\n", (int)(eq - copy[i]), copy[i], eq
-				+ 1);
+			printf("declare -x %.*s=\"%s\"\n", (int)(eq - copy[i]),
+				copy[i], eq + 1);
 		else
 			printf("declare -x %s\n", copy[i]);
 		free(copy[i]);
@@ -44,13 +45,13 @@ int	print_sorted_env(char **env)
 	char	**copy;
 
 	if (!env)
-		return (1);
+		return 1;
 	count = 0;
 	while (env[count])
 		count++;
 	copy = malloc((count + 1) * sizeof(char *));
 	if (!copy)
-		return (1);
+		return 1;
 	i = 0;
 	while (i < count)
 	{
@@ -61,7 +62,7 @@ int	print_sorted_env(char **env)
 	bubble_sort_env(copy, count);
 	print_env_vars(copy, count);
 	free(copy);
-	return (0);
+	return 0;
 }
 
 int	add_new_var(t_data *data, char *new_entry)
@@ -73,9 +74,10 @@ int	add_new_var(t_data *data, char *new_entry)
 	{
 		free(new_entry);
 		perror("export");
-		return (1);
+		return (0);
 	}
 	free(data->env);
 	data->env = new_env;
-	return (0);
+	return (1);
 }
+
