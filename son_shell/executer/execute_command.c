@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 19:46:46 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/10 17:01:06 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/11 19:20:54 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,21 +78,29 @@ static void	execute_single_external(t_data *data, char **splitted_path)
 static int	handle_all_heredocs(t_data *data)
 {
 	t_command	*current_cmd;
+	int status;
 
+	status = 0;
 	current_cmd = data->cmd;
 	while (current_cmd)
 	{
 		if (current_cmd->heredocs)
 		{
-			if (handle_heredoc(data, current_cmd) == -1)
+			status = handle_heredoc(data, current_cmd);
+			if (status == -1)
 			{
 				data->exit_value = 1;
+				return (-1);
+			}
+			if (status == 130)
+			{
+				data->exit_value = 130;
 				return (-1);
 			}
 		}
 		current_cmd = current_cmd->next;
 	}
-	return (0);
+	return (status);
 }
 
 void	execute_command(t_data *data)

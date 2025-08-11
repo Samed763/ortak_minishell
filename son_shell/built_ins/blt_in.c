@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/02 11:22:32 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/10 17:53:01 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/08 14:56:02 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 
 static int	handle_echo_cd_pwd(t_command *current_cmd, t_data *data)
 {
+	(void)data;
 	if (ft_strcmp(current_cmd->args[0], "echo") == 0)
 	{
 		data->exit_value = builtin_echo(current_cmd->args);
@@ -56,6 +57,8 @@ static int	handle_env_exit(t_command *current_cmd, t_data *data, int is_parent)
 	}
 	if (ft_strcmp(current_cmd->args[0], "exit") == 0)
 	{
+		// `builtin_exit` sadece "too many arguments" durumunda döner.
+		// Bu durumda dönen `1` değerini `data->exit_value`'ya atıyoruz.
 		data->exit_value = builtin_exit(current_cmd, data, is_parent);
 		return (1);
 	}

@@ -93,7 +93,7 @@ static int	validate_and_process_arg(t_data *data, char *arg)
 int	builtin_export(t_data *data) //export başaralı başarız return dönücek şu anda yanlış 
 {
 	int	i;
-	if (!data || !data->cmd || !data->cmd->args || !data->env)
+	if (!data || !data->cmd || !data->cmd->args || !data->env )
 	{
 		write(2, "export: internal error\n", 23);
 		return 1;

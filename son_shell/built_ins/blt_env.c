@@ -15,12 +15,18 @@
 
 int	builtin_env(char **env)
 {
-	int	i;
+	int		i;
+	char	*eq;
 
 	i = 0;
 	while (env[i])
 	{
-		printf("%s\n", env[i]);
+		eq = ft_strchr(env[i], '=');
+		// Sadece değeri olan variable'ları yazdır
+		if (eq && *(eq + 1) != '\0')
+		{
+			printf("%s\n", env[i]);
+		}
 		i++;
 	}
 	return (0);

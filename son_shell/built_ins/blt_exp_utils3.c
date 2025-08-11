@@ -23,8 +23,14 @@ void	print_env_vars(char **copy, int count)
 	{
 		eq = ft_strchr(copy[i], '=');
 		if (eq)
-			printf("declare -x %.*s=\"%s\"\n", (int)(eq - copy[i]),
-				copy[i], eq + 1);
+		{
+			// Değer var mı kontrol et
+			if (*(eq + 1) != '\0')  // Değer varsa
+				printf("declare -x %.*s=\"%s\"\n", (int)(eq - copy[i]),
+					copy[i], eq + 1);
+			else  // Değer yoksa (sadece "NAME=" durumu)
+				printf("declare -x %.*s\n", (int)(eq - copy[i]), copy[i]);
+		}
 		else
 			printf("declare -x %s\n", copy[i]);
 		free(copy[i]);
