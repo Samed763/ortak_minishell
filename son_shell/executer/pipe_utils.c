@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 19:53:31 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/12 17:39:10 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/12 17:46:04 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,6 @@ void	pipe_child_routine(t_pipe_data *p_data)
 	 
 	signal(SIGINT, SIG_DFL);
 	signal(SIGQUIT, SIG_DFL);
-	signal(SIGPIPE, SIG_IGN);
 	if (handle_pipe_redirections(p_data->current, p_data->pipefd,
 			p_data->prev_fd) == -1)
 		cleanup_and_exit(1);
