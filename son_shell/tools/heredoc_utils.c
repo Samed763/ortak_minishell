@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 19:07:05 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/10 15:11:52 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/12 17:57:20 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,30 +116,3 @@ void	read_pipe_fill_list(int pipe_read_fd, t_heredoc *heredoc)
 	free(full_content);
 }
 
-void	add_line_to_heredoc(t_heredoc *heredoc, char *content)
-{
-	t_heredoc_line	*new_line;
-	t_heredoc_line	*current;
-
-	if (!heredoc || !content)
-		return ;
-	new_line = malloc(sizeof(t_heredoc_line));
-	if (!new_line)
-		return ;
-	new_line->content = ft_strdup(content);
-	if (!new_line->content)
-	{
-		free(new_line);
-		return ;
-	}
-	new_line->next = NULL;
-	if (heredoc->lines == NULL)
-		heredoc->lines = new_line;
-	else
-	{
-		current = heredoc->lines;
-		while (current->next)
-			current = current->next;
-		current->next = new_line;
-	}
-}
