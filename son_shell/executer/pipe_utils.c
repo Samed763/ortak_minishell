@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 19:53:31 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/12 17:46:04 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/12 19:08:57 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,6 +110,8 @@ void	wait_for_all_children(t_data *data)
 	while (cmd_count > 0)
 	{
 		waited_pid = wait(&status);
+		if (WIFSIGNALED(status) && WTERMSIG(status) == SIGINT)
+			write(STDOUT_FILENO, "\n", 1);
 		if (waited_pid == last_pid)
 			last_status = status;
 		cmd_count--;
