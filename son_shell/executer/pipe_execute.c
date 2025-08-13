@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 19:44:56 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/13 18:41:02 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/13 20:30:00 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,122 +16,305 @@
 # include <unistd.h>
 
 /**
- * Safely close file descriptor and set to -1
+ * Check if command has heredoc input redirection
  */
-static void	safe_close(int *fd)
+static int	has_heredoc_input(t_command *cmd)
 {
-	if (*fd != -1)
-	{
-		close(*fd);
-		*fd = -1;
-	}
-}
+	t_redir	*redir;
 
-/**
- * Initialize pipe file descriptors for all commands
- */
-static int	init_all_pipes(t_data *data)
-{
-	t_command	*cmd;
-
-	cmd = data->cmd;
-	while (cmd)
+	if (!cmd || !cmd->redirs)
+		return (0);
+	
+	redir = cmd->redirs;
+	while (redir)
 	{
-		cmd->pipe_fd[0] = -1;
-		cmd->pipe_fd[1] = -1;
-		if (cmd->next)
-		{
-			if (pipe(cmd->pipe_fd) == -1)
-			{
-				perror("pipe");
-				return (-1);
-			}
-		}
-		cmd = cmd->next;
+		if (redir->type == TOKEN_HEREDOC)
+			return (1);
+		redir = redir->next;
 	}
 	return (0);
 }
 
 /**
- * Fork and execute a single command in the pipe chain
+ * Count the number of commands in the pipe chain
  */
-static pid_t	fork_and_execute(t_pipe_data *p_data)
+static int	count_commands(t_command *cmd)
 {
-	pid_t	pid;
+	int	count;
 
-	pid = fork();
-	if (pid == -1)
+	count = 0;
+	while (cmd)
 	{
-		perror("fork");
-		return (-1);
+		count++;
+		cmd = cmd->next;
 	}
-	else if (pid == 0)
-		pipe_child_routine(p_data);
-	return (pid);
+	return (count);
 }
 
 /**
- * Close appropriate pipe ends in parent after forking
+ * Execute a single command in the pipe chain
  */
-static void	parent_close_pipe_ends(t_command *cmd, t_command *prev_cmd)
+static void	execute_single_command(t_command *cmd, t_data *data, int input_fd, int output_fd)
 {
-	// Close the read end of the previous pipe (already read by current child)
-	if (prev_cmd && prev_cmd->pipe_fd[0] != -1)
-		safe_close(&prev_cmd->pipe_fd[0]);
-	
-	// Close the write end of the current pipe (written by current child)
-	if (cmd->next && cmd->pipe_fd[1] != -1)
-		safe_close(&cmd->pipe_fd[1]);
-}
+	char	*full_path;
+	int		access_ret;
 
-/**
- * Execute the pipe chain
- */
-static void	execute_pipe_loop(t_pipe_data *p_data)
-{
-	pid_t		pid;
-	t_command	*prev_cmd;
+	signal(SIGINT, SIG_DFL);
+	signal(SIGQUIT, SIG_DFL);
+	signal(SIGPIPE, SIG_DFL);  // Handle SIGPIPE properly
 
-	if (init_all_pipes(p_data->data) == -1)
-		return ;
-	
-	p_data->current = p_data->data->cmd;
-	prev_cmd = NULL;
-	
-	while (p_data->current)
+	// Setup input redirection from pipe (will be overridden by heredoc if present)
+	if (input_fd != STDIN_FILENO && input_fd >= 0)
 	{
-		p_data->prev_cmd = prev_cmd;
-		pid = fork_and_execute(p_data);
-		if (pid == -1)
+		if (dup2(input_fd, STDIN_FILENO) == -1)
 		{
-			cleanup_pipe_fds(p_data->data);
-			return ;
+			perror("dup2 input");
+			cleanup_and_exit(1);
 		}
-		
-		p_data->current->pid = pid;
-		parent_close_pipe_ends(p_data->current, prev_cmd);
-		
-		prev_cmd = p_data->current;
-		p_data->current = p_data->current->next;
+		close(input_fd);
 	}
-	
-	// Close any remaining pipe file descriptors
-	cleanup_pipe_fds(p_data->data);
+
+	// Setup output redirection to pipe (will be overridden by file redirections if present)
+	if (output_fd != STDOUT_FILENO && output_fd >= 0)
+	{
+		if (dup2(output_fd, STDOUT_FILENO) == -1)
+		{
+			perror("dup2 output");
+			cleanup_and_exit(1);
+		}
+		close(output_fd);
+	}
+
+	// Handle file redirections - these override pipe redirections
+	// This is important: heredoc will override the pipe input we set above
+	if (handle_redirections(cmd) == -1)
+		cleanup_and_exit(1);
+
+	// Check if command is empty
+	if (!cmd->args || !cmd->args[0])
+		cleanup_and_exit(0);
+
+	// Try to execute builtin command
+	if (try_builtin(cmd, data, 0))
+		cleanup_and_exit(data->exit_value);
+
+	// Execute external command
+	access_ret = is_accessable(cmd->args[0], data->splitted_path, &full_path);
+	check_error(access_ret, data);
+
+	if (execve(full_path, cmd->args, data->env) == -1)
+	{
+		perror("execve");
+		free(full_path);
+		cleanup_and_exit(1);
+	}
 }
 
 /**
- * Main pipe execution function
+ * Create pipes selectively - skip pipes where the next command has heredoc
+ */
+static int	**create_pipes_selective(t_data *data, int cmd_count)
+{
+	int			**pipes;
+	int			i;
+	t_command	*cmd;
+
+	if (cmd_count <= 1)
+		return (NULL);
+
+	pipes = malloc(sizeof(int *) * (cmd_count - 1));
+	if (!pipes)
+		return (NULL);
+
+	// Initialize all to NULL
+	i = 0;
+	while (i < cmd_count - 1)
+	{
+		pipes[i] = NULL;
+		i++;
+	}
+
+	// Create pipes only where needed
+	cmd = data->cmd;
+	i = 0;
+	while (cmd && i < cmd_count - 1)
+	{
+		// Don't create a pipe if the next command has heredoc
+		if (cmd->next && has_heredoc_input(cmd->next))
+		{
+			pipes[i] = NULL;  // No pipe needed
+		}
+		else
+		{
+			pipes[i] = malloc(sizeof(int) * 2);
+			if (!pipes[i] || pipe(pipes[i]) == -1)
+			{
+				perror("pipe");
+				// Cleanup already created pipes
+				while (--i >= 0)
+				{
+					if (pipes[i])
+					{
+						close(pipes[i][0]);
+						close(pipes[i][1]);
+						free(pipes[i]);
+					}
+				}
+				free(pipes);
+				return (NULL);
+			}
+		}
+		cmd = cmd->next;
+		i++;
+	}
+	return (pipes);
+}
+
+/**
+ * Close all pipe file descriptors in parent process
+ */
+static void	close_all_pipes(int **pipes, int pipe_count)
+{
+	int	i;
+
+	if (!pipes)
+		return;
+
+	i = 0;
+	while (i < pipe_count)
+	{
+		if (pipes[i])
+		{
+			if (pipes[i][0] != -1)
+				close(pipes[i][0]);
+			if (pipes[i][1] != -1)
+				close(pipes[i][1]);
+			free(pipes[i]);
+		}
+		i++;
+	}
+	free(pipes);
+}
+
+/**
+ * Execute the entire pipe chain
  */
 void	pipe_execute(t_data *data)
 {
-	t_pipe_data	p_data;
+	t_command	*cmd;
+	int			**pipes;
+	int			cmd_count;
+	int			i;
+	pid_t		pid;
+	int			input_fd;
+	int			output_fd;
+	int			devnull_fd;
 
-	p_data.data = data;
-	p_data.current = NULL;
-	p_data.prev_cmd = NULL;
+	cmd_count = count_commands(data->cmd);
+	pipes = create_pipes_selective(data, cmd_count);
 	
-	execute_pipe_loop(&p_data);
-	
+	if (cmd_count > 1 && !pipes)
+	{
+		data->exit_value = 1;
+		return;
+	}
+
+	// Pre-open /dev/null to avoid opening it multiple times
+	devnull_fd = -1;
+
+	cmd = data->cmd;
+	i = 0;
+	while (cmd)
+	{
+		// Determine input file descriptor
+		if (i == 0)
+			input_fd = STDIN_FILENO;
+		else if (pipes && pipes[i - 1])
+			input_fd = pipes[i - 1][0];
+		else
+			input_fd = STDIN_FILENO;  // No pipe from previous command
+
+		// Determine output file descriptor
+		if (i == cmd_count - 1)
+			output_fd = STDOUT_FILENO;
+		else if (cmd->next && has_heredoc_input(cmd->next))
+		{
+			// Next command has heredoc, redirect this command's output to /dev/null
+			if (devnull_fd == -1)
+			{
+				devnull_fd = open("/dev/null", O_WRONLY);
+				if (devnull_fd == -1)
+				{
+					perror("open /dev/null");
+					close_all_pipes(pipes, cmd_count - 1);
+					data->exit_value = 1;
+					return;
+				}
+			}
+			output_fd = devnull_fd;
+		}
+		else if (pipes && pipes[i])
+			output_fd = pipes[i][1];
+		else
+			output_fd = STDOUT_FILENO;  // No pipe to next command
+
+		pid = fork();
+		if (pid == -1)
+		{
+			perror("fork");
+			if (devnull_fd != -1)
+				close(devnull_fd);
+			close_all_pipes(pipes, cmd_count - 1);
+			data->exit_value = 1;
+			return;
+		}
+		else if (pid == 0)
+		{
+			// Child process - close all other pipes except the ones we need
+			if (pipes)
+			{
+				int j = 0;
+				while (j < cmd_count - 1)
+				{
+					if (pipes[j])
+					{
+						// Keep input pipe open if it's ours
+						if (j != i - 1 && pipes[j][0] != -1)
+						{
+							close(pipes[j][0]);
+							pipes[j][0] = -1;
+						}
+						// Keep output pipe open if it's ours
+						if (j != i && pipes[j][1] != -1)
+						{
+							close(pipes[j][1]);
+							pipes[j][1] = -1;
+						}
+					}
+					j++;
+				}
+			}
+			
+			execute_single_command(cmd, data, input_fd, output_fd);
+		}
+		else
+		{
+			// Parent process - store PID
+			cmd->pid = pid;
+		}
+
+		cmd = cmd->next;
+		i++;
+	}
+
+	// Parent closes /dev/null if it was opened
+	if (devnull_fd != -1)
+		close(devnull_fd);
+
+	// Parent closes all pipes
+	close_all_pipes(pipes, cmd_count - 1);
+
+	// Wait for all children
 	signal(SIGINT, SIG_IGN);
 	signal(SIGQUIT, SIG_IGN);
 	wait_for_all_children(data);

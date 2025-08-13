@@ -130,7 +130,6 @@ int	try_builtin(t_command *current_cmd, t_data *data, int is_parent);
 void	restore_fds(t_data *data);
 void	set_exit_status(t_data *data, int status);
 int	handle_heredoc(t_data *data, t_command *cmd);
-void	pipe_child_routine(t_pipe_data *p_data);
 void	cleanup_pipe_fds(t_data *data);
 void	wait_for_all_children(t_data *data);
 void write_error_and_exit(int exit_val, char *arg, char *error);
