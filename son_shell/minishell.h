@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 17:17:58 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/10 16:24:15 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/13 18:41:02 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,7 @@ typedef struct s_command
 {
 	char				**args;
 	pid_t				pid;
+	int					pipe_fd[2];		// Pipe file descriptors for this command
 	t_redir				*redirs; // Bütün yönlendirmeler artık burada, sırayla tutulacak.
 	t_heredoc			*heredocs; // Heredoc içeriklerini tutmak için bu yapıyı koruyabiliriz.
 	struct s_command	*next;
@@ -89,8 +90,7 @@ typedef struct s_pipe_data
 {
 	t_data					*data;
 	t_command				*current;
-	int						*pipefd;
-	int						prev_fd;
+	t_command				*prev_cmd;
 }							t_pipe_data;
 
 void	cleanup_and_exit(int exit_code);
@@ -131,7 +131,7 @@ void	restore_fds(t_data *data);
 void	set_exit_status(t_data *data, int status);
 int	handle_heredoc(t_data *data, t_command *cmd);
 void	pipe_child_routine(t_pipe_data *p_data);
-int	pipe_parent_routine(t_command *current, int *pipefd, int prev_fd);
+void	cleanup_pipe_fds(t_data *data);
 void	wait_for_all_children(t_data *data);
 void write_error_and_exit(int exit_val, char *arg, char *error);
 char	*ft_strchr(const char *s, int c);

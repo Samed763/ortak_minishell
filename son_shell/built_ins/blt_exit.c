@@ -55,6 +55,7 @@ void	cleanup_and_exit(int exit_code)
 			close(data->original_stdin);
 		if (data->original_stdout != -1)
 			close(data->original_stdout);
+		cleanup_pipe_fds(data);
 		free_data_resources(data);
 		if (data->splitted_path)
 			free_word_array(data->splitted_path);
@@ -93,9 +94,5 @@ int	builtin_exit(t_command *cmd, t_data *data, int is_parent)
 			return (1); // 1 döndürerek "builtin çalıştı" de.
 		}
 	}
-	if (is_parent)
-		cleanup_and_exit(status % 256);
-	else
-		exit(status % 256);
-	return (0);
+	cleanup_and_exit(status % 256);
 }
