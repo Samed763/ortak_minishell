@@ -95,4 +95,5 @@ int	builtin_exit(t_command *cmd, t_data *data, int is_parent)
 		}
 	}
 	cleanup_and_exit(status % 256);
+	return 0;
 }
