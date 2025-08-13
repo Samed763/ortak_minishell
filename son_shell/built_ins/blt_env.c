@@ -22,7 +22,6 @@ int	builtin_env(char **env)
 	while (env[i])
 	{
 		eq = ft_strchr(env[i], '=');
-		// Sadece değeri olan variable'ları yazdır
 		if (eq && *(eq + 1) != '\0')
 		{
 			printf("%s\n", env[i]);

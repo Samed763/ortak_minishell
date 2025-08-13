@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 20:00:14 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/12 19:12:51 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/11 23:10:55 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,5 @@ int	setup_signals(void)
 		perror("sigaction for SIGQUIT");
 		return (-1);
 	}
-	//signal(SIGPIPE, SIG_IGN);
 	return (0);
 }

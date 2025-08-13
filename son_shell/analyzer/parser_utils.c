@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/10 12:57:40 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/13 18:41:02 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/10 14:53:52 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,8 +21,6 @@ t_command	*create_list(void)
 		return (NULL);
 	cmd->args = NULL;
 	cmd->pid = -1;
-	cmd->pipe_fd[0] = -1;
-	cmd->pipe_fd[1] = -1;
 	cmd->redirs = NULL;
 	cmd->heredocs = NULL;
 	cmd->next = NULL;

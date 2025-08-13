@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 19:53:31 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/13 20:30:00 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/10 17:44:14 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,36 +16,67 @@
 # include <sys/wait.h>
 # include <stdio.h>
 
-/**
- * Cleanup pipe file descriptors (now mostly unused but kept for compatibility)
- */
-void	cleanup_pipe_fds(t_data *data)
+static int	handle_pipe_redirections(t_command *current, int *pipefd,
+		int prev_fd)
 {
-	t_command	*cmd;
-
-	if (!data || !data->cmd)
-		return ;
-	
-	cmd = data->cmd;
-	while (cmd)
+	if (prev_fd != -1)
 	{
-		if (cmd->pipe_fd[0] != -1)
+		if (dup2(prev_fd, STDIN_FILENO) == -1)
+			return (perror("dup2"), -1);
+		close(prev_fd);
+	}
+	if (current->next)
+	{
+		close(pipefd[0]);
+		if (dup2(pipefd[1], STDOUT_FILENO) == -1)
 		{
-			close(cmd->pipe_fd[0]);
-			cmd->pipe_fd[0] = -1;
+			close(pipefd[1]);
+			return (perror("dup2"), -1);
 		}
-		if (cmd->pipe_fd[1] != -1)
-		{
-			close(cmd->pipe_fd[1]);
-			cmd->pipe_fd[1] = -1;
-		}
-		cmd = cmd->next;
+		close(pipefd[1]);
+	}
+	if (handle_redirections(current) == -1)
+		return (-1);
+	return (0);
+}
+
+void	pipe_child_routine(t_pipe_data *p_data)
+{
+	char	*full_path;
+	int		access_ret;
+	 
+	signal(SIGINT, SIG_DFL);
+	signal(SIGQUIT, SIG_DFL);
+	if (handle_pipe_redirections(p_data->current, p_data->pipefd,
+			p_data->prev_fd) == -1)
+		cleanup_and_exit(1);
+	if (!p_data->current->args || !p_data->current->args[0])
+		cleanup_and_exit(0);
+	if (try_builtin(p_data->current, p_data->data, 0))
+		cleanup_and_exit(p_data->data->exit_value);
+	access_ret = is_accessable(p_data->current->args[0], p_data->data->splitted_path,
+			&full_path);
+	check_error(access_ret,p_data->data);
+	if (execve(full_path, p_data->current->args, p_data->data->env) == -1)
+	{
+		perror("execve");
+		free(full_path);
+		cleanup_and_exit(1);
 	}
 }
 
-/**
- * Count commands and get last PID for proper exit status handling
- */
+int	pipe_parent_routine(t_command *current, int *pipefd, int prev_fd)
+{
+	if (prev_fd != -1)
+		close(prev_fd);
+	if (current->next)
+	{
+		close(pipefd[1]);
+		return (pipefd[0]);
+	}
+	return (-1);
+}
+
 static int	pid_and_count(t_command *cmd, pid_t *last_pid)
 {
 	t_command	*iter;
@@ -64,9 +95,6 @@ static int	pid_and_count(t_command *cmd, pid_t *last_pid)
 	return (count);
 }
 
-/**
- * Wait for all child processes to complete
- */
 void	wait_for_all_children(t_data *data)
 {
 	int		cmd_count;
@@ -77,24 +105,14 @@ void	wait_for_all_children(t_data *data)
 
 	if (!data || !data->cmd)
 		return ;
-	
 	cmd_count = pid_and_count(data->cmd, &last_pid);
 	last_status = 0;
-	
 	while (cmd_count > 0)
 	{
 		waited_pid = wait(&status);
-		if (waited_pid == -1)
-			break ;
-			
-		if (WIFSIGNALED(status) && WTERMSIG(status) == SIGINT)
-			write(STDOUT_FILENO, "\n", 1);
-		
 		if (waited_pid == last_pid)
 			last_status = status;
-		
 		cmd_count--;
 	}
-	
 	set_exit_status(data, last_status);
 }
