@@ -93,9 +93,6 @@ int	builtin_exit(t_command *cmd, t_data *data, int is_parent)
 			return (1); // 1 döndürerek "builtin çalıştı" de.
 		}
 	}
-	if (is_parent)
-		cleanup_and_exit(status % 256);
-	else
-		exit(status % 256);
+	cleanup_and_exit(status % 256);
 	return (0);
 }
