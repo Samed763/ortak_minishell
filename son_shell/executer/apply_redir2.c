@@ -6,13 +6,13 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/10 13:01:00 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/10 15:12:40 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/15 20:32:25 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
-# include <unistd.h>
-# include <stdio.h>
+#include <stdio.h>
+#include <unistd.h>
 
 static void	write_heredoc_to_pipe(int write_fd, t_heredoc *heredoc)
 {

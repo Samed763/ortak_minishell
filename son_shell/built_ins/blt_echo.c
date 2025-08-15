@@ -11,7 +11,7 @@
 /* ************************************************************************** */
 
 #include "built_in.h"
-# include <unistd.h>
+#include <unistd.h>
 
 static int	is_valid_n_flag(char *str)
 {
@@ -29,21 +29,7 @@ static int	is_valid_n_flag(char *str)
 	return (i > 1);
 }
 
-static int	has_valid_next_arg(char **args, int current_index)
-{
-	int	j;
-
-	j = current_index + 1;
-	while (args[j])
-	{
-		if (args[j] && ft_strlen(args[j]) > 0)
-			return (1);
-		j++;
-	}
-	return (0);
-}
-
-int	builtin_echo(char **args)// buraya data'yı al 
+int	builtin_echo(char **args)
 {
 	int	i;
 	int	newline;
@@ -58,10 +44,10 @@ int	builtin_echo(char **args)// buraya data'yı al
 	}
 	while (args[i])
 	{
-		if (args[i] && ft_strlen(args[i]) > 0)
+		if (args[i])
 		{
 			write(STDOUT_FILENO, args[i], ft_strlen(args[i]));
-			if (has_valid_next_arg(args, i))
+			if (args[i + 1])
 				write(STDOUT_FILENO, " ", 1);
 		}
 		i++;

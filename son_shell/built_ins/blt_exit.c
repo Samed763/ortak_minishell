@@ -6,15 +6,15 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/02 11:22:44 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/02 11:22:44 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/15 16:53:07 by yant56           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../minishell.h"
+#include "built_in.h"
 #include <limits.h>
-# include <unistd.h>
-# include <stdio.h>
-# include <readline/history.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <readline/history.h>
 
 static int	ft_atol(const char *str, long *result, int i)
 {
@@ -67,31 +67,30 @@ void	cleanup_and_exit(int exit_code)
 	exit(exit_code);
 }
 
-int	builtin_exit(t_command *cmd, t_data *data, int is_parent)
+int	builtin_exit(char **args, t_data *data, int is_parent)
 {
 	long	status;
-	char	**args;
 
-	args = cmd->args;
 	if (is_parent)
 		printf("exit\n");
 	if (!args[1])
 		status = data->exit_value;
 	else if (ft_atol(args[1], &status, 0))
 	{
-		write(2, "minishell: exit: ", 17);
-		write(2, args[1], ft_strlen(args[1]));
-		write(2, ": numeric argument required\n", 28);
-		status = 2; // Hata kodu 2
+		ft_putstr_fd("minishell: exit: ", 2);
+		ft_putstr_fd(args[1], 2);
+		ft_putendl_fd(": numeric argument required", 2);
+		status = 2;
 	}
-	if (args[1] && args[2])
+	else if (args[2])
 	{
+		write(2, "minishell: exit: too many arguments\n", 37);
 		if (is_parent)
 		{
-			write(2, "minishell: exit: too many arguments\n", 37);
-			data->exit_value = 1; // Çıkış kodunu 1 yap.
-			return (1); // 1 döndürerek "builtin çalıştı" de.
+			data->exit_value = 1;
+			return (1);
 		}
+		status = 1;
 	}
 	cleanup_and_exit(status % 256);
 	return (0);

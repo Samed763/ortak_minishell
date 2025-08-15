@@ -6,14 +6,14 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 20:00:14 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/11 23:10:55 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/15 20:37:20 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
-# include <signal.h>
-# include <unistd.h>
-# include <readline/readline.h>
+#include <readline/readline.h>
+#include <signal.h>
+#include <unistd.h>
 
 extern int	g_signal_received;
 

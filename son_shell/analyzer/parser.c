@@ -11,7 +11,7 @@
 /* ************************************************************************** */
 
 #include "../minishell.h"
-# include <stdio.h>
+#include <stdio.h>
 
 static int	parse_redirections(t_data *data, t_command *current, int *i)
 {

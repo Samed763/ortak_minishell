@@ -6,29 +6,13 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 16:20:02 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/09 20:45:42 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/15 20:53:45 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
-#include "../minishell.h"
 
 int	is_token(int c)
 {
 	return (c == '|' || c == '<' || c == '>');
-}
-
-int	is_valid_after_pipe(int c)
-{
-	return ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0'
-			&& c <= '9') || c == '_' || c == '-' || c == '.' || c == '/'
-		|| c == '\'' || c == '"' || c == '$' || c == ' ' || c == '\t');
-}
-
-int	is_valid_filename_char(int c)
-{
-	return ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0'
-			&& c <= '9') || c == '_' || c == '-' || c == '.' || c == '/'
-		|| c == '~' || c == '\'' || c == '"' || c == '$');
 }
 
 int	is_valid_to_expand(int c)

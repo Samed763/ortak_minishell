@@ -6,15 +6,15 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 19:53:31 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/10 17:44:14 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/15 20:33:47 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
-# include <signal.h>
-# include <unistd.h>
-# include <sys/wait.h>
-# include <stdio.h>
+#include <signal.h>
+#include <stdio.h>
+#include <sys/wait.h>
+#include <unistd.h>
 
 static int	handle_pipe_redirections(t_command *current, int *pipefd,
 		int prev_fd)
@@ -44,7 +44,7 @@ void	pipe_child_routine(t_pipe_data *p_data)
 {
 	char	*full_path;
 	int		access_ret;
-	 
+
 	signal(SIGINT, SIG_DFL);
 	signal(SIGQUIT, SIG_DFL);
 	if (handle_pipe_redirections(p_data->current, p_data->pipefd,
@@ -54,9 +54,9 @@ void	pipe_child_routine(t_pipe_data *p_data)
 		cleanup_and_exit(0);
 	if (try_builtin(p_data->current, p_data->data, 0))
 		cleanup_and_exit(p_data->data->exit_value);
-	access_ret = is_accessable(p_data->current->args[0], p_data->data->splitted_path,
-			&full_path);
-	check_error(access_ret,p_data->data);
+	access_ret = is_accessable(p_data->current->args[0],
+			p_data->data->splitted_path, &full_path);
+	check_error(access_ret, p_data->data);
 	if (execve(full_path, p_data->current->args, p_data->data->env) == -1)
 	{
 		perror("execve");

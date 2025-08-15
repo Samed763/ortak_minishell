@@ -6,14 +6,14 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 19:44:56 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/10 15:12:59 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/15 20:28:24 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
-# include <signal.h>
-# include <stdio.h>
-# include <unistd.h>
+#include <signal.h>
+#include <stdio.h>
+#include <unistd.h>
 
 static pid_t	fork_and_execute(t_pipe_data *p_data)
 {
@@ -30,7 +30,7 @@ static pid_t	fork_and_execute(t_pipe_data *p_data)
 	return (pid);
 }
 
-static void	execute_pipe_loop( t_pipe_data *p_data)
+static void	execute_pipe_loop(t_pipe_data *p_data)
 {
 	pid_t	pid;
 

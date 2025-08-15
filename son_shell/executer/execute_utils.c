@@ -6,15 +6,15 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 19:37:55 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/10 15:16:13 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/15 20:33:19 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
+#include <signal.h>
+#include <stdio.h>
 #include <sys/stat.h>
-# include <unistd.h>
-# include <stdio.h>
-# include <signal.h>
+#include <unistd.h>
 
 int	is_builtin(char *command)
 {

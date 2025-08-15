@@ -1,30 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   blt_env.c                                          :+:      :+:    :+:   */
+/*   ft_put_utils.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
+/*   By: yant56 <yant56@student.42>                 +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/02 11:22:46 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/02 11:22:46 by sadinc           ###   ########.fr       */
+/*   Created: 2025/08/15 17:03:54 by yant56            #+#    #+#             */
+/*   Updated: 2025/08/15 17:03:54 by yant56           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "built_in.h"
-#include <stdio.h>
+#include "../minishell.h"
+#include <unistd.h>
 
-int	builtin_env(char **env)
+void	ft_putstr_fd(char *s, int fd)
 {
-	int		i;
-	char	*eq;
+	if (!s)
+		return ;
+	write(fd, s, ft_strlen(s));
+}
 
-	i = 0;
-	while (env[i])
-	{
-		eq = ft_strchr(env[i], '=');
-		if (eq && *(eq + 1) != '\0')
-			printf("%s\n", env[i]);
-		i++;
-	}
-	return (0);
+void	ft_putendl_fd(char *s, int fd)
+{
+	if (!s)
+		return ;
+	ft_putstr_fd(s, fd);
+	write(fd, "\n", 1);
 }

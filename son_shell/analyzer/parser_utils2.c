@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 18:37:06 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/10 16:24:07 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/15 20:38:53 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,6 +58,7 @@ int	add_heredoc_to_command(t_command *cmd, char *raw_word)
 	}
 	return (0);
 }
+
 void	add_redir_to_list(t_command *cmd, char *filename, int type)
 {
 	t_redir	*new_redir;

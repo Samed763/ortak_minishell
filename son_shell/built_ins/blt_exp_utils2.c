@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/02 11:22:40 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/02 11:22:40 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/15 16:54:41 by yant56           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,7 +99,7 @@ int	find_exact_var(char **env, char *arg)
 	j = 0;
 	while (env[j])
 	{
-		if (ft_strcmp(env[j], arg) == 0)
+		if (ft_strncmp(env[j], arg, ft_strlen(arg)) == 0)
 			return (j);
 		j++;
 	}

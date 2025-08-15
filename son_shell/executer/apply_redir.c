@@ -6,13 +6,13 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 22:10:08 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/10 15:12:27 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/15 20:32:01 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
-# include <unistd.h>
-# include <stdio.h>
+#include <stdio.h>
+#include <unistd.h>
 
 static int	apply_output_redirection(t_redir *redir)
 {

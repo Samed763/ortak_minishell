@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   built_in.h                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
+/*   By: yant <yant@student.42>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/04 09:13:05 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/07 15:16:50 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/15 20:02:57 by yant             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,5 +28,7 @@ int		prepare_var_data(char *arg, char *eq, char **var_name,
 int		update_existing_var(t_data *data, char *new_entry, int name_len);
 int		ft_isalpha(int c);
 int		ft_isalnum(int c);
+void	ft_putstr_fd(char *s, int fd);
+void	ft_putendl_fd(char *s, int fd);
 
 #endif

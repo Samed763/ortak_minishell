@@ -6,16 +6,16 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 20:00:01 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/11 23:10:12 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/15 20:49:25 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-# include <readline/history.h>
-# include <readline/readline.h>
-# include <signal.h>
+#include <readline/history.h>
+#include <readline/readline.h>
+#include <signal.h>
 
-int	g_signal_received = 0;
+int			g_signal_received = 0;
 
 static void	init_data(t_data *data, char **envp)
 {
@@ -43,6 +43,7 @@ t_data	*get_data_instance(t_data *data_to_set)
 		data_instance = data_to_set;
 	return (data_instance);
 }
+
 static void	process_line(char *line, t_data *data)
 {
 	if (!line)
@@ -76,7 +77,7 @@ static void	main_loop(t_data *data)
 		g_signal_received = 0;
 		line = readline("minishell$ ");
 		if (g_signal_received == SIGINT)
-			data->exit_value = 130; 
+			data->exit_value = 130;
 		process_line(line, data);
 	}
 }

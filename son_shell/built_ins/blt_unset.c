@@ -1,6 +1,16 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   blt_unset.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/02 11:22:28 by sadinc            #+#    #+#             */
+/*   Updated: 2025/08/15 20:58:50 by sadinc           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "built_in.h"
-#include "../minishell.h"
 
 static int	find_env_index(char **env, char *arg)
 {
@@ -30,7 +40,6 @@ static void	remove_env_var(char **env, int env_index)
 	env[env_index] = NULL;
 }
 
-
 static int	process_unset_arg(t_data *data, char *arg)
 {
 	int	env_index;
@@ -38,7 +47,6 @@ static int	process_unset_arg(t_data *data, char *arg)
 	env_index = find_env_index(data->env, arg);
 	if (env_index != -1)
 		remove_env_var(data->env, env_index);
-	
 	return (0);
 }
 
@@ -50,10 +58,8 @@ int	builtin_unset(t_data *data)
 
 	if (!data || !data->cmd || !data->env)
 		return (1);
-	
 	if (!data->cmd->args[1])
 		return (0);
-	
 	i = 1;
 	status = 0;
 	arg_status = 0;

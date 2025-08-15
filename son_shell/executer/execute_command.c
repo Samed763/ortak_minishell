@@ -6,15 +6,15 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/30 19:46:46 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/11 19:20:54 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/15 20:32:43 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
-# include <signal.h>
-# include <stdio.h>
-# include <unistd.h>
-# include <sys/wait.h>
+#include <signal.h>
+#include <stdio.h>
+#include <sys/wait.h>
+#include <unistd.h>
 
 static void	child_process_routine(t_data *data, char **splitted_path)
 {
@@ -78,7 +78,7 @@ static void	execute_single_external(t_data *data, char **splitted_path)
 static int	handle_all_heredocs(t_data *data)
 {
 	t_command	*current_cmd;
-	int status;
+	int			status;
 
 	status = 0;
 	current_cmd = data->cmd;
