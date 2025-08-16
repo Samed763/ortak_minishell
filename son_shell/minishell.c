@@ -5,10 +5,11 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/07/30 20:00:01 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/15 20:49:25 by sadinc           ###   ########.fr       */
+/*   Created: 2025/08/16 14:12:44 by sadinc            #+#    #+#             */
+/*   Updated: 2025/08/16 14:12:45 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 
 #include "minishell.h"
 #include <readline/history.h>

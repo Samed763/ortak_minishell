@@ -5,14 +5,15 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/07/30 19:44:56 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/15 20:28:24 by sadinc           ###   ########.fr       */
+/*   Created: 2025/08/16 14:10:03 by sadinc            #+#    #+#             */
+/*   Updated: 2025/08/16 14:13:41 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 #include <signal.h>
 #include <stdio.h>
+#include <sys/wait.h>
 #include <unistd.h>
 
 static pid_t	fork_and_execute(t_pipe_data *p_data)

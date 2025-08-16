@@ -3,12 +3,13 @@
 /*                                                        :::      ::::::::   */
 /*   built_in.h                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yant <yant@student.42>                     +#+  +:+       +#+        */
+/*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/04 09:13:05 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/15 20:02:57 by yant             ###   ########.fr       */
+/*   Created: 2025/08/16 14:11:52 by sadinc            #+#    #+#             */
+/*   Updated: 2025/08/16 14:11:53 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 
 #ifndef BUILT_IN_H
 # define BUILT_IN_H
