@@ -6,10 +6,9 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/16 14:11:52 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/16 14:11:53 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/16 14:15:53 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 
 #ifndef BUILT_IN_H
 # define BUILT_IN_H
