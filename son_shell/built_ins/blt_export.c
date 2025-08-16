@@ -20,7 +20,7 @@ static int	handle_var_without_value(t_data *data, char *arg)
 	char	*new_entry;
 	char	**new_env;
 
-	found = find_exact_var(data->env, arg);
+	found = find_exact_var(data->env, ft_strjoin(arg, "="));
 	if (found == -1)
 	{
 		new_entry = ft_strjoin(arg, "=");

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   blt_unset.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
+/*   By: yant <yant@student.42>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/16 14:11:47 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/16 14:11:48 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/16 17:32:55 by yant             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,22 +53,13 @@ static int	process_unset_arg(t_data *data, char *arg)
 int	builtin_unset(t_data *data)
 {
 	int	i;
-	int	status;
-	int	arg_status;
 
 	if (!data || !data->cmd || !data->env)
 		return (1);
 	if (!data->cmd->args[1])
 		return (0);
 	i = 1;
-	status = 0;
-	arg_status = 0;
 	while (data->cmd->args[i])
-	{
-		arg_status = process_unset_arg(data, data->cmd->args[i]);
-		if (arg_status == 1)
-			status = 1;
-		i++;
-	}
-	return (status);
+		process_unset_arg(data, data->cmd->args[i++]);
+	return (0);
 }
