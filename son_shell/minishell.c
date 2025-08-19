@@ -6,7 +6,7 @@
 /*   By: sadinc <sadinc@student.42kocaeli.com.tr    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/16 14:12:44 by sadinc            #+#    #+#             */
-/*   Updated: 2025/08/16 14:15:55 by sadinc           ###   ########.fr       */
+/*   Updated: 2025/08/19 12:29:57 by sadinc           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,7 @@ static void	process_line(char *line, t_data *data)
 	if (syntax_check(line))
 	{
 		printf("syntax error\n");
+		data->exit_value = 1;
 		free(line);
 		return ;
 	}
